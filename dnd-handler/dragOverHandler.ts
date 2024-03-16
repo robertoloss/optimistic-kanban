@@ -1,6 +1,6 @@
 import { DragOverEvent } from "@dnd-kit/core";
 import { Dispatch, SetStateAction } from "react";
-import { TaskType } from "../components-new/types";
+import { TaskType } from "@/components/kanban/types";
 import { arrayMove } from "@dnd-kit/sortable";
 
 export default function dragOverHandler(

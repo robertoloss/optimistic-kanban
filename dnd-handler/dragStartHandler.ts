@@ -1,5 +1,5 @@
 import { DragStartEvent } from "@dnd-kit/core";
-import { ColumnType, TaskType } from "../components-new/types";
+import { ColumnType, TaskType } from "@/components/kanban/types";
 import { Dispatch, SetStateAction } from "react";
 
 
