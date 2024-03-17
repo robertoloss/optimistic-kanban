@@ -1,11 +1,12 @@
 import { DragStartEvent } from "@dnd-kit/core";
-import { ColumnType, TaskType } from "@/components/kanban/types";
+import { ColumnType } from "@/components/kanban/types";
 import { Dispatch, SetStateAction } from "react";
+import { Task } from "@prisma/client";
 
 
 export default function dragStartHandler(
 	setActiveColumn: Dispatch<SetStateAction<ColumnType | null>>,
-	setActiveTask: Dispatch<SetStateAction<TaskType | null>>
+	setActiveTask: Dispatch<SetStateAction<Task | null>>
 ) {
 	return (event: DragStartEvent) => {
 		if (event.active.data.current?.type === "Column") {

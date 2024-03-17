@@ -1,13 +1,15 @@
-import Task from "./Task"
 import { cn } from "@/app/utils/cn"
-import { ColumnType, TaskType } from "./types"
+import { ColumnType } from "./types"
 import { useMemo } from "react"
 import { SortableContext, useSortable } from "@dnd-kit/sortable"
 import { CSS } from '@dnd-kit/utilities'
+import { Task as TaskPrismaType } from "@prisma/client"
+import Task from "./Task"
+import { UniqueIdentifier } from "@dnd-kit/core"
 
 type Props = {
 	column: ColumnType
-	tasks: TaskType[]
+	tasks: TaskPrismaType[] | undefined
 	overlay?: boolean
 }
 export default function Column({ column, tasks, overlay } : Props) {
@@ -23,7 +25,11 @@ export default function Column({ column, tasks, overlay } : Props) {
 			easing: 'ease'
 		}
 	});
-	const tasksIds = useMemo(() => tasks.map(t => t.id), [tasks])
+
+
+	const sortedTasks = tasks?.sort((a,b) => (a.position || 0) - (b.position || 0))
+
+	const tasksIds = useMemo(() => sortedTasks?.map(t => (t.id as unknown) as UniqueIdentifier), [tasks])
   
  // const style = {
  //   transform: CSS.Transform.toString(transform),
@@ -49,8 +55,8 @@ export default function Column({ column, tasks, overlay } : Props) {
 			)}
 			
 		>
-			{!isDragging && <SortableContext items={tasksIds}>
-				{tasks.map(task => (
+			{!isDragging && <SortableContext items={tasksIds || []}>
+				{tasks?.map(task => (
 					<Task key={task.id} task={task} column={column}/>
 				))}
 			</SortableContext>}

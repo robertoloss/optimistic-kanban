@@ -1,29 +1,10 @@
 import AuthButton from "../components/AuthButton";
 import Header from "@/components/Header";
-import { prisma } from "@/prisma/client";
+import { getProfiles, getTasks } from "@/prisma/queries";
 
 export const dynamic = 'force-dynamic'
 
-const getProfiles = async () => {
-["getProfiles"]
-try {
-		const profiles = await prisma.profile.findMany();
-		return profiles;
-	} catch( error ) {
-		console.log(error);
-	}
-}
-const getTasks = async () => {
-["getProfiles"]
-try {
-		return await prisma.task.findMany();
-	} catch( error ) {
-		console.log(error);
-	}
-}
-
 export default async function Index() {
-
 	const profiles = await getProfiles()
 	const tasks = await getTasks()
   
@@ -35,14 +16,14 @@ export default async function Index() {
         </div>
       </nav>
 
-      <div className="flex-1 flex flex-col gap-20 opacity-0 max-w-4xl px-3">
+      <div className="flex-1 flex flex-col gap-20  max-w-4xl px-3">
         <Header />
         <main className="flex-1 flex flex-col gap-6">
 					{profiles && profiles.map(profile => 
-						<h1>{profile.first_name} {profile.last_name}</h1>
+						<h1 key={profile.id}>{profile.first_name} {profile.last_name}</h1>
 					)}
 					{tasks && tasks.map(task =>
-						<div>
+						<div key={task.id}>
 							<h1>{task.title}</h1>
 							<h1>{task.content}</h1>
 						</div>

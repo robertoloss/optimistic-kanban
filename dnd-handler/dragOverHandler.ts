@@ -1,19 +1,18 @@
-import { DragOverEvent } from "@dnd-kit/core";
+import { DragOverEvent, UniqueIdentifier } from "@dnd-kit/core";
+import { Task } from "@prisma/client";
 import { Dispatch, SetStateAction } from "react";
-import { TaskType } from "@/components/kanban/types";
-import { arrayMove } from "@dnd-kit/sortable";
 
-export default function dragOverHandler(
-	setTasks: Dispatch<SetStateAction<TaskType[]>>
-) {
+
+type Props = {
+	setTasks: Dispatch<SetStateAction<Task[] | null>>
+}
+export default function dragOverHandler({ setTasks } : Props) {
 	return (event: DragOverEvent) => {
 		const { active, over } = event;
 		if (!over) return;
 
 		const activeId = active.id;
 		const overId = over.id;
-		//console.log("\nactiveId: ", activeId)
-		//console.log("overId: ", overId)
 		if (activeId === overId) return;
 
 		const isActiveATask = active.data.current?.type === "Task";
@@ -22,28 +21,39 @@ export default function dragOverHandler(
 
 		if (isActiveATask && isOverATask) {
 			setTimeout(() => setTasks((tasks) => {
-				const activeIndex = tasks.findIndex((t) => t.id === activeId);
-				const overIndex = tasks.findIndex((t) => t.id === overId);
+				let newTasks : Task[] = []
+				if (tasks) {
+					const task1 = tasks.filter((t) => (t.id as unknown) as UniqueIdentifier === activeId)[0];
+					const task2 = tasks.filter((t) => (t.id as unknown) as UniqueIdentifier === overId)[0];
+					// Create new task objects with updated positions
+					const newTask1: Task = { ...task1, position: task2.position };
+					const newTask2: Task = { ...task2, position: task1.position };
 
-				if (tasks[activeIndex].columnId != tasks[overIndex].columnId) {
-					tasks[activeIndex].columnId = tasks[overIndex].columnId;
-					return arrayMove(tasks, activeIndex, overIndex );
+					// Update the tasks array with the new task objects
+					newTasks = tasks.map(t => {
+							if (t.id === newTask1.id) return newTask1;
+							if (t.id === newTask2.id) return newTask2;
+							return t;
+					});
 				}
-				return arrayMove(tasks, activeIndex, overIndex);
-			}),50);
+				return newTasks
+			}), 50)
 		}
 
 		const isOverAColumn = over.data.current?.type === "Column";
-
 		if (isActiveATask && isOverAColumn) {
 			setTimeout(() => setTasks((tasks) => {
-				const activeIndex = tasks.findIndex((t) => t.id === activeId);
-				const overIndex = tasks.findIndex((t) => t.id === overId);
-				//console.log("activeIndex", activeIndex)
-				//console.log("overIndex", activeId)
-				tasks[activeIndex].columnId = overId;
-				return arrayMove(tasks, activeIndex, overIndex);
-			}),50);
+				let newTasks : Task[] = []
+				if (tasks) {
+					const task1 = tasks.filter((t) => (t.id as unknown) as UniqueIdentifier === activeId)[0];
+					const newTask1: Task = { ...task1, columnId: (over.id as string) };
+					newTasks = tasks.map(t => {
+							if (t.id === newTask1.id) return newTask1;
+							return t;
+					});
+				}
+				return newTasks
+			}), 50)
 		}
 	}
 }
