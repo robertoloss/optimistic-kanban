@@ -5,9 +5,8 @@ import { DragEndEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { Task } from "@prisma/client";
 
-async function updateTasksPositions(tasks : Task[], setSync: Dispatch<SetStateAction<boolean>>) {
+async function updateTasksPositions(tasks : Task[]) {
 	await actionUpdateTasksPositions({ tasks })
-	setTimeout(()=>setSync(prev => !prev),500)
 }
 
 export default function dragEndHandler(
@@ -15,10 +14,9 @@ export default function dragEndHandler(
 	setActiveTask: Dispatch<SetStateAction<Task | null>>,
 	setColumns: Dispatch<SetStateAction<ColumnType[]>>,
 	tasks: Task[] | null,
-	setSync: Dispatch<SetStateAction<boolean>>,
 ) {
 	return (event: DragEndEvent) => {
-		tasks && updateTasksPositions(tasks, setSync)
+		tasks && updateTasksPositions(tasks)
 		
 		setActiveColumn(null);
 		setActiveTask(null);

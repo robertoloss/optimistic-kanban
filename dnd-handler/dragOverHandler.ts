@@ -25,11 +25,14 @@ export default function dragOverHandler({ setTasks } : Props) {
 				if (tasks) {
 					const task1 = tasks.filter((t) => (t.id as unknown) as UniqueIdentifier === activeId)[0];
 					const task2 = tasks.filter((t) => (t.id as unknown) as UniqueIdentifier === overId)[0];
-					// Create new task objects with updated positions
-					const newTask1: Task = { ...task1, position: task2.position };
+
+					const newTask1: Task = { 
+						...task1, 
+						position: task2.position,
+						columnId: task1.columnId != task2.columnId ? task2.columnId : task1.columnId
+					};
 					const newTask2: Task = { ...task2, position: task1.position };
 
-					// Update the tasks array with the new task objects
 					newTasks = tasks.map(t => {
 							if (t.id === newTask1.id) return newTask1;
 							if (t.id === newTask2.id) return newTask2;

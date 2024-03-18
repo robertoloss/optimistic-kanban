@@ -29,6 +29,7 @@ export default function DragOverlayComponent({activeColumn, activeTask, tasks } 
 						id: activeTask.columnId || "",
 						title: ""
 					}}
+					overlay={true}
 				/>
 			)}
 		</DragOverlay>

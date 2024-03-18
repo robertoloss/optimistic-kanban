@@ -26,12 +26,11 @@ export default function Kanban({ dbTasks } : Props) {
 	const [tasks, setTasks] = useState<Task[] | null>(null);
 	const [activeColumn, setActiveColumn] = useState<ColumnType | null>(null)
 	const [activeTask, setActiveTask] = useState<Task | null>(null)
-	const [sync, setSync] = useState(false)
 
 	useEffect(()=>{
 		dbTasks && setTasks(dbTasks)
 		console.log("useEffect")
-	},[sync])
+	},[])
 
 	return (
 		<div className="flex flex-row flex-wrap gap-y-8 w-full justify-center gap-x-8">
@@ -39,7 +38,7 @@ export default function Kanban({ dbTasks } : Props) {
 				id="list"
 				sensors={sensors}
 				onDragStart={dragStartHandler(setActiveColumn, setActiveTask)}
-				onDragEnd={dragEndHandler(setActiveColumn, setActiveTask, setColumns, tasks, setSync)}
+				onDragEnd={dragEndHandler(setActiveColumn, setActiveTask, setColumns, tasks)}
 				onDragOver={dragOverHandler({setTasks})}
 			>
 				<SortableContext 
