@@ -21,7 +21,7 @@ export default function Column({ column, tasks, overlay } : Props) {
     },
 		animateLayoutChanges: () => true,
 		transition: {
-			duration: 200,
+			duration: 0,
 			easing: 'ease'
 		}
 	});
@@ -31,17 +31,17 @@ export default function Column({ column, tasks, overlay } : Props) {
 
 	const tasksIds = useMemo(() => sortedTasks?.map(t => (t.id as unknown) as UniqueIdentifier), [tasks])
   
- // const style = {
- //   transform: CSS.Transform.toString(transform),
- //   transition,
- // };
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
-	const style = useMemo(() => {
-			return {
-					...(isDragging ? { transform: CSS.Translate.toString(transform) } : null),
-					transition,
-			}
-	}, [isDragging, transform, transition])
+	//const style = useMemo(() => {
+	//		return {
+	//				...(isDragging ? { transform: CSS.Translate.toString(transform) } : null),
+	//				transition,
+	//		}
+	//}, [isDragging, transform, transition])
 
 	return (
 		<div ref={setNodeRef} style={style} {...attributes} {...listeners}  
@@ -49,13 +49,13 @@ export default function Column({ column, tasks, overlay } : Props) {
 				`flex flex-col w-full max-w-[240px] min-w-[200px] p-4 gap-y-4 z-10 h-[400px] bg-gray-700
 				 rounded-lg`,
 				{ 
-					"border-4 z-50 border-yellow-200 bg-transparent": isDragging,
+					"z-50 opacity-35": isDragging,
 					"shadow-black shadow": overlay,
 				}
 			)}
 			
 		>
-			{!isDragging && <SortableContext items={tasksIds || []}>
+			{<SortableContext items={tasksIds || []}>
 				{tasks?.map(task => (
 					<Task key={task.id} task={task} column={column}/>
 				))}

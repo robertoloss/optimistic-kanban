@@ -26,9 +26,9 @@ export default function Task({ task, column, overlay } : Props) {
       task,
 			columnId: column.id
     },
-		animateLayoutChanges: () => false,
+		animateLayoutChanges: () => true,
 		 transition: {
-			duration: 500, // milliseconds
+			duration: 200, // milliseconds
 			easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
 		},
   });
