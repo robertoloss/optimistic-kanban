@@ -1,12 +1,13 @@
 import { DragOverEvent, UniqueIdentifier } from "@dnd-kit/core";
-import { Task } from "@prisma/client";
+import { Column, Task } from "@prisma/client";
 import { Dispatch, SetStateAction } from "react";
 
 
 type Props = {
 	setTasks: Dispatch<SetStateAction<Task[] | null>>
+	setColumns: Dispatch<SetStateAction<Column[] | null>>
 }
-export default function dragOverHandler({ setTasks } : Props) {
+export default function dragOverHandler({ setTasks, setColumns } : Props) {
 	return (event: DragOverEvent) => {
 		const { active, over } = event;
 		if (!over) return;
@@ -17,16 +18,12 @@ export default function dragOverHandler({ setTasks } : Props) {
 
 		const isActiveATask = active.data.current?.type === "Task";
 		const isOverATask = over.data.current?.type === "Task";
-		if (!isActiveATask) {
-			//console.log("active col: ", active.id )
-			//console.log("hovered col: ", over.id )
-			return
-		};
+		const isActiveAColumn = active.data.current?.type === "Column";
+		const isOverAColumn = over.data.current?.type === "Column";
 
 		if (isActiveATask && isOverATask) {
 			//console.log("task")
 			setTimeout(() => setTasks((tasks) => {
-				console.log("lskdjflk")
 				let newTasks : Task[] = []
 				if (tasks) {
 					const task1 = tasks.filter((t) => (t.id as unknown) as UniqueIdentifier === activeId)[0];
@@ -71,7 +68,7 @@ export default function dragOverHandler({ setTasks } : Props) {
 			}), 0)
 		}
 
-		const isOverAColumn = over.data.current?.type === "Column";
+
 		if (isActiveATask && isOverAColumn) {
 			//console.log("column")
 			setTimeout(() => setTasks((tasks) => {
@@ -79,25 +76,43 @@ export default function dragOverHandler({ setTasks } : Props) {
 				if (tasks) {
 					const task1 = tasks.filter((t) => (t.id as unknown) as UniqueIdentifier === activeId)[0];
 					let newTask1: Task = { ...task1, columnId: over.id as string };
-
-					const differentColumn = task1.columnId != over.id;
-					//console.log("task1.columnId, over.id: ", task1.columnId, over.id)
-					//const columnIsEmpty = tasks.filter(t => t.columnId === over.id).length === 0 
 					const numTasksInColumn = tasks.filter(t => t.columnId === over.id).length 
-
-					if (differentColumn) {
-						newTask1 = {
-							...task1,
-							columnId: over.id as string,
-							position: numTasksInColumn 
-						}
+					newTask1 = {
+						...task1,
+						columnId: over.id as string,
+						position: numTasksInColumn 
 					}
-					newTasks = tasks.map(t => {
+					newTasks = [...tasks]
+					const tasksInOverColumn = newTasks
+						.filter(t => t.columnId === over.id)
+						.sort((a,b) => a.position! - b.position!)
+					tasksInOverColumn.forEach((t,i) => {
+						t.position = i
+					})
+					newTasks = newTasks.filter(t => t.columnId != over.id)
+					newTasks = [...newTasks, ...tasksInOverColumn]
+					newTasks = newTasks.map(t => {
 							if (t.id === newTask1.id) return newTask1;
 							return t;
 					});
 				}
 				return newTasks
+			}), 0)
+		}
+
+		if (isActiveAColumn && isActiveAColumn) {
+			setTimeout(() => 
+				setColumns((columns) => {
+					const activeColumn = columns?.filter((col) => col.title === activeId)[0];
+					const overColumn = columns?.filter((col) => col.title === overId)[0];
+					if (columns && activeColumn != undefined && overColumn != undefined) {
+						const res = columns.map(col => {
+							if (col.title === activeId) return overColumn
+							if (col.title === overId) return activeColumn;
+							return col
+						})	
+						return res
+					} else return [] 
 			}), 0)
 		}
 	}

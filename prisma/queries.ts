@@ -1,4 +1,4 @@
-import { Task } from "@prisma/client";
+import { Task, Column } from "@prisma/client";
 import prisma from "./client";
 
 export const getColumns = async () => {
@@ -33,6 +33,24 @@ export const updateTasksPositions = async({ tasks } : { tasks: Task[] }) => {
 			})
 		} catch(error) {
 			console.error(error)
+		}
+	}
+}
+
+export const updateColumnPositions = async({ columns } : { columns: Column[] }) => {
+	console.log("updating columns positions")
+	console.log("input: ", columns)
+	for (let i=0; i<columns.length; i++) {
+		try {
+			console.log("COLUMN:", columns[i])
+			await prisma.column.update({
+				where: { id: columns[i].id},
+				data: {
+					position: i
+				}
+			})
+		} catch(error) {
+		console.log(error)
 		}
 	}
 }

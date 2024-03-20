@@ -14,7 +14,7 @@ model Column {
   id         Int      @id @default(autoincrement())
   created_at DateTime @default(now()) @db.Timestamptz(6)
   title      String?
-  position   Int?     @unique
+  position   Int?
 
   @@schema("public")
 }

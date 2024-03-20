@@ -20,7 +20,7 @@ export default function Column({ column, overlay, tasks } : Props) {
     },
 		animateLayoutChanges: () => true,
 		transition: {
-			duration: 0,
+			duration: 200,
 			easing: 'ease'
 		}
 	});
@@ -43,7 +43,7 @@ export default function Column({ column, overlay, tasks } : Props) {
 					"shadow-black shadow": overlay, }
 			)}
 		>
-			{column.title}
+			{column.title} Pos:{column.position} Id:{column.id}
 			{<SortableContext items={tasksIds || []}>
 				{tasks?.map(task => (
 					<Task key={task.id} task={task} column={column}/>

@@ -1,12 +1,11 @@
 'use client'
 import { useEffect, useState } from "react"
-import { SortableContext, rectSwappingStrategy } from "@dnd-kit/sortable"
-import { useMemo } from "react"
+import { SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable"
 import ColumnComp from "./Column"
 import { DndContext, useSensors, PointerSensor, useSensor, UniqueIdentifier } from "@dnd-kit/core"
-import dragStartHandler from "@/dnd-handler/dragStartHandler"
-import dragEndHandler from "@/dnd-handler/dragEndHandler"
-import dragOverHandler from "@/dnd-handler/dragOverHandler"
+import dragStartHandler from "@/dnd-utils/dragStartHandler"
+import dragEndHandler from "@/dnd-utils/dragEndHandler"
+import dragOverHandler from "@/dnd-utils/dragOverHandler"
 import DragOverlayComponent from "./DragOverlayComponent"
 import { Column, Task } from "@prisma/client"
 
@@ -14,7 +13,6 @@ type Props = {
 	dbTasks: Task[] | undefined
 	dbColumns: Column[] | undefined
 }
-
 export default function Kanban({ dbTasks, dbColumns } : Props) {
 	const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 0 }})
@@ -23,11 +21,10 @@ export default function Kanban({ dbTasks, dbColumns } : Props) {
 	const [tasks, setTasks] = useState<Task[] | null>(null);
 	const [activeColumn, setActiveColumn] = useState<Column | null>(null)
 	const [activeTask, setActiveTask] = useState<Task | null>(null)
-	const [_, setTrigger] = useState(false)
-	const columnsIds = useMemo(()=> columns?.map(column => column.title as UniqueIdentifier), [columns])
+	const columnsIds =  columns?.map(column => column.title as UniqueIdentifier)
 
 	useEffect(()=>{
-		console.log("useEffect")
+		console.log("useEffect initial")
 		dbTasks && setTasks(dbTasks)
 		dbColumns && setColumns(dbColumns)
 	},[])
@@ -37,25 +34,25 @@ export default function Kanban({ dbTasks, dbColumns } : Props) {
 			<DndContext
 				id="list"
 				sensors={sensors}
-				onDragStart={dragStartHandler(setActiveColumn, setActiveTask)}
-				onDragEnd={dragEndHandler(setActiveColumn, setActiveTask, setColumns, tasks, setTrigger )}
-				onDragOver={dragOverHandler({setTasks})}
+				onDragStart={dragStartHandler({ setActiveColumn, setActiveTask })}
+				onDragEnd={dragEndHandler({setActiveColumn, setActiveTask, tasks, columns })}
+				onDragOver={dragOverHandler({ setTasks, setColumns })}
 			>
-				{columnsIds && <SortableContext 
-					items={columnsIds}
-					strategy={rectSwappingStrategy}
-				>
-					{columns && columns.map(column => {
-						//console.log("column.title: ", column.title)
-						const columnTasks = tasks?.filter(t => t.columnId === column.title)
-						//console.log("columnTasks: ", columnTasks)
-						return <ColumnComp 
-							key={column.id}
-							column={column}
-							tasks={columnTasks}
-						/>
-					})}
-				</SortableContext>}
+				{columnsIds && 
+					<SortableContext 
+						items={columnsIds}
+						strategy={horizontalListSortingStrategy}
+					>
+						{columns && columns.map(column => {
+							const columnTasks = tasks?.filter(t => t.columnId === column.title)
+							return <ColumnComp 
+								key={column.id}
+								column={column}
+								tasks={columnTasks}
+							/>
+						})}
+					</SortableContext>
+				}
 				<DragOverlayComponent 
 					activeColumn={activeColumn}
 					activeTask={activeTask}

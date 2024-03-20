@@ -2,19 +2,16 @@ import AuthButton from "@/components/AuthButton";
 import Kanban from "@/components/kanban/Kanban";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import { actionGetTasks } from "../actions/actions";
-import { getColumns } from "@/prisma/queries";
+import { getColumns, getTasks } from "@/prisma/queries";
 
 export default async function KanbanPage() {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) { return redirect("/login") }
 
-	const tasks = await actionGetTasks()
+	const tasks = await getTasks()
 	const columns = await getColumns()
-
-	
-	console.log("geTasks from KB page: ", tasks)
+	console.log("KanbanPage")
   return (
     <div className="flex-1 w-full flex flex-col gap-20 items-center">
       <div className="w-full">
