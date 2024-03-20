@@ -26,6 +26,7 @@ export default function dragOverHandler({ setTasks } : Props) {
 		if (isActiveATask && isOverATask) {
 			//console.log("task")
 			setTimeout(() => setTasks((tasks) => {
+				console.log("lskdjflk")
 				let newTasks : Task[] = []
 				if (tasks) {
 					const task1 = tasks.filter((t) => (t.id as unknown) as UniqueIdentifier === activeId)[0];
@@ -67,7 +68,7 @@ export default function dragOverHandler({ setTasks } : Props) {
 					//console.log("tasks: ", tasks)
 				}
 				return newTasks
-			}), 50)
+			}), 0)
 		}
 
 		const isOverAColumn = over.data.current?.type === "Column";
@@ -97,7 +98,7 @@ export default function dragOverHandler({ setTasks } : Props) {
 					});
 				}
 				return newTasks
-			}), 50)
+			}), 0)
 		}
 	}
 }

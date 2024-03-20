@@ -48,11 +48,9 @@ export default function Task({ task, column, overlay } : Props) {
 			)}
 			onClick={(e)=>{
 				e.stopPropagation()
-				console.log("click on task")
 			}}
 			onMouseDown={(e)=>{
 				e.stopPropagation()
-				console.log("down on task")
 			}}
 		>
 			<h1>Pos: {task.position} Col: {task.columnId}</h1>
