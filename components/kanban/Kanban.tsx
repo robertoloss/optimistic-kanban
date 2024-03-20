@@ -3,13 +3,11 @@ import { useEffect, useState } from "react"
 import { SortableContext, rectSwappingStrategy } from "@dnd-kit/sortable"
 import { useMemo } from "react"
 import ColumnComp from "./Column"
-import { defaultColumns } from "./mock-data"
 import { DndContext, useSensors, PointerSensor, useSensor, UniqueIdentifier } from "@dnd-kit/core"
 import dragStartHandler from "@/dnd-handler/dragStartHandler"
 import dragEndHandler from "@/dnd-handler/dragEndHandler"
 import dragOverHandler from "@/dnd-handler/dragOverHandler"
 import DragOverlayComponent from "./DragOverlayComponent"
-//import { actionGetTasks } from "@/app/actions/actions"
 import { Column, Task } from "@prisma/client"
 
 type Props = {
@@ -33,7 +31,6 @@ export default function Kanban({ dbTasks, dbColumns } : Props) {
 		dbTasks && setTasks(dbTasks)
 		dbColumns && setColumns(dbColumns)
 	},[])
-	console.log("Kanban tasks: ", tasks)
 
 	return (
 		<div className="flex flex-row flex-wrap gap-y-8 w-full justify-center gap-x-8">
