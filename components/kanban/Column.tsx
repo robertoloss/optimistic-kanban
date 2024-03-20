@@ -1,20 +1,19 @@
 import { cn } from "@/app/utils/cn"
-import { ColumnType } from "./types"
 import { useMemo } from "react"
 import { SortableContext, useSortable } from "@dnd-kit/sortable"
 import { CSS } from '@dnd-kit/utilities'
-import { Task as TaskPrismaType } from "@prisma/client"
+import { Column, Task as TaskPrisma} from "@prisma/client"
 import Task from "./Task"
 import { UniqueIdentifier } from "@dnd-kit/core"
 
 type Props = {
-	column: ColumnType
-	tasks: TaskPrismaType[] | undefined
+	column: Column
 	overlay?: boolean
+	tasks?: TaskPrisma[]
 }
-export default function Column({ column, tasks, overlay } : Props) {
+export default function Column({ column, overlay, tasks } : Props) {
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-		id: column.id,
+		id: column.title!,
 		data: {
       type: "Column",
       column,
@@ -26,7 +25,6 @@ export default function Column({ column, tasks, overlay } : Props) {
 		}
 	});
 
-
 	const sortedTasks = tasks?.sort((a,b) => (a.position || 0) - (b.position || 0))
 
 	const tasksIds = useMemo(() => sortedTasks?.map(t => (t.id as unknown) as UniqueIdentifier), [tasks])
@@ -36,25 +34,16 @@ export default function Column({ column, tasks, overlay } : Props) {
     transition,
   };
 
-	//const style = useMemo(() => {
-	//		return {
-	//				...(isDragging ? { transform: CSS.Translate.toString(transform) } : null),
-	//				transition,
-	//		}
-	//}, [isDragging, transform, transition])
-
 	return (
 		<div ref={setNodeRef} style={style} {...attributes} {...listeners}  
 			className={cn(
 				`flex flex-col w-full max-w-[240px] min-w-[200px] p-4 gap-y-4 z-10 h-[400px] bg-gray-700
 				 rounded-lg`,
-				{ 
-					"z-50 opacity-35": isDragging,
-					"shadow-black shadow": overlay,
-				}
+				{ "z-50 opacity-35": isDragging,
+					"shadow-black shadow": overlay, }
 			)}
-			
 		>
+			{column.title}
 			{<SortableContext items={tasksIds || []}>
 				{tasks?.map(task => (
 					<Task key={task.id} task={task} column={column}/>
@@ -63,3 +52,14 @@ export default function Column({ column, tasks, overlay } : Props) {
 		</div>
 	)
 }
+
+
+
+
+	//const style = useMemo(() => {
+	//		return {
+	//				...(isDragging ? { transform: CSS.Translate.toString(transform) } : null),
+	//				transition,
+	//		}
+	//}, [isDragging, transform, transition])
+

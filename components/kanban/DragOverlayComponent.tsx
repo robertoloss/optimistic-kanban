@@ -1,34 +1,35 @@
 import { DragOverlay } from "@dnd-kit/core";
 import Column from "./Column";
 import Task from "./Task";
-import { ColumnType } from "./types";
-import { Task as TaskPrismaType } from "@prisma/client";
+import { Column as ColumnType, Task as TaskPrismaType } from "@prisma/client";
 
 type Props = {
 	activeColumn: ColumnType | null,
 	activeTask: TaskPrismaType | null | undefined,
-	tasks: TaskPrismaType[] | undefined | null
+	tasks: TaskPrismaType[] | undefined | null,
+	columns: ColumnType[] | null
 }
-export default function DragOverlayComponent({activeColumn, activeTask, tasks } : Props) {
+export default function DragOverlayComponent({activeColumn, activeTask, columns, tasks } : Props) {
+	const column = columns?.filter((col: ColumnType) => col.title === activeTask?.columnId )[0]
+	//console.log("cols from DragOverlayComponent: ", columns)
+	//console.log("activeTask:" , activeTask)
+	//console.log("column fro DragOverlayComponent: ", column)
+	
+	const columnTasks = tasks?.filter(t => t.columnId === activeColumn?.title)
 
 	return (
 		<DragOverlay>
 			{activeColumn && (
 				<Column
 					column={activeColumn}
-					tasks={tasks?.filter(
-						(task) => task.columnId === activeColumn.id
-					)}
 					overlay={true}
+					tasks={columnTasks}
 				/>
 			)}
 			{activeTask && (
 				<Task
 					task={activeTask}
-					column={{ 
-						id: activeTask.columnId || "",
-						title: ""
-					}}
+					column={column}				
 					overlay={true}
 				/>
 			)}

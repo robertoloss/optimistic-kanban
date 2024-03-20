@@ -3,6 +3,7 @@ import Kanban from "@/components/kanban/Kanban";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { actionGetTasks } from "../actions/actions";
+import { getColumns } from "@/prisma/queries";
 
 export default async function KanbanPage() {
   const supabase = createClient();
@@ -10,6 +11,9 @@ export default async function KanbanPage() {
   if (!user) { return redirect("/login") }
 
 	const tasks = await actionGetTasks()
+	const columns = await getColumns()
+
+	
 	console.log("geTasks from KB page: ", tasks)
   return (
     <div className="flex-1 w-full flex flex-col gap-20 items-center">
@@ -20,7 +24,7 @@ export default async function KanbanPage() {
 						</div>
         </nav>
       </div>
-			<Kanban dbTasks={tasks} />
+			<Kanban dbTasks={tasks} dbColumns={columns}/>
     </div>
   );
 }

@@ -1,13 +1,11 @@
-import { UniqueIdentifier } from "@dnd-kit/core";
-import { ColumnType } from "./types"
 import { cn } from "@/app/utils/cn";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Task } from "@prisma/client";
+import { Column, Task } from "@prisma/client";
 
 type Props = {
 	task: Task
-	column: ColumnType
+	column?: Column 
 	overlay?: boolean
 }
 
@@ -20,11 +18,11 @@ export default function Task({ task, column, overlay } : Props) {
     transition,
     isDragging,
   } = useSortable({
-    id: (task.id as unknown) as UniqueIdentifier,
+    id: task.id ,
     data: {
       type: "Task",
       task,
-			columnId: column.id
+			columnId: column?.title!
     },
 		animateLayoutChanges: () => true,
 		 transition: {
@@ -38,20 +36,24 @@ export default function Task({ task, column, overlay } : Props) {
     transform: CSS.Transform.toString(transform),
   };
 
+
+
 	return (
 		<div ref={setNodeRef} style={style} {...attributes} {...listeners}
 			className={cn(
-				`flex flex-col w-full h-[80px] min-h-4 bg-gray-300 font-normal font-sans 
+				`	flex flex-col w-full h-[80px] min-h-4 bg-gray-300 font-normal font-sans 
 					rounded-sm p-4 text-gray-900 z-50 active:shadow-black active:shadow text-sm transition-transform`,
-				{
-					'opacity-0': isDragging,
-					'shadow-black shadow opacity-85': overlay
-				}
+				{ 'opacity-0': isDragging,
+					'shadow-black shadow opacity-85': overlay }
 			)}
 			onClick={(e)=>{
 				e.stopPropagation()
+				console.log("click on task")
 			}}
-			onMouseDown={(e)=>e.stopPropagation()}
+			onMouseDown={(e)=>{
+				e.stopPropagation()
+				console.log("down on task")
+			}}
 		>
 			<h1>Pos: {task.position} Col: {task.columnId}</h1>
 			<h1>{task.content}</h1>
