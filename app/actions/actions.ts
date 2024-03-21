@@ -1,5 +1,5 @@
 'use server'
-import { getTasks, updateColumnPositions, updateTasksPositions } from "@/prisma/queries"
+import { updateColumnPositions, updateTasksPositions } from "@/prisma/queries"
 import { Column, Task } from "@prisma/client"
 import { revalidateTag } from "next/cache"
 

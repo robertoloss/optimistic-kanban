@@ -21,45 +21,52 @@ export default function Kanban({ dbTasks, dbColumns } : Props) {
 	const [tasks, setTasks] = useState<Task[] | null>(null);
 	const [activeColumn, setActiveColumn] = useState<Column | null>(null)
 	const [activeTask, setActiveTask] = useState<Task | null>(null)
+	const [updating, setUpdating] = useState(false)
+
 	const columnsIds =  columns?.map(column => column.title as UniqueIdentifier)
+
 
 	useEffect(()=>{
 		console.log("useEffect initial")
 		dbTasks && setTasks(dbTasks)
 		dbColumns && setColumns(dbColumns)
-	},[])
+		setUpdating(false)
+	},[dbColumns])
 
 	return (
-		<div className="flex flex-row flex-wrap gap-y-8 w-full justify-center gap-x-8">
-			<DndContext
-				id="list"
-				sensors={sensors}
-				onDragStart={dragStartHandler({ setActiveColumn, setActiveTask })}
-				onDragEnd={dragEndHandler({setActiveColumn, setActiveTask, tasks, columns })}
-				onDragOver={dragOverHandler({ setTasks, setColumns })}
-			>
-				{columnsIds && 
-					<SortableContext 
-						items={columnsIds}
-						strategy={horizontalListSortingStrategy}
-					>
-						{columns && columns.map(column => {
-							const columnTasks = tasks?.filter(t => t.columnId === column.title)
-							return <ColumnComp 
-								key={column.id}
-								column={column}
-								tasks={columnTasks}
-							/>
-						})}
-					</SortableContext>
-				}
-				<DragOverlayComponent 
-					activeColumn={activeColumn}
-					activeTask={activeTask}
-					tasks={tasks}
-					columns={columns}
-				/>
-			</DndContext>
+		<div className="flex flex-col w-full h-full items-center">
+			<h1 className="h-6">{updating && <p>Saving...</p>}</h1>
+			<div className="flex flex-row flex-wrap gap-y-8 w-full justify-center gap-x-8">
+				<DndContext
+					id="list"
+					sensors={sensors}
+					onDragStart={dragStartHandler({ setActiveColumn, setActiveTask })}
+					onDragEnd={dragEndHandler({setActiveColumn, setActiveTask, tasks, columns, setUpdating })}
+					onDragOver={dragOverHandler({ setTasks, setColumns })}
+				>
+					{columnsIds && 
+						<SortableContext 
+							items={columnsIds}
+							strategy={horizontalListSortingStrategy}
+						>
+							{columns && columns.map(column => {
+								const columnTasks = tasks?.filter(t => t.columnId === column.title)
+								return <ColumnComp 
+									key={column.id}
+									column={column}
+									tasks={columnTasks}
+								/>
+							})}
+						</SortableContext>
+					}
+					<DragOverlayComponent 
+						activeColumn={activeColumn}
+						activeTask={activeTask}
+						tasks={tasks}
+						columns={columns}
+					/>
+				</DndContext>
+			</div>
 		</div>
 	)
 }

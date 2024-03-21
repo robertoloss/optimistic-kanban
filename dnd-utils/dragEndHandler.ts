@@ -14,16 +14,19 @@ type Props = {
 	setActiveTask: Dispatch<SetStateAction<Task | null>>,
 	tasks: Task[] | null,
 	columns: Column[] | null
+	setUpdating: Dispatch<SetStateAction<boolean>>
 }
 export default function dragEndHandler({
 	setActiveColumn,
 	setActiveTask,
 	tasks,
-	columns
+	columns,
+	setUpdating
 } : Props) {
 	return (_event: DragEndEvent) => {
 		tasks && updateTasksPositions(tasks)
 		columns && updateColumnsPositions(columns)
+		columns && setUpdating(true)
 
 		setActiveColumn(null);
 		setActiveTask(null);
