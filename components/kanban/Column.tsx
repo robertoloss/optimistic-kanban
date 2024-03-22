@@ -37,8 +37,8 @@ export default function Column({ column, overlay, tasks } : Props) {
 	return (
 		<div ref={setNodeRef} style={style} {...attributes} {...listeners}  
 			className={cn(
-				`flex flex-col w-full max-w-[240px] min-w-[200px] p-4 gap-y-4 z-10 h-[400px] bg-gray-700
-				 rounded-lg`,
+				`flex flex-col w-full max-w-[280px] min-w-[200px] p-8 gap-y-4 z-10 h-[400px] bg-gray-700
+				 rounded-lg border-2 border-gray-700`,
 				{ "z-50 opacity-35": isDragging,
 					"shadow-black shadow": overlay, }
 			)}
