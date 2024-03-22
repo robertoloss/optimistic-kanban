@@ -1,44 +1,41 @@
 import { Dispatch, SetStateAction } from "react";
-import { actionUpdateColumnsPositions, actionUpdateTasksPositions } from "@/app/actions/actions";
 import { DragEndEvent } from "@dnd-kit/core";
 import { Column, Task } from "@prisma/client";
+import { supabase } from "@/components/kanban/Kanban";
 
-async function updateColumnsPositions(columns: Column[]) {
-	await actionUpdateColumnsPositions({ columns })
-}
-async function updateTasksPositions(tasks : Task[]) {
-	await actionUpdateTasksPositions({ tasks })
-}
 type Props = {
 	setActiveColumn: Dispatch<SetStateAction<Column | null>>,
 	setActiveTask: Dispatch<SetStateAction<Task | null>>,
 	tasks: Task[] | null,
 	columns: Column[] | null
 	setUpdating: Dispatch<SetStateAction<boolean>>
+	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
 }
 export default function dragEndHandler({
 	setActiveColumn,
 	setActiveTask,
 	tasks,
 	columns,
-	setUpdating
+	setUpdating,
+	setTriggerUpdate,
 } : Props) {
+	async function updateColsAndTasks(columns: Column[], tasks: Task[]) {
+		setUpdating(true);
+		try {
+			await supabase
+				.from('Column')
+				.upsert(columns.map((col,i) => ({...col, position: i})))
+			await supabase
+				.from('Task')
+				.upsert(tasks)
+		} catch (error) {
+				console.error("Error updating columns:", error);
+		}
+		setTriggerUpdate((prev: boolean) => !prev)
+	}
 	return (_event: DragEndEvent) => {
-		tasks && updateTasksPositions(tasks)
-		columns && updateColumnsPositions(columns)
-		columns && setUpdating(true)
-
+		columns && tasks && updateColsAndTasks(columns,tasks)
 		setActiveColumn(null);
 		setActiveTask(null);
-		//const { active, over } = event;
-		//if (!over) return;
-
-		//const activeId = active.id;
-		//const overId = over.id;
-		//if (activeId === overId) return;
-
-		//const isActiveAColumn = active.data.current?.type === "Column";
-		//if (!isActiveAColumn) return;
-		
 	};
 }

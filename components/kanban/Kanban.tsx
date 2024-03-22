@@ -8,12 +8,11 @@ import dragEndHandler from "@/dnd-utils/dragEndHandler"
 import dragOverHandler from "@/dnd-utils/dragOverHandler"
 import DragOverlayComponent from "./DragOverlayComponent"
 import { Column, Task } from "@prisma/client"
+import { createClient } from "@/utils/supabase/client"
 
-type Props = {
-	dbTasks: Task[] | undefined
-	dbColumns: Column[] | undefined
-}
-export default function Kanban({ dbTasks, dbColumns } : Props) {
+export const supabase = createClient()
+
+export default function Kanban() {
 	const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 0 }})
 	)
@@ -21,27 +20,50 @@ export default function Kanban({ dbTasks, dbColumns } : Props) {
 	const [tasks, setTasks] = useState<Task[] | null>(null);
 	const [activeColumn, setActiveColumn] = useState<Column | null>(null)
 	const [activeTask, setActiveTask] = useState<Task | null>(null)
+	const [triggerUpdate, setTriggerUpdate] = useState(false)
 	const [updating, setUpdating] = useState(false)
 
 	const columnsIds =  columns?.map(column => column.title as UniqueIdentifier)
-
-
+	
+	async function supaFetchCols() {
+		let { data }  = await supabase
+			.from('Column')
+			.select('*')
+		if (data) {
+			const res : Column[] = [...data]
+			return res
+		}
+	}
+	async function supaFetchTasks() {
+		let { data }  = await supabase
+			.from('Task')
+			.select('*')
+		if (data) {
+			const res : Task[] = [...data]
+			return res
+		}
+	}
 	useEffect(()=>{
-		console.log("useEffect initial")
-		dbTasks && setTasks(dbTasks)
-		dbColumns && setColumns(dbColumns)
+		console.log("useEffect")
+		async function fetchColsAndTasks() {
+			const columns = await supaFetchCols();
+			columns && setColumns(columns)
+			const tasks = await supaFetchTasks();
+			tasks && setTasks(tasks)
+		}
+		fetchColsAndTasks()
 		setUpdating(false)
-	},[dbColumns])
+	},[triggerUpdate])
 
 	return (
 		<div className="flex flex-col w-full h-full items-center">
 			<h1 className="h-6">{updating && <p>Saving...</p>}</h1>
-			<div className="flex flex-row flex-wrap gap-y-8 w-full justify-center gap-x-8">
+			<div className="flex flex-row flex-wrap gap-y-8 w-full justify-center gap-x-4">
 				<DndContext
 					id="list"
 					sensors={sensors}
 					onDragStart={dragStartHandler({ setActiveColumn, setActiveTask })}
-					onDragEnd={dragEndHandler({setActiveColumn, setActiveTask, tasks, columns, setUpdating })}
+					onDragEnd={dragEndHandler({setActiveColumn, setActiveTask, tasks, columns, setUpdating, setTriggerUpdate})}
 					onDragOver={dragOverHandler({ setTasks, setColumns })}
 				>
 					{columnsIds && 

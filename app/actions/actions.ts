@@ -1,8 +1,7 @@
 'use server'
-import { updateColumnPositions, updateTasksPositions } from "@/prisma/queries"
+import {  getColumns, updateColumnPositions, updateTasksPositions } from "@/prisma/queries"
 import { Column, Task } from "@prisma/client"
 import { revalidateTag } from "next/cache"
-
 
 export async function actionUpdateTasksPositions({ tasks } : { tasks: Task[] }) {
 	try {
@@ -22,7 +21,14 @@ export async function actionUpdateColumnsPositions({ columns } : { columns: Colu
 	}
 }
 
-
+export async function actionGetColumns() {
+	try {
+		const data = await getColumns()
+		return data
+	} catch(error) {
+		console.error(error)
+	}
+}
 
 
 

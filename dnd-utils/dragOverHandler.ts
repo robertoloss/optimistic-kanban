@@ -2,7 +2,6 @@ import { DragOverEvent, UniqueIdentifier } from "@dnd-kit/core";
 import { Column, Task } from "@prisma/client";
 import { Dispatch, SetStateAction } from "react";
 
-
 type Props = {
 	setTasks: Dispatch<SetStateAction<Task[] | null>>
 	setColumns: Dispatch<SetStateAction<Column[] | null>>
@@ -107,8 +106,8 @@ export default function dragOverHandler({ setTasks, setColumns } : Props) {
 					const overColumn = columns?.filter((col) => col.title === overId)[0];
 					if (columns && activeColumn != undefined && overColumn != undefined) {
 						const res = columns.map(col => {
-							if (col.title === activeId) return overColumn
-							if (col.title === overId) return activeColumn;
+							if (col.title === activeId) return {...overColumn, position: activeColumn.position}
+							if (col.title === overId) return {...activeColumn, position: overColumn.position};
 							return col
 						})	
 						return res
