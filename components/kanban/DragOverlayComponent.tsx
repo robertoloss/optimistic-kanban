@@ -11,10 +11,6 @@ type Props = {
 }
 export default function DragOverlayComponent({activeColumn, activeTask, columns, tasks } : Props) {
 	const column = columns?.filter((col: ColumnType) => col.title === activeTask?.columnId )[0]
-	//console.log("cols from DragOverlayComponent: ", columns)
-	//console.log("activeTask:" , activeTask)
-	//console.log("column fro DragOverlayComponent: ", column)
-	
 	const columnTasks = tasks?.filter(t => t.columnId === activeColumn?.title)
 
 	return (

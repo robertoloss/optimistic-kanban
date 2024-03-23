@@ -57,8 +57,13 @@ export default function Kanban() {
 
 	return (
 		<div className="flex flex-col w-full h-full items-center">
-			<h1 className="h-6">{updating && <p>Saving...</p>}</h1>
-			<div className="flex flex-row flex-wrap gap-y-8 w-full justify-center gap-x-4">
+			<h1 className="h-6 mb-2">{updating && <p>Saving...</p>}</h1>
+			<div className="flex flex-row overflow-auto gap-y-8 w-full justify-center gap-x-4 s"
+				style={{ 
+					scrollbarWidth: 'thin', 
+					scrollbarColor: 'dark-gray black' 
+				}}
+			>
 				<DndContext
 					id="list"
 					sensors={sensors}
