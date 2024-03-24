@@ -11,7 +11,7 @@ export default async function KanbanPage() {
   return (
     <div className="flex-1 w-full flex flex-col gap-20 items-center">
       <div className="w-full">
-          <nav className="w-full flex justify-end border-b border-b-foreground/10 h-16">
+          <nav className="w-full flex justify-end border-b border-b-muted-foreground h-16">
 						<div className="w-fit max-w-4xl flex justify-between items-center p-3 text-sm">
 							<AuthButton />
 						</div>

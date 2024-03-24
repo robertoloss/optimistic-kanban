@@ -56,9 +56,9 @@ export default function Kanban() {
 	},[triggerUpdate])
 
 	return (
-		<div className="flex flex-col w-full h-full items-center">
+		<div className="flex flex-col w-full h-full items-center overscroll-none">
 			<h1 className="h-6 mb-2">{updating && <p>Saving...</p>}</h1>
-			<div className="flex flex-row overflow-auto gap-y-8 w-full justify-center gap-x-4 s"
+			<div className="flex flex-row overflow-x-auto gap-y-8 w-full justify-center gap-x-4 overflow-y-hidden"
 				style={{ 
 					scrollbarWidth: 'thin', 
 					scrollbarColor: 'dark-gray black' 
@@ -82,6 +82,7 @@ export default function Kanban() {
 									key={column.id}
 									column={column}
 									tasks={columnTasks}
+									setTriggerUpdate={setTriggerUpdate}
 								/>
 							})}
 						</SortableContext>

@@ -1,6 +1,5 @@
 import { cn } from "@/app/utils/cn"
-import { useState } from "react"
-import { useMemo } from "react"
+import { Dispatch, SetStateAction, useMemo } from "react"
 import { SortableContext, useSortable } from "@dnd-kit/sortable"
 import { CSS } from '@dnd-kit/utilities'
 import { Column, Task as TaskPrisma} from "@prisma/client"
@@ -13,8 +12,9 @@ type Props = {
 	column: Column
 	overlay?: boolean
 	tasks?: TaskPrisma[]
+	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
 }
-export default function Column({ column, overlay, tasks } : Props) {
+export default function Column({ column, overlay, tasks, setTriggerUpdate } : Props) {
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
 		id: column.title!,
 		data: {
@@ -39,8 +39,8 @@ export default function Column({ column, overlay, tasks } : Props) {
 		<div ref={setNodeRef} style={style} {...attributes}   
 			className={cn(
 				`	flex flex-col min-w-[280px] max-w-[280px] px-4 pt-1
-					pb-4 gap-y-4 z-10 h-[400px] bg-gray-700 rounded-lg border-2
-					border-gray-700 cursor-auto `, { 
+					pb-4 gap-y-4 z-10 min-h-[400px] bg-muted rounded-lg border-2
+					border-secondary cursor-auto transition-all `, { 
 						"z-50 opacity-35": isDragging,
 						"shadow-black shadow": overlay, 
 		})}>
@@ -52,16 +52,21 @@ export default function Column({ column, overlay, tasks } : Props) {
 			</div>
 			<div className="flex flex-row w-full justify-between">
 				<div className="flex flex-row gap-x-2 items-center text-sm font-medium">
-					<h1 className="text-sm bg-gray-500 w-fit px-2 py-1 rounded">
+					<h1 className="text-sm bg-secondary w-fit px-2 py-1 rounded">
 					 {column.title}
 					</h1>
 					<h1 className="">{tasks?.length}</h1>
 				</div>
-				<AddATask />
+				<AddATask column={column} setTriggerUpdate={setTriggerUpdate} />
 			</div>
 			{<SortableContext items={tasksIds || []}>
 				{tasks?.map(task => (
-					<Task key={task.id} task={task} column={column}/>
+					<Task 
+						key={task.id}
+						task={task}
+						column={column}
+						setTriggerUpdate={setTriggerUpdate}
+					/>
 				))}
 			</SortableContext>}
 		</div>
