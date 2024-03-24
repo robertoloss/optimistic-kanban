@@ -46,7 +46,7 @@ export default function Task({ task, column, overlay, setTriggerUpdate } : Props
 	return (
 		<div ref={setNodeRef} style={style} {...attributes}
 			className={cn(
-				`	flex flex-row gap-y-1  justify-between w-full h-[80px] min-h-4 bg-gray-300 font-normal font-sans 
+				`	flex flex-row gap-y-1  justify-between w-full min-h-[80px] max-h-[80px] bg-gray-300 font-normal font-sans 
 					rounded-sm pr-2 py-2 text-gray-900 z-50 active:shadow-black active:shadow text-sm transition-transform`, { 
 						'opacity-0': isDragging,
 						'shadow-black shadow opacity-85': overlay, 
@@ -54,7 +54,7 @@ export default function Task({ task, column, overlay, setTriggerUpdate } : Props
 		>
 			<div {...listeners}
 				className={cn(`flex flex-col justify-center h-full cursor-grab active:grabbing`, {
-					'cursor-grabbing': overlay
+					'h-[64px] cursor-grabbing': overlay,
 				})} >
 				<GripVertical color="#909bad" strokeWidth={2} size={16}/>
 			</div>
@@ -62,7 +62,9 @@ export default function Task({ task, column, overlay, setTriggerUpdate } : Props
 				<h1 className="font-semibold">{task.title}</h1>
 				<h1 className="text-md leading-[16px]">{task.content}</h1>
 			</div>
-			<div className="flex flex-col self-end justify-start h-full w-fit">
+			<div className={cn(`flex flex-col self-end justify-start h-full w-fit`, {
+					'h-[64px] cursor-grabbing': overlay,
+				})}>
 				<Trash2 
 					size={16} 
 					className="text-muted-foreground hover:text-pure"
