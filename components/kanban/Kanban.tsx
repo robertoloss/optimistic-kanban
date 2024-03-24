@@ -92,6 +92,7 @@ export default function Kanban() {
 						activeTask={activeTask}
 						tasks={tasks}
 						columns={columns}
+						setTriggerUpdate={setTriggerUpdate}
 					/>
 				</DndContext>
 			</div>
