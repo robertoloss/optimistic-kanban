@@ -22,7 +22,7 @@ export default function dragOverHandler({ setTasks, setColumns } : Props) {
 
 		if (isActiveATask && isOverATask) {
 			//console.log("task")
-			//setTimeout(() => 
+			setTimeout(() => 
 			setTasks((tasks) => {
 				let newTasks : Task[] = []
 				if (tasks) {
@@ -66,7 +66,7 @@ export default function dragOverHandler({ setTasks, setColumns } : Props) {
 				}
 				return newTasks
 			})
-			//, 50)
+			, 0)
 		}
 
 

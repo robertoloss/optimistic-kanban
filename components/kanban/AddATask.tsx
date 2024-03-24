@@ -2,7 +2,7 @@ import { CirclePlus } from "lucide-react"
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
+  //DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
