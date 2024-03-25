@@ -11,7 +11,10 @@ import { Column, Task } from "@prisma/client"
 import { createClient } from "@/utils/supabase/client"
 
 export const supabase = createClient()
-
+export type optimisticProps = {
+	action?: string,
+	task?: Task
+}
 export default function Kanban() {
 	const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 0 }})
@@ -55,6 +58,8 @@ export default function Kanban() {
 		setUpdating(false)
 	},[triggerUpdate])
 
+	//console.log("tasks: ", tasks)
+
 	return (
 		<div className="flex flex-col w-full h-full items-center overscroll-none">
 			<h1 className="h-6 mb-2">{updating && <p>Saving...</p>}</h1>
@@ -68,7 +73,9 @@ export default function Kanban() {
 					id="list"
 					sensors={sensors}
 					onDragStart={dragStartHandler({ setActiveColumn, setActiveTask })}
-					onDragEnd={dragEndHandler({setActiveColumn, setActiveTask, tasks, columns, setUpdating, setTriggerUpdate})}
+					onDragEnd={dragEndHandler({
+						setActiveColumn, setActiveTask, tasks, columns, setUpdating, setTriggerUpdate
+					})}
 					onDragOver={dragOverHandler({ setTasks, setColumns })}
 				>
 					{columnsIds && 
@@ -80,6 +87,7 @@ export default function Kanban() {
 								const columnTasks = tasks?.filter(t => t.columnId === column.title)
 								return <ColumnComp 
 									key={column.id}
+									setTasks={setTasks}
 									column={column}
 									tasks={columnTasks}
 									setTriggerUpdate={setTriggerUpdate}
@@ -91,6 +99,7 @@ export default function Kanban() {
 						activeColumn={activeColumn}
 						activeTask={activeTask}
 						tasks={tasks}
+						setTasks={setTasks}
 						columns={columns}
 						setTriggerUpdate={setTriggerUpdate}
 					/>

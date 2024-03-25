@@ -13,8 +13,9 @@ type Props = {
 	overlay?: boolean
 	tasks?: TaskPrisma[]
 	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
+	setTasks: Dispatch<SetStateAction<TaskPrisma[] | null>>
 }
-export default function Column({ column, overlay, tasks, setTriggerUpdate } : Props) {
+export default function Column({ column, overlay, tasks, setTriggerUpdate, setTasks} : Props) {
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
 		id: column.title!,
 		data: {
@@ -46,7 +47,7 @@ export default function Column({ column, overlay, tasks, setTriggerUpdate } : Pr
 					`	flex flex-col min-w-[280px] max-w-[280px] px-4 pt-1
 						pb-4 gap-y-4 z-10 bg-muted rounded-lg border-2
 						border-secondary cursor-auto transition-all `, { 
-							"z-50 opacity-35": isDragging,
+							"z-50 opacity-0": isDragging,
 							"shadow-black shadow": overlay,
 				})}
 				style={{ height: `${numF}px` }}
@@ -64,12 +65,17 @@ export default function Column({ column, overlay, tasks, setTriggerUpdate } : Pr
 						</h1>
 						<h1 className="">{tasks?.length}</h1>
 					</div>
-					<AddATask column={column} setTriggerUpdate={setTriggerUpdate} />
+					<AddATask 
+						column={column}
+						setTriggerUpdate={setTriggerUpdate}
+						setTasks={setTasks}
+					/>
 				</div>
 				{<SortableContext items={tasksIds || []}>
 					{tasks?.map(task => (
 						<Task 
 							key={task.id}
+							setTasks={setTasks}
 							task={task}
 							column={column}
 							setTriggerUpdate={setTriggerUpdate}

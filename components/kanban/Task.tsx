@@ -1,4 +1,5 @@
 import { cn } from "@/app/utils/cn";
+import { optimisticProps } from "./Kanban";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Column, Task } from "@prisma/client";
@@ -11,8 +12,10 @@ type Props = {
 	column?: Column 
 	overlay?: boolean
 	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
+	setTasks: Dispatch<SetStateAction<Task[] | null>>
+	updateOptimisticTasks?: ({ action, task }: optimisticProps) => void 
 }
-export default function Task({ task, column, overlay, setTriggerUpdate } : Props) {
+export default function Task({ task, column, overlay, setTriggerUpdate, setTasks} : Props) {
 	const { setNodeRef, attributes, listeners, transform, transition, isDragging,
   } = useSortable({
     id: task.id ,
@@ -33,6 +36,12 @@ export default function Task({ task, column, overlay, setTriggerUpdate } : Props
   };
 
 	async function deleteTask(task: Task) {
+		setTasks(tasks => {
+			if (tasks) {
+				return tasks.filter(t => t.id != task.id)
+			}
+			else return []
+		})
 		try {
 			await supabase.from('Task')
 				.delete()
