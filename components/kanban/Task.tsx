@@ -14,8 +14,9 @@ type Props = {
 	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
 	setTasks: Dispatch<SetStateAction<Task[] | null>>
 	updateOptimisticTasks?: ({ action, task }: optimisticProps) => void 
+	setUpdating: Dispatch<SetStateAction<boolean>>
 }
-export default function Task({ task, column, overlay, setTriggerUpdate, setTasks} : Props) {
+export default function Task({ task, column, overlay, setTriggerUpdate, setTasks, setUpdating } : Props) {
 	const { setNodeRef, attributes, listeners, transform, transition, isDragging,
   } = useSortable({
     id: task.id ,
@@ -36,6 +37,7 @@ export default function Task({ task, column, overlay, setTriggerUpdate, setTasks
   };
 
 	async function deleteTask(task: Task) {
+		setUpdating(true)
 		setTasks(tasks => {
 			if (tasks) {
 				return tasks.filter(t => t.id != task.id)

@@ -58,7 +58,7 @@ export default function Kanban() {
 		setUpdating(false)
 	},[triggerUpdate])
 
-	//console.log("tasks: ", tasks)
+	console.log("updating: ", updating)
 
 	return (
 		<div className="flex flex-col w-full h-full items-center overscroll-none">
@@ -90,6 +90,7 @@ export default function Kanban() {
 									setTasks={setTasks}
 									column={column}
 									tasks={columnTasks}
+									setUpdating={setUpdating}
 									setTriggerUpdate={setTriggerUpdate}
 								/>
 							})}
@@ -100,6 +101,7 @@ export default function Kanban() {
 						activeTask={activeTask}
 						tasks={tasks}
 						setTasks={setTasks}
+						setUpdating={setUpdating}
 						columns={columns}
 						setTriggerUpdate={setTriggerUpdate}
 					/>

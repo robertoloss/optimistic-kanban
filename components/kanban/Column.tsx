@@ -14,8 +14,9 @@ type Props = {
 	tasks?: TaskPrisma[]
 	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
 	setTasks: Dispatch<SetStateAction<TaskPrisma[] | null>>
+	setUpdating: Dispatch<SetStateAction<boolean>>
 }
-export default function Column({ column, overlay, tasks, setTriggerUpdate, setTasks} : Props) {
+export default function Column({ column, setUpdating, overlay, tasks, setTriggerUpdate, setTasks} : Props) {
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
 		id: column.title!,
 		data: {
@@ -69,6 +70,7 @@ export default function Column({ column, overlay, tasks, setTriggerUpdate, setTa
 						column={column}
 						setTriggerUpdate={setTriggerUpdate}
 						setTasks={setTasks}
+						setUpdating={setUpdating}
 					/>
 				</div>
 				{<SortableContext items={tasksIds || []}>
@@ -79,6 +81,7 @@ export default function Column({ column, overlay, tasks, setTriggerUpdate, setTa
 							task={task}
 							column={column}
 							setTriggerUpdate={setTriggerUpdate}
+							setUpdating={setUpdating}
 						/>
 					))}
 				</SortableContext>}

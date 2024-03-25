@@ -15,11 +15,13 @@ type Props = {
 	column: Column
 	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
 	setTasks: Dispatch<SetStateAction<Task[] | null>>
+	setUpdating: Dispatch<SetStateAction<boolean>>
 }
-export default function AddATask({ column, setTriggerUpdate, setTasks } : Props) {
+export default function AddATask({ column, setTriggerUpdate, setTasks, setUpdating } : Props) {
 	const [open, setOpen] = useState(false)
 
 	async function createTask(data: FormData) {
+		setUpdating(true)
 		const newTask = {
 				id: 9999,
 				title: data.get('title') as string,
