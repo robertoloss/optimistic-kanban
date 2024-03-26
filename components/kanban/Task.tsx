@@ -73,9 +73,7 @@ export default function Task({ task, column, overlay, setTriggerUpdate, setTasks
 				<h1 className="font-semibold">{task.title}</h1>
 				<h1 className="text-md leading-[16px]">{task.content}</h1>
 			</div>
-			<div className={cn(`flex flex-col self-end justify-start h-full w-fit`, {
-					'h-[64px] cursor-grabbing': overlay,
-				})}>
+			<div className={cn(`flex flex-col self-end justify-start h-full w-fit`)}>
 				<Trash2 
 					size={16} 
 					className="text-muted-foreground hover:text-pure"

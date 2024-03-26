@@ -12,8 +12,9 @@ type Props = {
 	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
 	setUpdating: Dispatch<SetStateAction<boolean>>
 	setTasks: Dispatch<SetStateAction<TaskPrismaType[] | null>>
+	setColumns: Dispatch<SetStateAction<ColumnType[] | null>>
 }
-export default function DragOverlayComponent({activeColumn, setUpdating, activeTask, columns, tasks, setTriggerUpdate, setTasks} : Props) {
+export default function DragOverlayComponent({activeColumn, setColumns, setUpdating, activeTask, columns, tasks, setTriggerUpdate, setTasks} : Props) {
 	const column = columns?.filter((col: ColumnType) => col.title === activeTask?.columnId )[0]
 	const columnTasks = tasks?.filter(t => t.columnId === activeColumn?.title)
 
@@ -27,6 +28,7 @@ export default function DragOverlayComponent({activeColumn, setUpdating, activeT
 					setTasks={setTasks}
 					tasks={columnTasks}
 					setTriggerUpdate={setTriggerUpdate}
+					setColumns={setColumns}
 				/>
 			)}
 			{activeTask && (

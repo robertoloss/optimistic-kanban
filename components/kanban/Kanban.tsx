@@ -9,6 +9,7 @@ import dragOverHandler from "@/dnd-utils/dragOverHandler"
 import DragOverlayComponent from "./DragOverlayComponent"
 import { Column, Task } from "@prisma/client"
 import { createClient } from "@/utils/supabase/client"
+import ModalAddAColumn from "./ModalAddAColumn"
 
 export const supabase = createClient()
 export type optimisticProps = {
@@ -16,9 +17,7 @@ export type optimisticProps = {
 	task?: Task
 }
 export default function Kanban() {
-	const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 0 }})
-	)
+	const sensors = useSensors( useSensor(PointerSensor, { activationConstraint: { distance: 0 }}) )
 	const [columns, setColumns] = useState<Column[] | null>(null);
 	const [tasks, setTasks] = useState<Task[] | null>(null);
 	const [activeColumn, setActiveColumn] = useState<Column | null>(null)
@@ -27,7 +26,6 @@ export default function Kanban() {
 	const [updating, setUpdating] = useState(false)
 
 	const columnsIds =  columns?.map(column => column.title as UniqueIdentifier)
-	
 	async function supaFetchCols() {
 		let { data }  = await supabase
 			.from('Column')
@@ -58,12 +56,10 @@ export default function Kanban() {
 		setUpdating(false)
 	},[triggerUpdate])
 
-	console.log("updating: ", updating)
-
 	return (
 		<div className="flex flex-col w-full h-full items-center overscroll-none">
 			<h1 className="h-6 mb-2">{updating && <p>Saving...</p>}</h1>
-			<div className="flex flex-row overflow-x-auto gap-y-8 w-full justify-center gap-x-4 overflow-y-hidden"
+			<div className="flex flex-row overflow-x-auto gap-y-8 w-full h-full p-6 justify-center gap-x-4 overflow-y-hidden"
 				style={{ 
 					scrollbarWidth: 'thin', 
 					scrollbarColor: 'dark-gray black' 
@@ -79,25 +75,33 @@ export default function Kanban() {
 					onDragOver={dragOverHandler({ setTasks, setColumns })}
 				>
 					{columnsIds && 
-						<SortableContext 
-							items={columnsIds}
-							strategy={horizontalListSortingStrategy}
-						>
-							{columns && columns.map(column => {
-								const columnTasks = tasks?.filter(t => t.columnId === column.title)
-								return <ColumnComp 
+					<SortableContext 
+						items={columnsIds}
+						strategy={horizontalListSortingStrategy}
+					>
+						{columns && columns.map(column => {
+							const columnTasks = tasks?.filter(t => t.columnId === column.title)
+							return (
+								<ColumnComp 
 									key={column.id}
 									setTasks={setTasks}
 									column={column}
 									tasks={columnTasks}
 									setUpdating={setUpdating}
 									setTriggerUpdate={setTriggerUpdate}
+									setColumns={setColumns}
 								/>
-							})}
-						</SortableContext>
-					}
+						)})}
+					</SortableContext>}
+					<ModalAddAColumn 
+						setColumns={setColumns} 
+						numOfCols={columns?.length} 
+						setTriggerUpdate={setTriggerUpdate}
+						setUpdating={setUpdating}
+					/>
 					<DragOverlayComponent 
 						activeColumn={activeColumn}
+						setColumns={setColumns}
 						activeTask={activeTask}
 						tasks={tasks}
 						setTasks={setTasks}

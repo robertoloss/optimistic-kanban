@@ -58,7 +58,7 @@ export default function AddATask({ column, setTriggerUpdate, setTasks, setUpdati
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger>
 				<div className="flex flex-col h-6 hover:cursor-pointer rounded-full w-6">
-					<CirclePlus color="#6b7280" />
+					<CirclePlus className="text-muted-foreground" />
 				</div>
 			</DialogTrigger>
 			<DialogContent>

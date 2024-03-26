@@ -2,21 +2,23 @@ import { cn } from "@/app/utils/cn"
 import { Dispatch, SetStateAction, useMemo } from "react"
 import { SortableContext, useSortable } from "@dnd-kit/sortable"
 import { CSS } from '@dnd-kit/utilities'
-import { Column, Task as TaskPrisma} from "@prisma/client"
+import { Column as ColumnPrisma, Task as TaskPrisma} from "@prisma/client"
 import Task from "./Task"
 import { UniqueIdentifier } from "@dnd-kit/core"
-import { GripHorizontal } from "lucide-react"
+import { GripHorizontal, Trash2 } from "lucide-react"
 import AddATask from "./AddATask"
+import { supabase } from "./Kanban"
 
 type Props = {
-	column: Column
+	column: ColumnPrisma
 	overlay?: boolean
 	tasks?: TaskPrisma[]
 	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
 	setTasks: Dispatch<SetStateAction<TaskPrisma[] | null>>
 	setUpdating: Dispatch<SetStateAction<boolean>>
+	setColumns: Dispatch<SetStateAction<ColumnPrisma[] | null>>
 }
-export default function Column({ column, setUpdating, overlay, tasks, setTriggerUpdate, setTasks} : Props) {
+export default function Column({ column, setUpdating, setColumns, overlay, tasks, setTriggerUpdate, setTasks} : Props) {
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
 		id: column.title!,
 		data: {
@@ -39,6 +41,22 @@ export default function Column({ column, setUpdating, overlay, tasks, setTrigger
     transition,
   };
 
+	async function deleteColumn(column: ColumnPrisma) {
+		setUpdating(true)
+		setColumns(cols => {
+			if (cols) return cols.filter(c => c.id != column.id)
+			else return [];
+		})
+		try {
+			await supabase.from('Column')
+				.delete()
+				.eq('id', column.id)
+			setTriggerUpdate(prev => !prev)
+		} catch (error) {
+			console.error(error)
+		}
+	}
+
 	return (
 		<div ref={setNodeRef} style={style} {...attributes} 
 			className="flex flex-col w-fit h-fit"	
@@ -54,10 +72,18 @@ export default function Column({ column, setUpdating, overlay, tasks, setTrigger
 				style={{ height: `${numF}px` }}
 			>
 				<div {...listeners} 
-					className={cn(`w-full h-6 flex flex-row justify-center cursor-grab active:cursor-grabbing rounded-lg`, {
+					className={cn(`w-full h-6 flex flex-row justify-between cursor-grab active:cursor-grabbing rounded-lg`, {
 						"cursor-grabbing": overlay,
 					})}>
+					<div className={cn(`flex flex-col self-end justify-start h-full w-fit`)}>
+						<Trash2 
+							size={16} 
+							className="self-end place-self-center text-muted-foreground hover:text-foreground hover:cursor-pointer"
+							onClick={()=>deleteColumn(column)}
+						/>
+					</div>
 					<GripHorizontal color="#6b7280"/>
+					<div />
 				</div>
 				<div className="flex flex-row w-full justify-between">
 					<div className="flex flex-row gap-x-2 items-center text-sm font-medium">
