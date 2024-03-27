@@ -73,6 +73,7 @@ export default function Column({  column, setUpdating, setColumns, overlay, task
 						active:cursor-grabbing rounded-lg`, {
 						"cursor-grabbing": overlay,
 					})}>
+					<div className="w-4" />
 					<div {...listeners} >
 						<GripHorizontal color="#6b7280"/>
 					</div>
