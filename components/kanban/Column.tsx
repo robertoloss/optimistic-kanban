@@ -46,6 +46,7 @@ export default function Column({  column, setUpdating, setColumns, overlay, task
 
 	async function deleteColumn(column: ColumnPrisma) {
 		setUpdating(true)
+		console.log("")
 		setColumns(cols => {
 			if (cols) return cols.filter(c => c.id != column.id)
 			else return [];
@@ -67,18 +68,22 @@ export default function Column({  column, setUpdating, setColumns, overlay, task
 				})}
 				style={{ height: `${numF}px` }}
 			>
-				<div {...listeners} 
+				<div  
 					className={cn(`w-full h-6 flex flex-row items-center justify-between cursor-grab 
 						active:cursor-grabbing rounded-lg`, {
 						"cursor-grabbing": overlay,
 					})}>
-					<div />
-					<GripHorizontal color="#6b7280"/>
+					<div {...listeners} >
+						<GripHorizontal color="#6b7280"/>
+					</div>
 						<div className={cn(`flex flex-col self-end justify-center items-center h-full w-fit`)}>
 							<Trash2 
 								size={16} 
 								className="place-self-center self-center text-muted-foreground hover:text-foreground hover:cursor-pointer"
-								onClick={()=>deleteColumn(column)}
+								onClick={() => {
+									console.log("laskjdfgkljshd")
+									deleteColumn(column)
+								}}
 							/>
 						</div>
 				</div>

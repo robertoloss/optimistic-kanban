@@ -27,6 +27,7 @@ export async function supaFetchTasks() {
 	}
 }
 export async function supaDeleteColumn(column: Column, setTriggerUpdate: Dispatch<SetStateAction<boolean>>) {
+	console.log("trying to delete column: ", column)
 	try {
 		await supabase.from('Column')
 			.delete()
