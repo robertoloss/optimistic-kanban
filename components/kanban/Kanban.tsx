@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react"
 import { SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable"
 import ColumnComp from "./Column"
-import { DndContext, useSensors, PointerSensor, useSensor, UniqueIdentifier } from "@dnd-kit/core"
+import { DndContext, useSensors, PointerSensor, useSensor, UniqueIdentifier, MouseSensor, TouchSensor } from "@dnd-kit/core"
 import dragStartHandler from "@/dnd-utils/dragStartHandler"
 import dragEndHandler from "@/dnd-utils/dragEndHandler"
 import dragOverHandler from "@/dnd-utils/dragOverHandler"
@@ -14,7 +14,10 @@ import LoadingColumns from "./LoadingColumns"
 import { supaFetchCols, supaFetchTasks } from "@/utils/supabase/queries"
 
 export default function Kanban() {
-	const sensors = useSensors( useSensor(PointerSensor, { activationConstraint: { distance: 0 }}) )
+	const sensors = useSensors( 
+		useSensor(MouseSensor),
+		useSensor(TouchSensor)
+	)
 	const [columns, setColumns] = useState<Column[] | null>(null);
 	const [tasks, setTasks] = useState<Task[] | null>(null);
 	const [activeColumn, setActiveColumn] = useState<Column | null>(null)
