@@ -36,7 +36,7 @@ export default function Kanban() {
 	},[triggerUpdate])
 
 	return (
-		<div className="flex flex-col w-full h-full items-center">
+		<div className="flex flex-col w-full h-full items-center ">
 			<div className="h-6 mb-2 p-2">{updating && <p>Saving...</p>}</div>
 				<DndContext
 					id="list"
@@ -47,8 +47,8 @@ export default function Kanban() {
 					})}
 					onDragOver={dragOverHandler({ setTasks, setColumns })}
 				>
-					<div className={`flex flex-row flex-shrink w-full px-4 h-full items-center 
-						justify-center gap-x-4 overflow-x-auto py-8`}
+					<div className={`flex flex-row flex-shrink w-full px-4 h-full items-center  
+						justify-start gap-x-4 overflow-x-auto py-8`}
 						style={{ 
 							scrollbarWidth: 'thin', 
 							scrollbarColor: 'dark-gray black', 
@@ -60,6 +60,7 @@ export default function Kanban() {
 						items={columnsIds}
 						strategy={horizontalListSortingStrategy}
 					>
+						<div className="flex flex-row w-full" />
 						{columns?.map(column => {
 							const columnTasks = tasks?.filter(t => t.columnId === column.title)
 							return (
@@ -73,13 +74,15 @@ export default function Kanban() {
 									setColumns={setColumns}
 								/>
 						)})}
+						{<ModalAddAColumn 
+							setColumns={setColumns} 
+							numOfCols={columns?.length} 
+							setTriggerUpdate={setTriggerUpdate}
+							setUpdating={setUpdating}
+						/>}
+						<div className="flex flex-row w-full" />
 					</SortableContext> : <LoadingColumns />}
-					{<ModalAddAColumn 
-						setColumns={setColumns} 
-						numOfCols={columns?.length} 
-						setTriggerUpdate={setTriggerUpdate}
-						setUpdating={setUpdating}
-					/>}
+					
 					</div>	
 					<DragOverlayComponent 
 						activeColumn={activeColumn}
