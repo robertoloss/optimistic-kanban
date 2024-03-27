@@ -1,3 +1,4 @@
+import Link from "next/link";
 import AuthButton from "../components/AuthButton";
 import Header from "@/components/Header";
 
@@ -13,9 +14,15 @@ export default async function Index() {
         </div>
       </nav>
 
-      <div className="flex-1 flex flex-col gap-20  max-w-4xl px-3">
+      <div className="flex-1 flex flex-col gap-20  max-w-4xl px-3 items-center">
         <Header />
         <main className="flex-1 flex flex-col gap-6">
+				<Link href='/kanban' 
+					className={`flex flex-row justify-center py-2 px-4 rounded-lg 
+						w-fit h-fit bg-primary text-foreground hover:bg-primary-hover transition`}
+				>
+					Go to Kanban
+				</Link>
 					
         </main>
       </div>

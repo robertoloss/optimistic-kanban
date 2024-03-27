@@ -9,7 +9,7 @@ export default async function KanbanPage() {
   if (!user) { return redirect("/login") }
 
   return (
-    <div className="flex-1 w-full flex flex-col items-center">
+    <div className="w-full flex flex-col items-center overflow-x-auto">
       <div className="w-full">
           <nav className="w-full flex justify-end border-b border-b-muted-foreground h-16">
 						<div className="w-fit max-w-4xl flex justify-between items-center p-3 text-sm">

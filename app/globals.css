@@ -16,13 +16,15 @@ html::-webkit-scrollbar {
 @layer base {
   :root {
 		--pure: #ffffff;
-    --background: #FFFFFF;
+		--task: #4f5359;
+    --background: #ebebeb;
     --foreground: #0C0B0E;
     --card: #FFFFFF;
     --card-foreground: #0C0B0E;
     --popover: #FFFFFF;
     --popover-foreground: #0C0B0E;
     --primary: #D6175F;
+    --primary-hover: #f4357d;
     --primary-foreground: #FCFAFC;
     --secondary: #7c7c82;
     --secondary-foreground: #1E1B1F;
@@ -40,6 +42,7 @@ html::-webkit-scrollbar {
 
   .dark {
 		--pure: #000000;
+		--task: #d1d5db;
     --background: #161419;
     --foreground: #F5F5F7;
     --card: #1F1D24;
@@ -47,6 +50,7 @@ html::-webkit-scrollbar {
     --popover: #161619;
     --popover-foreground: #F5F5F7;
     --primary: #D6175F;
+    --primary-hover: #f4357d;
     --primary-foreground: #FCFAFC;
     --secondary: #3f3d4a;
     --secondary-foreground: #FCFCFD;

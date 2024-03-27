@@ -9,6 +9,9 @@ import { GripHorizontal, Trash2 } from "lucide-react"
 import AddATask from "./AddATask"
 import { supabase } from "./Kanban"
 
+export const minHeigtColumn = 480
+
+
 type Props = {
 	column: ColumnPrisma
 	overlay?: boolean
@@ -35,7 +38,7 @@ export default function Column({ column, setUpdating, setColumns, overlay, tasks
 	const tasksIds = useMemo(() => sortedTasks?.map(t => (t.id as unknown) as UniqueIdentifier), [tasks])
 	const numF = tasks?.length && tasks.length >= 4 ? 
 									((tasks?.length)*80) + (16*(2+(tasks?.length-1))) + 28 + 24 + 4 + 24
-								:	480
+								:	minHeigtColumn
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -72,22 +75,23 @@ export default function Column({ column, setUpdating, setColumns, overlay, tasks
 				style={{ height: `${numF}px` }}
 			>
 				<div {...listeners} 
-					className={cn(`w-full h-6 flex flex-row justify-between cursor-grab active:cursor-grabbing rounded-lg`, {
+					className={cn(`w-full h-6 flex flex-row items-center justify-between cursor-grab 
+						active:cursor-grabbing rounded-lg`, {
 						"cursor-grabbing": overlay,
 					})}>
-					<div className={cn(`flex flex-col self-end justify-start h-full w-fit`)}>
-						<Trash2 
-							size={16} 
-							className="self-end place-self-center text-muted-foreground hover:text-foreground hover:cursor-pointer"
-							onClick={()=>deleteColumn(column)}
-						/>
-					</div>
-					<GripHorizontal color="#6b7280"/>
 					<div />
+					<GripHorizontal color="#6b7280"/>
+						<div className={cn(`flex flex-col self-end justify-center items-center h-full w-fit`)}>
+							<Trash2 
+								size={16} 
+								className="place-self-center self-center text-muted-foreground hover:text-foreground hover:cursor-pointer"
+								onClick={()=>deleteColumn(column)}
+							/>
+						</div>
 				</div>
 				<div className="flex flex-row w-full justify-between">
 					<div className="flex flex-row gap-x-2 items-center text-sm font-medium">
-						<h1 className="text-sm bg-secondary w-fit px-2 py-1 rounded">
+						<h1 className="text-sm bg-muted-foreground text-background w-fit px-2 py-1 rounded">
 						 {column.title}
 						</h1>
 						<h1 className="">{tasks?.length}</h1>

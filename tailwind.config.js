@@ -19,6 +19,7 @@ module.exports = {
     extend: {
       colors: {
 				pure: "var(--pure)",
+				task: "var(--task)",
         border: "var(--border)",
         input: "var(--input)",
         ring: "var(--ring)",
@@ -27,6 +28,7 @@ module.exports = {
         primary: {
           DEFAULT: "var(--primary)",
           foreground: "var(--primary-foreground)",
+          hover: "var(--primary-hover)",
         },
         secondary: {
           DEFAULT: "var(--secondary)",
@@ -67,10 +69,16 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+				"column-loading": {
+					'0%': { backgroundColor: "var(--muted)" },
+					'50%': { backgroundColor: "black" }, 
+					'100%': { backgroundColor: "var(--muted)" },
+				}
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+				"column-loading": "column-loading 1s infinite linear"
       },
     },
   },

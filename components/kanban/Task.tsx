@@ -57,8 +57,8 @@ export default function Task({ task, column, overlay, setTriggerUpdate, setTasks
 	return (
 		<div ref={setNodeRef} style={style} {...attributes}
 			className={cn(
-				`	flex flex-row gap-y-1  justify-between w-full min-h-[80px] max-h-[80px] bg-gray-300 font-normal font-sans 
-					rounded-sm pr-2 py-2 text-gray-900 z-50 active:shadow-black active:shadow text-sm transition-transform`, { 
+				`	flex flex-row gap-y-1  justify-between w-full min-h-[80px] max-h-[80px] bg-task font-normal font-sans 
+					rounded-lg pr-2 py-2 text-background z-50 active:shadow-black active:shadow text-sm transition-transform`, { 
 						'opacity-0': isDragging,
 						'shadow-black shadow opacity-85': overlay, 
 			})}
@@ -69,7 +69,7 @@ export default function Task({ task, column, overlay, setTriggerUpdate, setTasks
 				})} >
 				<GripVertical color="#909bad" strokeWidth={2} size={16}/>
 			</div>
-			<div className="flex flex-col px-2 py-1 w-full items-start">
+			<div className="flex flex-col px-2 py-1 w-full items-start text-background">
 				<h1 className="font-semibold">{task.title}</h1>
 				<h1 className="text-md leading-[16px]">{task.content}</h1>
 			</div>

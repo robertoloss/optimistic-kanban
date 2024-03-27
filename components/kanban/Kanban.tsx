@@ -10,6 +10,8 @@ import DragOverlayComponent from "./DragOverlayComponent"
 import { Column, Task } from "@prisma/client"
 import { createClient } from "@/utils/supabase/client"
 import ModalAddAColumn from "./ModalAddAColumn"
+import { minHeigtColumn } from "./Column"
+import LoadingColumns from "./LoadingColumns"
 
 export const supabase = createClient()
 export type optimisticProps = {
@@ -25,7 +27,7 @@ export default function Kanban() {
 	const [triggerUpdate, setTriggerUpdate] = useState(false)
 	const [updating, setUpdating] = useState(false)
 
-	const columnsIds =  columns?.map(column => column.title as UniqueIdentifier)
+	const columnsIds =  columns?.sort((a,b) => a.position! - b.position! ).map(column => column.title as UniqueIdentifier)
 	async function supaFetchCols() {
 		let { data }  = await supabase
 			.from('Column')
@@ -57,14 +59,8 @@ export default function Kanban() {
 	},[triggerUpdate])
 
 	return (
-		<div className="flex flex-col w-full h-full items-center overscroll-none">
-			<h1 className="h-6 mb-2">{updating && <p>Saving...</p>}</h1>
-			<div className="flex flex-row overflow-x-auto gap-y-8 w-full h-full p-6 justify-center gap-x-4 overflow-y-hidden"
-				style={{ 
-					scrollbarWidth: 'thin', 
-					scrollbarColor: 'dark-gray black' 
-				}}
-			>
+		<div className="flex flex-col w-full h-full items-center">
+			<div className="h-6 mb-2 p-2">{updating && <p>Saving...</p>}</div>
 				<DndContext
 					id="list"
 					sensors={sensors}
@@ -74,12 +70,23 @@ export default function Kanban() {
 					})}
 					onDragOver={dragOverHandler({ setTasks, setColumns })}
 				>
-					{columnsIds && 
+					<div 
+						className={`
+							flex flex-row flex-shrink w-full px-4 h-full items-start justify-center gap-x-4 overflow-x-auto
+							py-8
+						`}
+						style={{ 
+							scrollbarWidth: 'thin', 
+							scrollbarColor: 'dark-gray black', 
+							minHeight: `${minHeigtColumn}px`
+						}}
+					>
+					{columnsIds ? 
 					<SortableContext 
 						items={columnsIds}
 						strategy={horizontalListSortingStrategy}
 					>
-						{columns && columns.map(column => {
+						{columns?.map(column => {
 							const columnTasks = tasks?.filter(t => t.columnId === column.title)
 							return (
 								<ColumnComp 
@@ -92,13 +99,14 @@ export default function Kanban() {
 									setColumns={setColumns}
 								/>
 						)})}
-					</SortableContext>}
-					<ModalAddAColumn 
+					</SortableContext> : <LoadingColumns />}
+					{<ModalAddAColumn 
 						setColumns={setColumns} 
 						numOfCols={columns?.length} 
 						setTriggerUpdate={setTriggerUpdate}
 						setUpdating={setUpdating}
-					/>
+					/>}
+					</div>	
 					<DragOverlayComponent 
 						activeColumn={activeColumn}
 						setColumns={setColumns}
@@ -110,7 +118,6 @@ export default function Kanban() {
 						setTriggerUpdate={setTriggerUpdate}
 					/>
 				</DndContext>
-			</div>
 		</div>
 	)
 }
