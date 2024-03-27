@@ -9,7 +9,7 @@ import {
 import { Column, Task } from "@prisma/client"
 import { Dispatch, SetStateAction, useState } from "react"
 import { Button } from "../ui/button"
-import { supaCreateTask } from "@/utils/supabase/queries"
+import { supaCreateTask, supabase } from "@/utils/supabase/queries"
 
 type Props = {
 	column: Column
@@ -21,14 +21,17 @@ export default function AddATask({ column, setTriggerUpdate, setTasks, setUpdati
 	const [open, setOpen] = useState(false)
 
 	async function createTask(data: FormData) {
+		const { data: { user } } = await supabase.auth.getUser()
 		setUpdating(true)
 		const newTask = {
-			id: 9999,
+			id: '9999',
 			title: data.get('title') as string,
 			content: data.get('content') as string,
 			columnId: column.title as string,
 			created_at: new Date(), 
-			position: -1 
+			position: -1,
+			owner: user?.id ? user.id : null,
+			project: null
 		}
 		setTasks((t) => {
 			if (t) return [...t, newTask]

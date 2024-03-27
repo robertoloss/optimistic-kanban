@@ -9,7 +9,7 @@ import {
 import { Column } from "@prisma/client"
 import { Dispatch, SetStateAction, useState } from "react"
 import { Button } from "../ui/button"
-import { supaCreateColumn } from "@/utils/supabase/queries"
+import { supaCreateColumn, supabase } from "@/utils/supabase/queries"
 
 type Props = {
 	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
@@ -21,12 +21,15 @@ export default function ModalAddAColumn({ setTriggerUpdate, setColumns, setUpdat
 	const [open, setOpen] = useState(false)
 
 	async function createColumn(data: FormData) {
+		const { data: { user } } = await supabase.auth.getUser()
 		setUpdating(true)
 		const newColumn : Column = {
-				id: 9999,
+				id: '9999',
 				title: data.get('title') as string,
 				created_at: new Date(), 
-				position: numOfCols ? numOfCols : 99999
+				position: numOfCols ? numOfCols : 0,
+				owner: user?.id ? user.id : null,
+				project: null
 			}
 			setColumns((c) => {
 				if (c) return [...c, newColumn]

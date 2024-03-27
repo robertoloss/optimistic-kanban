@@ -18,10 +18,7 @@ export default function updateTaskOverTask({ activeId, overId, setTasks } : Prop
 			const [_id2, col2, position2] = [task2.id, task2.columnId, task2.position]
 			newTasks = tasks.map(t => {
 				return {
-					id: t.id,
-					created_at: t.created_at,
-					title: t?.title,
-					content: t?.content,
+					...t,
 					columnId: t.id === id1 ? col2 : t.columnId,
 					position: 
 						col1 === col2 ?  
