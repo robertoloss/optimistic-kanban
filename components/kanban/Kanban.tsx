@@ -55,12 +55,12 @@ export default function Kanban() {
 							minHeight: `${minHeigtColumn}px`
 						}}
 					>
+					<div className="flex flex-row w-full" />
 					{columnsIds ? 
 					<SortableContext 
 						items={columnsIds}
 						strategy={horizontalListSortingStrategy}
 					>
-						<div className="flex flex-row w-full" />
 						{columns?.map(column => {
 							const columnTasks = tasks?.filter(t => t.columnId === column.title)
 							return (
@@ -74,15 +74,14 @@ export default function Kanban() {
 									setColumns={setColumns}
 								/>
 						)})}
+					</SortableContext> : <LoadingColumns />}
 						{<ModalAddAColumn 
 							setColumns={setColumns} 
 							numOfCols={columns?.length} 
 							setTriggerUpdate={setTriggerUpdate}
 							setUpdating={setUpdating}
 						/>}
-						<div className="flex flex-row w-full" />
-					</SortableContext> : <LoadingColumns />}
-					
+					<div className="flex flex-row w-full" />
 					</div>	
 					<DragOverlayComponent 
 						activeColumn={activeColumn}
