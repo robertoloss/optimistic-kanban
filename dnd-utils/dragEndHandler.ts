@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { DragEndEvent } from "@dnd-kit/core";
 import { Column, Task } from "@prisma/client";
-import { supabase } from "@/components/kanban/Kanban";
+import { supabase } from "@/utils/supabase/queries";
 
 type Props = {
 	setActiveColumn: Dispatch<SetStateAction<Column | null>>,

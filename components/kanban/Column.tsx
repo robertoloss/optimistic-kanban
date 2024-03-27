@@ -7,7 +7,7 @@ import Task from "./Task"
 import { UniqueIdentifier } from "@dnd-kit/core"
 import { GripHorizontal, Trash2 } from "lucide-react"
 import AddATask from "./AddATask"
-import { supabase } from "./Kanban"
+import { supaDeleteColumn } from "@/utils/supabase/queries"
 
 export const minHeigtColumn = 480
 
@@ -21,7 +21,7 @@ type Props = {
 	setUpdating: Dispatch<SetStateAction<boolean>>
 	setColumns: Dispatch<SetStateAction<ColumnPrisma[] | null>>
 }
-export default function Column({ column, setUpdating, setColumns, overlay, tasks, setTriggerUpdate, setTasks} : Props) {
+export default function Column({  column, setUpdating, setColumns, overlay, tasks, setTriggerUpdate, setTasks} : Props) {
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
 		id: column.title!,
 		data: {
@@ -50,14 +50,7 @@ export default function Column({ column, setUpdating, setColumns, overlay, tasks
 			if (cols) return cols.filter(c => c.id != column.id)
 			else return [];
 		})
-		try {
-			await supabase.from('Column')
-				.delete()
-				.eq('id', column.id)
-			setTriggerUpdate(prev => !prev)
-		} catch (error) {
-			console.error(error)
-		}
+		supaDeleteColumn(column,setTriggerUpdate)
 	}
 
 	return (
@@ -67,8 +60,8 @@ export default function Column({ column, setUpdating, setColumns, overlay, tasks
 			<div    
 				className={cn(
 					`	flex flex-col min-w-[280px] max-w-[280px] px-4 pt-1
-						pb-4 gap-y-4 z-10 bg-muted rounded-lg border-2
-						border-secondary cursor-auto transition-all `, { 
+						pb-4 gap-y-4 z-10 bg-muted rounded-lg border
+						border-muted-foreground cursor-auto transition-all `, { 
 							"z-50 opacity-0": isDragging,
 							"shadow-black shadow": overlay,
 				})}

@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/dialog"
 import { Column, Task } from "@prisma/client"
 import { Dispatch, SetStateAction, useState } from "react"
-import { supabase } from "./Kanban"
 import { Button } from "../ui/button"
+import { supaCreateTask } from "@/utils/supabase/queries"
 
 type Props = {
 	column: Column
@@ -23,35 +23,24 @@ export default function AddATask({ column, setTriggerUpdate, setTasks, setUpdati
 	async function createTask(data: FormData) {
 		setUpdating(true)
 		const newTask = {
-				id: 9999,
-				title: data.get('title') as string,
-				content: data.get('content') as string,
-				columnId: column.title as string,
-				created_at: new Date(), 
-				position: -1 
-			}
-			setTasks((t) => {
-				if (t) return [...t, newTask]
-				else return [newTask]
-			})
-			try {
-			await supabase.rpc(
-				'update_position_for_column', 
-				{ column_id_value: column.title }
-			)
-			await supabase.from('Task')
-				.insert([
-					{
-						title: data.get('title'),
-						content: data.get('content'),
-						columnId: column.title,
-						position: 0 
-					}
-				])
-			setTriggerUpdate(prev => !prev)
-		} catch(error) {
-			console.error(error)
+			id: 9999,
+			title: data.get('title') as string,
+			content: data.get('content') as string,
+			columnId: column.title as string,
+			created_at: new Date(), 
+			position: -1 
 		}
+		setTasks((t) => {
+			if (t) return [...t, newTask]
+			else return [newTask]
+		})
+		const input = {
+			title: data.get('title'),
+			content: data.get('content'),
+			columnId: column.title,
+			position: 0 
+		}
+		supaCreateTask(input, column, setTriggerUpdate)
 	}
 
 	return (

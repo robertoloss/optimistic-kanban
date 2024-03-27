@@ -11,22 +11,30 @@ datasource db {
 }
 
 model Column {
-  id         Int      @id @default(autoincrement())
+  id         String   @id(map: "Column2_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   created_at DateTime @default(now()) @db.Timestamptz(6)
-  title      String?
   position   Int?
+  title      String?
+  project    String?  @db.Uuid
+  owner      String?  @db.Uuid
+  users      users?   @relation(fields: [owner], references: [id], onDelete: Cascade, map: "public_Column_owner_fkey")
+  Project    Project? @relation(fields: [project], references: [id], onDelete: NoAction, map: "public_Column_project_fkey")
 
   @@schema("public")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model Task {
-  id         Int      @id @default(autoincrement())
   created_at DateTime @default(now()) @db.Timestamptz(6)
   title      String?
   content    String?
   position   Int?
   columnId   String?
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  project    String?  @db.Uuid
+  owner      String?  @db.Uuid
+  users      users?   @relation(fields: [owner], references: [id], onDelete: Cascade, map: "public_Task_owner_fkey")
+  Project    Project? @relation(fields: [project], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "public_Task_project_fkey")
 
   @@schema("public")
 }
@@ -298,10 +306,26 @@ model users {
   identities                  identities[]
   mfa_factors                 mfa_factors[]
   sessions                    sessions[]
+  Column                      Column[]
+  Project                     Project[]
+  Task                        Task[]
 
   @@index([instance_id])
   @@index([is_anonymous])
   @@schema("auth")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Project {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  title      String?
+  owner      String?  @db.Uuid
+  Column     Column[]
+  users      users?   @relation(fields: [owner], references: [id], onDelete: Cascade, map: "public_Project_owner_fkey")
+  Task       Task[]
+
+  @@schema("public")
 }
 
 enum aal_level {

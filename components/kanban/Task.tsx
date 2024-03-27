@@ -1,11 +1,10 @@
 import { cn } from "@/app/utils/cn";
-import { optimisticProps } from "./Kanban";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Column, Task } from "@prisma/client";
 import { GripVertical, Trash2 } from "lucide-react";
-import { supabase } from "./Kanban";
 import { Dispatch, SetStateAction } from "react";
+import { supaDeleteTask } from "@/utils/supabase/queries";
 
 type Props = {
 	task: Task
@@ -13,7 +12,6 @@ type Props = {
 	overlay?: boolean
 	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
 	setTasks: Dispatch<SetStateAction<Task[] | null>>
-	updateOptimisticTasks?: ({ action, task }: optimisticProps) => void 
 	setUpdating: Dispatch<SetStateAction<boolean>>
 }
 export default function Task({ task, column, overlay, setTriggerUpdate, setTasks, setUpdating } : Props) {
@@ -44,14 +42,7 @@ export default function Task({ task, column, overlay, setTriggerUpdate, setTasks
 			}
 			else return []
 		})
-		try {
-			await supabase.from('Task')
-				.delete()
-				.eq('id', task.id)
-			setTriggerUpdate(prev => !prev)
-		} catch (error) {
-			console.error(error)
-		}
+		supaDeleteTask(task,setTriggerUpdate)
 	}
 
 	return (
@@ -67,13 +58,17 @@ export default function Task({ task, column, overlay, setTriggerUpdate, setTasks
 				className={cn(`flex flex-col justify-center h-full cursor-grab active:grabbing`, {
 					'h-[64px] cursor-grabbing': overlay,
 				})} >
-				<GripVertical color="#909bad" strokeWidth={2} size={16}/>
+				<GripVertical  
+					className="text-muted-foreground hover:text-pure"
+					strokeWidth={2}
+					size={16}
+				/>
 			</div>
 			<div className="flex flex-col px-2 py-1 w-full items-start text-background">
 				<h1 className="font-semibold">{task.title}</h1>
 				<h1 className="text-md leading-[16px]">{task.content}</h1>
 			</div>
-			<div className={cn(`flex flex-col self-end justify-start h-full w-fit`)}>
+			<div className={cn(`flex flex-col self-start justify-start h-fit w-fit`)}>
 				<Trash2 
 					size={16} 
 					className="text-muted-foreground hover:text-pure"

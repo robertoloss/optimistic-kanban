@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/dialog"
 import { Column } from "@prisma/client"
 import { Dispatch, SetStateAction, useState } from "react"
-import { supabase } from "./Kanban"
 import { Button } from "../ui/button"
+import { supaCreateColumn } from "@/utils/supabase/queries"
 
 type Props = {
 	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
@@ -32,18 +32,7 @@ export default function ModalAddAColumn({ setTriggerUpdate, setColumns, setUpdat
 				if (c) return [...c, newColumn]
 				else return [newColumn]
 			})
-			try {
-			await supabase.from('Column')
-				.insert([
-					{
-						title: data.get('title'),
-						position: numOfCols ? numOfCols : 99999
-					}
-				])
-			setTriggerUpdate(prev => !prev)
-		} catch(error) {
-			console.error(error)
-		}
+			supaCreateColumn(data, setTriggerUpdate, numOfCols)
 	}
 
 	return (

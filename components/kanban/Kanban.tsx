@@ -8,16 +8,11 @@ import dragEndHandler from "@/dnd-utils/dragEndHandler"
 import dragOverHandler from "@/dnd-utils/dragOverHandler"
 import DragOverlayComponent from "./DragOverlayComponent"
 import { Column, Task } from "@prisma/client"
-import { createClient } from "@/utils/supabase/client"
 import ModalAddAColumn from "./ModalAddAColumn"
 import { minHeigtColumn } from "./Column"
 import LoadingColumns from "./LoadingColumns"
+import { supaFetchCols, supaFetchTasks } from "@/utils/supabase/queries"
 
-export const supabase = createClient()
-export type optimisticProps = {
-	action?: string,
-	task?: Task
-}
 export default function Kanban() {
 	const sensors = useSensors( useSensor(PointerSensor, { activationConstraint: { distance: 0 }}) )
 	const [columns, setColumns] = useState<Column[] | null>(null);
@@ -26,26 +21,8 @@ export default function Kanban() {
 	const [activeTask, setActiveTask] = useState<Task | null>(null)
 	const [triggerUpdate, setTriggerUpdate] = useState(false)
 	const [updating, setUpdating] = useState(false)
-
 	const columnsIds =  columns?.sort((a,b) => a.position! - b.position! ).map(column => column.title as UniqueIdentifier)
-	async function supaFetchCols() {
-		let { data }  = await supabase
-			.from('Column')
-			.select('*')
-		if (data) {
-			const res : Column[] = [...data]
-			return res
-		}
-	}
-	async function supaFetchTasks() {
-		let { data }  = await supabase
-			.from('Task')
-			.select('*')
-		if (data) {
-			const res : Task[] = [...data]
-			return res
-		}
-	}
+
 	useEffect(()=>{
 		console.log("useEffect")
 		async function fetchColsAndTasks() {
@@ -70,11 +47,8 @@ export default function Kanban() {
 					})}
 					onDragOver={dragOverHandler({ setTasks, setColumns })}
 				>
-					<div 
-						className={`
-							flex flex-row flex-shrink w-full px-4 h-full items-start justify-center gap-x-4 overflow-x-auto
-							py-8
-						`}
+					<div className={`flex flex-row flex-shrink w-full px-4 h-full items-center 
+						justify-center gap-x-4 overflow-x-auto py-8`}
 						style={{ 
 							scrollbarWidth: 'thin', 
 							scrollbarColor: 'dark-gray black', 
