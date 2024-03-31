@@ -74,7 +74,7 @@ export default function Task({ task, column, overlay, setTriggerUpdate, setTasks
 			<div className={cn(`flex flex-col self-start justify-start h-fit w-fit`)}>
 				<Trash2 
 					size={16} 
-					className="text-muted-foreground hover:text-pure"
+					className="text-muted-foreground hover:text-black dark:hover:text-pure "
 					onClick={()=>deleteTask(task)}
 				/>
 			</div>
