@@ -12,14 +12,19 @@ body::-webkit-scrollbar {
 html::-webkit-scrollbar { 
     display: none;  /* Safari and Chrome */
 }
+.no-scrollbar::-webkit-scrollbar {
+	display: none;
+}
 
 @layer base {
   :root {
+		--layout: #cbcacd;
 		--pure: #ffffff;
-		--task: #4f5359;
-    --background: #ebebeb;
+		--task: #ffffff;
+		--column: #e3e4e5;
+    --background: #ffffff;
     --foreground: #0C0B0E;
-    --card: #FFFFFF;
+    --card: #f7f8f9;
     --card-foreground: #0C0B0E;
     --popover: #FFFFFF;
     --popover-foreground: #0C0B0E;
@@ -28,7 +33,7 @@ html::-webkit-scrollbar {
     --primary-foreground: #FCFAFC;
     --secondary: #7c7c82;
     --secondary-foreground: #1E1B1F;
-    --muted: #E0E0E6;
+    --muted: #f7f8f9;
     --muted-foreground: #9F9AA8;
     --accent: #E0E0E6;
     --accent-foreground: #1E1B1F;
@@ -41,7 +46,9 @@ html::-webkit-scrollbar {
   }
 
   .dark {
+		--layout: #3f3f46;
 		--pure: #000000;
+		--column: #2a282d;
 		--task: #d1d5db;
     --background: #161419;
     --foreground: #F5F5F7;

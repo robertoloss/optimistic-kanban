@@ -50,7 +50,7 @@ export default function Kanban() {
 					})}
 					onDragOver={dragOverHandler({ setTasks, setColumns })}
 				>
-					<div className={`flex flex-row flex-shrink w-full px-4 h-full items-center  
+					<div className={`flex flex-row flex-shrink w-full px-4 h-full items-start  
 						justify-start gap-x-4 overflow-x-auto py-8`}
 						style={{ 
 							scrollbarWidth: 'thin', 

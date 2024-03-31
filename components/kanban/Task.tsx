@@ -46,16 +46,19 @@ export default function Task({ task, column, overlay, setTriggerUpdate, setTasks
 	}
 
 	return (
-		<div ref={setNodeRef} style={style} {...attributes}
+		<div className="p-[2px]" style={style} {...attributes}>
+		<div ref={setNodeRef} 
 			className={cn(
-				`	flex flex-row gap-y-1  justify-between w-full min-h-[80px] max-h-[80px] bg-task font-normal font-sans 
-					rounded-lg pr-2 py-2 text-background z-50 active:shadow-black active:shadow text-sm transition-transform`, { 
+				`	flex flex-row gap-y-1  justify-between w-full min-h-[80px] max-h-[80px] bg-task font-normal font-sans  
+					rounded-lg pr-2 py-2 text-background z-50 shadow shadow-gray-500 active:shadow-black 
+					active:shadow text-sm transition-transform dark:border dark:border-gray-900 
+					dark:shadow-none`, { 
 						'opacity-0': isDragging,
-						'shadow-black shadow opacity-85': overlay, 
+						'shadow-black shadow opacity-85 -m-[2px] size-[101.7%]': overlay, 
 			})}
 		>
 			<div {...listeners}
-				className={cn(`flex flex-col justify-center h-full cursor-grab active:grabbing`, {
+				className={cn(`flex flex-col justify-center h-[64px] cursor-grab active:grabbing`, {
 					'h-[64px] cursor-grabbing': overlay,
 				})} >
 				<GripVertical  
@@ -64,7 +67,7 @@ export default function Task({ task, column, overlay, setTriggerUpdate, setTasks
 					size={16}
 				/>
 			</div>
-			<div className="flex flex-col px-2 py-1 w-full items-start text-background">
+			<div className="flex flex-col px-2 py-1 w-full items-start text-foreground dark:text-background ">
 				<h1 className="font-semibold">{task.title}</h1>
 				<h1 className="text-md leading-[16px]">{task.content}</h1>
 			</div>
@@ -75,6 +78,7 @@ export default function Task({ task, column, overlay, setTriggerUpdate, setTasks
 					onClick={()=>deleteTask(task)}
 				/>
 			</div>
+		</div>
 		</div>
 	)
 }

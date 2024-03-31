@@ -18,6 +18,8 @@ module.exports = {
     },
     extend: {
       colors: {
+				column: "var(--column)",
+				layout: "var(--layout)",
 				pure: "var(--pure)",
 				task: "var(--task)",
         border: "var(--border)",

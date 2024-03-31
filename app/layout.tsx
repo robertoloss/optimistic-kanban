@@ -16,8 +16,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "Optimistic Kanban Board",
+  description: "A kanban board with Next.js and Supabase featuring optimistic UI",
 };
 
 export default function RootLayout({

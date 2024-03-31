@@ -1,4 +1,5 @@
 import { CirclePlus } from "lucide-react"
+import { minHeigtColumn } from "./Column"
 import {
   Dialog,
   DialogContent,
@@ -39,7 +40,7 @@ export default function ModalAddAColumn({ setTriggerUpdate, setColumns, setUpdat
 	}
 
 	return (
-		<div className="flex flex-col self-center h-full justify-center ">
+		<div className={`flex flex-col mt-[minHeigtColumn] justify-start `}>
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogTrigger>
 				<div className="group p-4 flex flex-col justify-center border-2 rounded-lg border-border hover:border-muted-foreground hover:cursor-pointer border-dashed transition ">

@@ -56,17 +56,17 @@ export default function Column({  column, setUpdating, setColumns, overlay, task
 
 	return (
 		<div ref={setNodeRef} style={style} {...attributes} 
-			className="flex flex-col w-fit h-fit"	
+			className="flex flex-col w-fit h-full"	
 		>
 			<div    
 				className={cn(
 					`	flex flex-col min-w-[280px] max-w-[280px] px-4 pt-1
-						pb-4 gap-y-4 z-10 bg-muted rounded-lg border
-						border-muted-foreground cursor-auto transition-all `, { 
+						pb-4 gap-y-4 z-10 bg-column rounded-lg border
+						border-border cursor-auto transition-all h-full`, { 
 							"z-50 opacity-0": isDragging,
 							"shadow-black shadow": overlay,
 				})}
-				style={{ height: `${numF}px` }}
+				//style={{ height: `${numF}px` }}
 			>
 				<div  
 					className={cn(`w-full h-6 flex flex-row items-center justify-between cursor-grab 
@@ -82,7 +82,6 @@ export default function Column({  column, setUpdating, setColumns, overlay, task
 								size={16} 
 								className="place-self-center self-center text-muted-foreground hover:text-foreground hover:cursor-pointer"
 								onClick={() => {
-									console.log("laskjdfgkljshd")
 									deleteColumn(column)
 								}}
 							/>
@@ -102,6 +101,7 @@ export default function Column({  column, setUpdating, setColumns, overlay, task
 						setUpdating={setUpdating}
 					/>
 				</div>
+				<div className="no-scrollbar flex flex-col h-full overflow-y-scroll gap-y-2 pb-10">
 				{<SortableContext items={tasksIds || []}>
 					{tasks?.map(task => (
 						<Task 
@@ -114,6 +114,7 @@ export default function Column({  column, setUpdating, setColumns, overlay, task
 						/>
 					))}
 				</SortableContext>}
+				</div>
 			</div>
 		</div>
 	)
