@@ -112,6 +112,7 @@ export default function Kanban({ projectId } : Props) {
 					<div className="flex flex-row w-full" />
 					</div>	
 					<DragOverlayComponent 
+						projectId={projectId}
 						activeColumn={activeColumn}
 						setColumns={setColumns}
 						activeTask={activeTask}
