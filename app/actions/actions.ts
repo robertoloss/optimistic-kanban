@@ -1,34 +1,54 @@
 'use server'
-import {  getColumns, updateColumnPositions, updateTasksPositions } from "@/prisma/queries"
-import { Column, Task } from "@prisma/client"
 import { revalidateTag } from "next/cache"
+import { createClient } from "@/utils/supabase/server"
 
-export async function actionUpdateTasksPositions({ tasks } : { tasks: Task[] }) {
+const supabase = createClient()
+
+export async function actionCreateProject({ 
+	title,
+} : {
+	title: string
+}) {
+	console.log("action create Project")
 	try {
-		await updateTasksPositions({ tasks })
-		revalidateTag("getTasks")
-	} catch(error) {
+		const { data: { user }} = await supabase.auth.getUser()
+		if (user) {
+			const id = user.id
+			//console.log(id)
+			await supabase.from('Project')
+				.insert({
+					title: title,
+					owner: id
+				})
+			revalidateTag('getProjects')
+		}
+		
+	} catch (error) {
 		console.error(error)
 	}
 }
 
-export async function actionUpdateColumnsPositions({ columns } : { columns: Column[]}) {
+export async function actionDeleteProject({
+	id,
+} : {
+	id: string
+}) {
+	console.log("action delete Project")
 	try {
-		await updateColumnPositions({ columns })
-		revalidateTag("getColumns")
-	} catch(error) {
+		await supabase.from('Project')
+			.delete()
+			.eq('id',id)
+		revalidateTag('getProjects')
+	} catch (error) {
 		console.error(error)
 	}
 }
 
-export async function actionGetColumns() {
-	try {
-		const data = await getColumns()
-		return data
-	} catch(error) {
-		console.error(error)
-	}
-}
+
+
+
+
+
 
 
 

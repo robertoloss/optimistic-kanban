@@ -1,26 +1,28 @@
-import { Column, Task } from "@prisma/client"
+import { Column, Project, Task } from "@prisma/client"
 import { createClient } from "@/utils/supabase/client"
 import { Dispatch, SetStateAction } from "react"
 
 export const supabase = createClient()
 
-export async function supaFetchCols() {
+export async function supaFetchCols( projectId: string) {
 	const { data: { user } } = await supabase.auth.getUser()
 	let { data }  = await supabase
 		.from('Column')
 		.select('*')
 		.eq('owner', user?.id)
+		.eq('project', projectId)
 	if (data) {
 		const res : Column[] = [...data]
 		return res
 	}
 }
-export async function supaFetchTasks() {
+export async function supaFetchTasks(projectId: string) {
 	const { data: { user } } = await supabase.auth.getUser()
 	let { data }  = await supabase
 		.from('Task')
 		.select('*')
 		.eq('owner', user?.id)
+		.eq('project', projectId)
 	if (data) {
 		const res : Task[] = [...data]
 		return res
@@ -50,7 +52,8 @@ export async function supaDeleteTask(task: Task, setTriggerUpdate: Dispatch<SetS
 export async function supaCreateColumn(
 		data: FormData,
 		setTriggerUpdate: Dispatch<SetStateAction<boolean>>,
-		numOfCols: number | undefined
+		numOfCols: number | undefined,
+		projectId: string
 ) {
 	try {
 		const { data: { user } } = await supabase.auth.getUser()
@@ -59,7 +62,8 @@ export async function supaCreateColumn(
 				{
 					title: data.get('title'),
 					position: numOfCols ? numOfCols : 0,
-					owner: user?.id
+					owner: user?.id,
+					project: projectId
 				}
 			])
 		setTriggerUpdate(prev => !prev)
@@ -87,6 +91,22 @@ export async function supaCreateTask(
 			.insert([ {...input, owner: user?.id }])
 		setTriggerUpdate(prev => !prev)
 	} catch(error) {
+		console.error(error)
+	}
+}
+
+export async function supaFetchProjects(projectId: string) {
+	try {
+		const { data } = await supabase
+			.from('Project')
+			.select()
+			.eq('id', projectId)
+		if (data) {
+			const res : Project[] = [...data]
+			return res
+		}
+		return data
+	} catch (error) {
 		console.error(error)
 	}
 }

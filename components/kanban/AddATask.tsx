@@ -16,8 +16,9 @@ type Props = {
 	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
 	setTasks: Dispatch<SetStateAction<Task[] | null>>
 	setUpdating: Dispatch<SetStateAction<boolean>>
+	projectId: string
 }
-export default function AddATask({ column, setTriggerUpdate, setTasks, setUpdating } : Props) {
+export default function AddATask({ column, setTriggerUpdate, setTasks, setUpdating, projectId } : Props) {
 	const [open, setOpen] = useState(false)
 
 	async function createTask(data: FormData) {
@@ -31,7 +32,7 @@ export default function AddATask({ column, setTriggerUpdate, setTasks, setUpdati
 			created_at: new Date(), 
 			position: -1,
 			owner: user?.id ? user.id : null,
-			project: null
+			project: projectId
 		}
 		setTasks((t) => {
 			if (t) return [...t, newTask]
@@ -41,7 +42,8 @@ export default function AddATask({ column, setTriggerUpdate, setTasks, setUpdati
 			title: data.get('title'),
 			content: data.get('content'),
 			columnId: column.title,
-			position: 0 
+			position: 0, 
+			project: projectId 
 		}
 		supaCreateTask(input, column, setTriggerUpdate)
 	}

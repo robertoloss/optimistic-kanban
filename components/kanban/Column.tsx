@@ -20,8 +20,18 @@ type Props = {
 	setTasks: Dispatch<SetStateAction<TaskPrisma[] | null>>
 	setUpdating: Dispatch<SetStateAction<boolean>>
 	setColumns: Dispatch<SetStateAction<ColumnPrisma[] | null>>
+	projectId: string
 }
-export default function Column({  column, setUpdating, setColumns, overlay, tasks, setTriggerUpdate, setTasks} : Props) {
+export default function Column({
+	column, 
+	setUpdating, 
+	setColumns,
+	overlay, 
+	tasks, 
+	setTriggerUpdate,
+	setTasks, 
+	projectId 
+} : Props) {
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
 		id: column.title!,
 		data: {
@@ -36,17 +46,13 @@ export default function Column({  column, setUpdating, setColumns, overlay, task
 	});
 	const sortedTasks = tasks?.sort((a,b) => (a.position || 0) - (b.position || 0))
 	const tasksIds = useMemo(() => sortedTasks?.map(t => (t.id as unknown) as UniqueIdentifier), [tasks])
-	const numF = tasks?.length && tasks.length >= 4 ? 
-									((tasks?.length)*80) + (16*(2+(tasks?.length-1))) + 28 + 24 + 4 + 24
-								:	minHeigtColumn
-  const style = {
+	const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   };
 
 	async function deleteColumn(column: ColumnPrisma) {
 		setUpdating(true)
-		console.log("")
 		setColumns(cols => {
 			if (cols) return cols.filter(c => c.id != column.id)
 			else return [];
@@ -95,6 +101,7 @@ export default function Column({  column, setUpdating, setColumns, overlay, task
 						<h1 className="">{tasks?.length}</h1>
 					</div>
 					<AddATask 
+						projectId={projectId}
 						column={column}
 						setTriggerUpdate={setTriggerUpdate}
 						setTasks={setTasks}
