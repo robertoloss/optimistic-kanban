@@ -21,13 +21,12 @@ async function getNumberOfColumns() : Promise<ProjNumCols> {
 	}
 	return projNumCols
 }
-type Props = {
-	params: { id: string }
-}
-export default async function KanbanPage({ params } : Props) {
+
+export default async function KanbanPage() {
 	const projNumCols = await getNumberOfColumns()
+	const projects = await actionFetchAllProjects() || null 
   
   return (
-    <Kanban projectId={params.id} projNumCols={projNumCols}/>
+    <Kanban projNumCols={projNumCols} projectArray={projects} />
   );
 }

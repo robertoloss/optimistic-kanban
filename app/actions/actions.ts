@@ -20,7 +20,7 @@ export async function actionCreateProject({
 					title: title,
 					owner: id
 				})
-			revalidateTag('getProjects')
+			revalidateTag("getNumberOfColumns")
 		}
 		
 	} catch (error) {
@@ -38,7 +38,7 @@ export async function actionDeleteProject({
 		await supabase.from('Project')
 			.delete()
 			.eq('id',id)
-		revalidateTag('getProjects')
+		revalidateTag("getNumberOfColumns")
 	} catch (error) {
 		console.error(error)
 	}
@@ -62,12 +62,14 @@ export async function actionFetchCols({ projectId } : { projectId: string }) {
 }
 
 export async function actionFetchAllProjects() {
+	["actionFetchAllProjects"]
 	try {
 		const { data: { user } } = await supabase.auth.getUser()
-		console.log('supaFetchAllProjects: user: ', user)
 		const { data } = await supabase
 			.from('Project')
 			.select()
+			.eq('owner',user?.id)
+			.order('created_at', {ascending: true})
 		if (data) {
 			const res : Project[] = [...data]
 			return res

@@ -38,10 +38,10 @@ export default function SidebarButton({ project, updateOptimisticProjects, hover
 			}
 			onClick={()=> {
 				if (project.id != currentId) {
+					router.push(`/kanban/${project.id}`)
 					setLoading(true)
 					setSelectedProjectId(project.id)
 					setNumCols(projNumCols[project.id])
-					router.push(`/kanban/${project.id}`)
 					setProject(project)
 				}
 			}}
@@ -58,10 +58,11 @@ export default function SidebarButton({ project, updateOptimisticProjects, hover
 				{project.title?.at(0)?.toUpperCase()}
 			</p>
 			<div className={`xl:block ${hover ? 'block' : 'hidden'}`} 
-				onClick={()=>{
-				startTransition(()=>updateOptimisticProjects({
-					action: "delete",
-					id: project.id,
+				onClick={(e)=>{
+					e.stopPropagation()
+					startTransition(()=>updateOptimisticProjects({
+						action: "delete",
+						id: project.id,
 				}))
 				actionDeleteProject({ id: project.id })
 			}}>

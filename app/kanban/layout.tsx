@@ -6,14 +6,12 @@ import { redirect } from "next/navigation";
 import { actionFetchAllProjects, actionFetchCols } from "../actions/actions";
 import { ProjNumCols } from "./[id]/page";
 
-export const dynamic = 'force-dynamic'  
-
 type Props = {
   children: React.ReactNode;
 }
-async function getNumberOfColumns() : Promise<ProjNumCols> {
+async function getNumberOfColumns() : Promise<[ProjNumCols, Project[]]> {
 	["getNumberOfColumns"]
-	const projects = await actionFetchAllProjects()
+	const projects = await actionFetchAllProjects() || []
 	const projNumCols : ProjNumCols = {}
 	if (projects) {
 		for (let i=0; i<projects?.length; i++) {
@@ -25,7 +23,7 @@ async function getNumberOfColumns() : Promise<ProjNumCols> {
 			}
 		}
 	}
-	return projNumCols
+	return [projNumCols, projects]
 }
 
 export default async function KanbanLayout({ children }: Props ) {
@@ -33,18 +31,8 @@ export default async function KanbanLayout({ children }: Props ) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) { return redirect("/login") }
 
-	async function getProjects() {
-		["getProjects"]
-		const { data }  = await supabase.from('Project')
-			.select('*')
-		//console.log(JSON.stringify(data))
-		return data
-	}
-
-	const projNumCols = await getNumberOfColumns()
+	const [projNumCols, projects] = await getNumberOfColumns()
 	
-	const projects : Project[] | null = await getProjects() || [] 
-	//console.log("Projects found: ", projects)
 
   return (
 		<div className="flex flex-col w-screen h-screen overflow-hidden">

@@ -10,6 +10,9 @@ import {
 import { Button } from "../ui/button";
 import { Dispatch, SetStateAction, useState, useTransition } from "react";
 import { UpdateOptimisticProjects } from "../SidebarContent";
+import { revalidateTag } from "next/cache";
+
+
 
 type Props = {
 	updateOptimisticProjects: UpdateOptimisticProjects
@@ -52,6 +55,7 @@ export default function AddAProject({ updateOptimisticProjects, setHover } : Pro
 									title,
 								}))
 								title && actionCreateProject({ title })
+								revalidateTag("getNumberOfColumns")
 							}}
 						>
 							<div className="flex flex-col w-full">

@@ -14,19 +14,20 @@ import ModalAddAColumn from "./ModalAddAColumn"
 import { minHeigtColumn } from "./Column"
 import LoadingColumns from "./LoadingColumns"
 import { supaFetchCols, supaFetchProjects, supaFetchTasks } from "@/utils/supabase/queries"
+import { useParams } from "next/navigation"
 
 type Props = {
-	projectId: string
 	projNumCols: ProjNumCols | null
+	projectArray: Project[] | null
 }
-export default function Kanban({ projectId, projNumCols } : Props) {
+export default function Kanban({  projNumCols, projectArray } : Props) {
 	const sensors = useSensors( 
 		useSensor(MouseSensor),
 		useSensor(TouchSensor),
 	)
 	const [columns, setColumns] = useState<Column[] | null>(null);
 	const [tasks, setTasks] = useState<Task[] | null>(null);
-	const [projectArray, setProjectArray] = useState<Project[] | null>([]);
+	//const [projectArray, setProjectArray] = useState<Project[] | null>([]);
 	const [activeColumn, setActiveColumn] = useState<Column | null>(null)
 	const [activeTask, setActiveTask] = useState<Task | null>(null)
 	const [triggerUpdate, setTriggerUpdate] = useState(false)
@@ -34,7 +35,10 @@ export default function Kanban({ projectId, projNumCols } : Props) {
 	const columnsIds =  columns?.
 		sort((a,b) => a.position! - b.position! )
 		.map(column => column.title as UniqueIdentifier)
-	const { loading, setLoading, numCols, selectedProjectId } = useChangeProject(state => state)
+	const { loading, setLoading, numCols } = useChangeProject(state => state)
+
+	const params : {id: string} = useParams()
+	const projectId = params.id
 
 	useEffect(()=>{
 		console.log("useEffect")
@@ -44,21 +48,21 @@ export default function Kanban({ projectId, projNumCols } : Props) {
 			columns && setColumns(columns)
 			const tasks = await supaFetchTasks(projectId);
 			tasks && setTasks(tasks)
-			const projectData = await supaFetchProjects(projectId)
-			if (projectData) {
-				setProjectArray(projectData)
-			} else {
-				setProjectArray(null)
-			}
+			//const projectData = await supaFetchProjects(projectId)
+			//if (projectData) {
+			//	setProjectArray(projectData)
+			//} else {
+			//	setProjectArray(null)
+			//}
 		}
 		fetchColsAndTasks()
 		setUpdating(false)
-	},[triggerUpdate, 
+	},[
+		triggerUpdate, 
 		//projectId
-		])
-		
-	//console.log("loading", loading)
-	//console.log("selectedProjectId: ", selectedProjectId)
+	])
+	console.log("kanban")	
+	
 
 	return (
 		<div className="flex flex-col w-full h-full items-start ">
@@ -81,7 +85,6 @@ export default function Kanban({ projectId, projNumCols } : Props) {
 							minHeight: `${minHeigtColumn}px`
 						}}
 					>
-					{/*<div className="flex flex-row w-full bg-blue-300 h-full" />*/}
 					{
 						!loading && columnsIds ? 
 							<>

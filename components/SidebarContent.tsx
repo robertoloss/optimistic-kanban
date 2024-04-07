@@ -5,7 +5,9 @@ import SidebarButton from "./SidebarButton";
 import { ProjNumCols } from "@/app/kanban/[id]/page";
 
 export type UpdateOptimisticProjects = (action: { action: string; title?: string | undefined; id?: string | undefined; }) => void
-
+const generateRandomString = function() {
+	return Math.random().toString(20)
+}
 type Props = {
 	projects: Project[]
 	hover: boolean
@@ -20,7 +22,7 @@ export function SiderbarContent({ projects, hover, setHover, projNumCols } : Pro
 					return title ? [
 						...state,
 						{
-							id: 'mock-id',
+							id: generateRandomString(),
 							created_at: new Date(),
 							title: title || '',
 							owner: 'mock-owner'
