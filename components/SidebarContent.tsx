@@ -2,6 +2,7 @@ import { Project } from "@prisma/client";
 import { Dispatch, SetStateAction, useOptimistic } from "react";
 import AddAProject from "./kanban/AddAProject";
 import SidebarButton from "./SidebarButton";
+import { ProjNumCols } from "@/app/kanban/[id]/page";
 
 export type UpdateOptimisticProjects = (action: { action: string; title?: string | undefined; id?: string | undefined; }) => void
 
@@ -9,8 +10,9 @@ type Props = {
 	projects: Project[]
 	hover: boolean
 	setHover: Dispatch<SetStateAction<boolean>>			
+	projNumCols: ProjNumCols
 }
-export function SiderbarContent({ projects, hover, setHover } : Props) {
+export function SiderbarContent({ projects, hover, setHover, projNumCols } : Props) {
 	const [optimisticProjects, updateOptimisticProjects] = useOptimistic(projects,
     (state, { action, title, id }: { action: string; title?: string; id?: string }) => {
 			switch (action) {
@@ -41,6 +43,7 @@ export function SiderbarContent({ projects, hover, setHover } : Props) {
 						key={project.id}
 						project={project}
 						updateOptimisticProjects={updateOptimisticProjects}
+						projNumCols={projNumCols}
 					/>
 				))}
 			</div>

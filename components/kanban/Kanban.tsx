@@ -1,5 +1,7 @@
 'use client'
+import { useChangeProject } from "@/utils/store/useChangeProject"
 import { useEffect, useState } from "react"
+import { ProjNumCols } from "@/app/kanban/[id]/page"
 import { SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable"
 import ColumnComp from "./Column"
 import { DndContext, useSensors, useSensor, UniqueIdentifier, MouseSensor, TouchSensor } from "@dnd-kit/core"
@@ -15,8 +17,9 @@ import { supaFetchCols, supaFetchProjects, supaFetchTasks } from "@/utils/supaba
 
 type Props = {
 	projectId: string
+	projNumCols: ProjNumCols | null
 }
-export default function Kanban({ projectId } : Props) {
+export default function Kanban({ projectId, projNumCols } : Props) {
 	const sensors = useSensors( 
 		useSensor(MouseSensor),
 		useSensor(TouchSensor),
@@ -31,9 +34,11 @@ export default function Kanban({ projectId } : Props) {
 	const columnsIds =  columns?.
 		sort((a,b) => a.position! - b.position! )
 		.map(column => column.title as UniqueIdentifier)
+	const { loading, setLoading, numCols, selectedProjectId } = useChangeProject(state => state)
 
 	useEffect(()=>{
-		//console.log("useEffect")
+		console.log("useEffect")
+		if (loading) setLoading(false)	
 		async function fetchColsAndTasks() {
 			const columns = await supaFetchCols(projectId);
 			columns && setColumns(columns)
@@ -45,17 +50,20 @@ export default function Kanban({ projectId } : Props) {
 			} else {
 				setProjectArray(null)
 			}
-			console.log(projectData)
 		}
 		fetchColsAndTasks()
 		setUpdating(false)
-	},[triggerUpdate, projectId])
-
-	console.log("projectArray: ", projectArray)
+	},[triggerUpdate, 
+		//projectId
+		])
+		
+	//console.log("loading", loading)
+	//console.log("selectedProjectId: ", selectedProjectId)
 
 	return (
 		<div className="flex flex-col w-full h-full items-start ">
 			<div className="h-6 mb-2 p-2">{updating && <p>Saving...</p>}</div>
+			{/* <div className="h-6 mb-2 p-2">{loading && <p>Loading...</p>}</div> */}
 				<DndContext
 					id="list"
 					sensors={sensors}
@@ -75,7 +83,7 @@ export default function Kanban({ projectId } : Props) {
 					>
 					{/*<div className="flex flex-row w-full bg-blue-300 h-full" />*/}
 					{
-						columnsIds ? 
+						!loading && columnsIds ? 
 							<>
 								<SortableContext 
 									items={columnsIds}
@@ -104,7 +112,11 @@ export default function Kanban({ projectId } : Props) {
 									projectId={projectId}
 								/>
 							</>
-						: Array.isArray(projectArray) ? <LoadingColumns />
+						: Array.isArray(projectArray) || loading ? 
+							!loading ? (projNumCols && Object.keys(projNumCols).length > 0 ?
+									<LoadingColumns numOfCols={projNumCols[projectId]}/> 
+								: <LoadingColumns numOfCols={1}/>)
+							: <LoadingColumns numOfCols={numCols}/>
 						: <div className="flex flex-row w-[400px]">
 								Nothing found
 							</div>

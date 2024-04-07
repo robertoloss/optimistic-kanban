@@ -36,7 +36,6 @@ export default function AddAProject({ updateOptimisticProjects, setHover } : Pro
 				className="opacity-50"
 				onClick={()=>{
 					setHover(false)
-					console.log("click")
 				}}
 			>
 			<DialogContent >

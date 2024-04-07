@@ -5,15 +5,19 @@ import { Dispatch, SetStateAction } from "react"
 export const supabase = createClient()
 
 export async function supaFetchCols( projectId: string) {
-	const { data: { user } } = await supabase.auth.getUser()
-	let { data }  = await supabase
-		.from('Column')
-		.select('*')
-		.eq('owner', user?.id)
-		.eq('project', projectId)
-	if (data) {
-		const res : Column[] = [...data]
-		return res
+	try {
+		const { data: { user } } = await supabase.auth.getUser()
+		let { data }  = await supabase
+			.from('Column')
+			.select('*')
+			.eq('owner', user?.id)
+			.eq('project', projectId)
+		if (data) {
+			const res : Column[] = [...data]
+			return res
+		}
+	} catch(error) {
+		console.error("Error: ", error)
 	}
 }
 export async function supaFetchTasks(projectId: string) {
@@ -97,10 +101,12 @@ export async function supaCreateTask(
 
 export async function supaFetchProjects(projectId: string) {
 	try {
+		const { data: { user } } = await supabase.auth.getUser()
 		const { data } = await supabase
 			.from('Project')
 			.select()
 			.eq('id', projectId)
+			.eq('owner', user?.id)
 		if (data) {
 			const res : Project[] = [...data]
 			return res
@@ -110,3 +116,24 @@ export async function supaFetchProjects(projectId: string) {
 		console.error(error)
 	}
 }
+
+export async function supaFetchAllProjects() {
+	try {
+		const { data: { user } } = await supabase.auth.getUser()
+		const { data } = await supabase
+			.from('Project')
+			.select()
+		if (data) {
+			const res : Project[] = [...data]
+			return res
+		}
+		return data
+	} catch (error) {
+		console.error(error)
+	}
+}
+
+
+
+
+
