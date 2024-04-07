@@ -15,6 +15,7 @@ import { minHeigtColumn } from "./Column"
 import LoadingColumns from "./LoadingColumns"
 import { supaFetchCols, supaFetchProjects, supaFetchTasks } from "@/utils/supabase/queries"
 import { useParams } from "next/navigation"
+import { PacmanLoader } from "react-spinners"
 
 type Props = {
 	projNumCols: ProjNumCols | null
@@ -65,7 +66,7 @@ export default function Kanban({  projNumCols, projectArray } : Props) {
 	
 
 	return (
-		<div className="flex flex-col w-full h-full items-start ">
+		<div className="flex flex-col w-full h-full items-start">
 			<div className="h-6 mb-2 p-2">{updating && <p>Saving...</p>}</div>
 			{/* <div className="h-6 mb-2 p-2">{loading && <p>Loading...</p>}</div> */}
 				<DndContext
@@ -119,7 +120,11 @@ export default function Kanban({  projNumCols, projectArray } : Props) {
 							!loading ? (projNumCols && Object.keys(projNumCols).length > 0 ?
 									<LoadingColumns numOfCols={projNumCols[projectId]}/> 
 								: <LoadingColumns numOfCols={1}/>)
-							: <LoadingColumns numOfCols={numCols}/>
+							: numCols && numCols > 0 ? 
+								<LoadingColumns numOfCols={numCols}/>
+								: <div className="flex flex-col w-[200%] h-full items-center justify-center">
+										<PacmanLoader color="var(--muted-foreground)" />
+									</div>
 						: <div className="flex flex-row w-[400px]">
 								Nothing found
 							</div>
