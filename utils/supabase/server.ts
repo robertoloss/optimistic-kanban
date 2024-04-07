@@ -4,7 +4,6 @@ import { cookies } from "next/headers";
 export function createClient() {
 
   return (() => {
-		const cookieStore = cookies();
 
 		return createServerClient(
 			process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -12,18 +11,18 @@ export function createClient() {
 			{
 				cookies: {
 					get(name: string) {
-						return cookieStore.get(name)?.value;
+						return cookies().get(name)?.value;
 					},
 					set(name: string, value: string, options: CookieOptions) {
 						try {
-							cookieStore.set({ name, value, ...options });
+							cookies().set({ name, value, ...options });
 						} catch (error) {
 							console.error(error)
 						}
 					},
 					remove(name: string, options: CookieOptions) {
 						try {
-							cookieStore.set({ name, value: "", ...options });
+							cookies().set({ name, value: "", ...options });
 						} catch (error) {
 							console.error()
 						}

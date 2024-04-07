@@ -1,36 +1,36 @@
 'use server'
 import { revalidateTag } from "next/cache"
-//import { createClient } from "@/utils/supabase/server"
+import { createClient } from "@/utils/supabase/server"
 import { Column, Project } from "@prisma/client"
 import { createServerClient, CookieOptions } from "@supabase/ssr"
 import { cookies } from "next/headers"
 
-const cookieStore = cookies();
+const supabase = createClient()
 
-const supabase = createServerClient(
-process.env.NEXT_PUBLIC_SUPABASE_URL!,
-process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-{
-	cookies: {
-		get(name: string) {
-			return cookieStore.get(name)?.value;
-		},
-		set(name: string, value: string, options: CookieOptions) {
-			try {
-				cookieStore.set({ name, value, ...options });
-			} catch (error) {
-				console.error(error)
-			}
-		},
-		remove(name: string, options: CookieOptions) {
-			try {
-				cookieStore.set({ name, value: "", ...options });
-			} catch (error) {
-				console.error()
-			}
-		},
-	},
-})
+//const supabase = createServerClient(
+//process.env.NEXT_PUBLIC_SUPABASE_URL!,
+//process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+//{
+//	cookies: {
+//		get(name: string) {
+//			return cookies().get(name)?.value;
+//		},
+//		set(name: string, value: string, options: CookieOptions) {
+//			try {
+//				cookies().set({ name, value, ...options });
+//			} catch (error) {
+//				console.error(error)
+//			}
+//		},
+//		remove(name: string, options: CookieOptions) {
+//			try {
+//				cookies().set({ name, value: "", ...options });
+//			} catch (error) {
+//				console.error()
+//			}
+//		},
+//	},
+//})
 
 export async function actionCreateProject({ 
 	title,
