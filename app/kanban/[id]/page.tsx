@@ -1,7 +1,7 @@
 import { actionFetchAllProjects, actionFetchCols } from "@/app/actions/actions";
 import Kanban from "@/components/kanban/Kanban";
 
-export const runtime = 'edge'; //...two hours later! 🙄
+//export const runtime = 'edge'; //...two hours later! 🙄
 
 export type ProjNumCols = {
 	[projectId: string] : number
