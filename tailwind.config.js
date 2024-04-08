@@ -73,7 +73,7 @@ module.exports = {
         },
 				"column-loading": {
 					'0%': { backgroundColor: "var(--muted)" },
-					'50%': { backgroundColor: "black" }, 
+					'50%': { backgroundColor: "var(--muted-foreground)" }, 
 					'100%': { backgroundColor: "var(--muted)" },
 				}
       },
