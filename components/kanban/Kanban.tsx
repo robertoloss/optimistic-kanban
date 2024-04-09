@@ -13,7 +13,7 @@ import { Column, Project, Task } from "@prisma/client"
 import ModalAddAColumn from "./ModalAddAColumn"
 import { minHeigtColumn } from "./Column"
 import LoadingColumns from "./LoadingColumns"
-import { supaFetchCols, supaFetchTasks } from "@/utils/supabase/queries"
+import { supaFetchAllCols, supaFetchAllTasks, supaFetchCols, supaFetchTasks } from "@/utils/supabase/queries"
 import { useParams } from "next/navigation"
 import { PacmanLoader } from "react-spinners"
 
@@ -35,37 +35,36 @@ export default function Kanban({  projNumCols, projectArray, colsInit, tasksInit
 	const [activeTask, setActiveTask] = useState<Task | null>(null)
 	const [triggerUpdate, setTriggerUpdate] = useState(false)
 	const [updating, setUpdating] = useState(false)
-	const columnsIds =  columns?.
-		sort((a,b) => a.position! - b.position! )
-		.map(column => column.title as UniqueIdentifier)
 	const { loading, setLoading, numCols } = useChangeProject(state => state)
 
 	const params : {id: string} = useParams()
 	const projectId = params.id
 
+	const columnsIds =  columns?.filter(col => col.project === projectId)
+		.sort((a,b) => a.position! - b.position! )
+		.map(column => column.title as UniqueIdentifier)
+
+	const currentColumns = columns?.filter(col => col.project === projectId)
+		.sort((a,b) => a.position! - b.position!)
+
 	useEffect(()=>{
 		console.log("useEffect")
-		if (loading) setLoading(false)	
 		async function fetchColsAndTasks() {
-			const columns = await supaFetchCols(projectId);
+			const columns = await supaFetchAllCols();
 			columns && setColumns(columns)
-			const tasks = await supaFetchTasks(projectId);
+			const tasks = await supaFetchAllTasks();
 			tasks && setTasks(tasks)
-			//const projectData = await supaFetchProjects(projectId)
-			//if (projectData) {
-			//	setProjectArray(projectData)
-			//} else {
-			//	setProjectArray(null)
-			//}
 		}
+		if (loading) {
+			setLoading(false)	
+		} 
 		fetchColsAndTasks()
 		setUpdating(false)
-	},[
-		triggerUpdate, 
-		//projectId
-	])
-	console.log("loading: ", loading)	
-	
+	},[ triggerUpdate ])
+
+	console.log("colsInit: ", colsInit)
+	console.log("tasksInit: ", tasksInit)
+
 
 	return (
 		<div className="flex flex-col w-full h-full items-start">
@@ -95,7 +94,7 @@ export default function Kanban({  projNumCols, projectArray, colsInit, tasksInit
 									items={columnsIds}
 									strategy={horizontalListSortingStrategy}
 								>
-								{columns?.map(column => {
+								{currentColumns?.map(column => {
 									const columnTasks = tasks?.filter(t => t.columnId === column.title)
 									return (
 										<ColumnComp 
@@ -124,9 +123,13 @@ export default function Kanban({  projNumCols, projectArray, colsInit, tasksInit
 								: <LoadingColumns numOfCols={1}/>)
 							: numCols && numCols > 0 ? 
 								<LoadingColumns numOfCols={numCols}/>
-								: <div className="flex flex-col w-[200%] h-full items-center justify-center">
-										<PacmanLoader color="var(--muted-foreground)" />
-									</div>
+								: <ModalAddAColumn 
+										setColumns={setColumns} 
+										numOfCols={columns?.length} 
+										setTriggerUpdate={setTriggerUpdate}
+										setUpdating={setUpdating}
+										projectId={projectId}
+									/>
 						: <div className="flex flex-row w-[400px]">
 								Nothing found
 							</div>

@@ -97,8 +97,8 @@ export async function actionFetchAllCols() {
 	}
 }
 
-export async function actionFetchALlTasks() {
-	["actionFetchALlTasks"]
+export async function actionFetchAllTasks() {
+	["actionFetchAllTasks"]
 	try {
 		const { data: { user } } = await supabase.auth.getUser()
 		let { data }  = await supabase

@@ -1,4 +1,4 @@
-import { actionFetchALlTasks, actionFetchAllCols, actionFetchAllProjects, actionFetchCols } from "@/app/actions/actions";
+import { actionFetchAllCols, actionFetchAllProjects, actionFetchAllTasks, actionFetchCols } from "@/app/actions/actions";
 import Kanban from "@/components/kanban/Kanban";
 
 //export const runtime = 'edge'; //...two hours later! 🙄
@@ -26,7 +26,9 @@ export default async function KanbanPage() {
 	const projNumCols = await getNumberOfColumns()
 	const projects = await actionFetchAllProjects() || null 
 	const columns = await actionFetchAllCols() || null
-	const tasks = await actionFetchALlTasks() || null
+	const tasks = await actionFetchAllTasks() || null
+
+	console.log("tasks: ", tasks)
   
   return (
     <Kanban 

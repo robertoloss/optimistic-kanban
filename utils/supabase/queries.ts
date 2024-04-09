@@ -133,7 +133,37 @@ export async function supaFetchAllProjects() {
 	}
 }
 
+export async function supaFetchAllCols() {
+	try {
+		const { data: { user } } = await supabase.auth.getUser()
+		let { data }  = await supabase
+			.from('Column')
+			.select('*')
+			.eq('owner', user?.id)
+		if (data) {
+			const res : Column[] = [...data]
+			return res
+		}
+	} catch(error) {
+		console.error("Error: ", error)
+	}
+}
 
+export async function supaFetchAllTasks() {
+	try {
+		const { data: { user } } = await supabase.auth.getUser()
+		let { data }  = await supabase
+			.from('Task')
+			.select('*')
+			.eq('owner', user?.id)
+		if (data) {
+			const res : Task[] = [...data]
+			return res
+		}
+	} catch(error) {
+		console.error("Error: ", error)
+	}
+}
 
 
 
