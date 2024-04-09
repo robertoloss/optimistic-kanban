@@ -13,21 +13,23 @@ import { Column, Project, Task } from "@prisma/client"
 import ModalAddAColumn from "./ModalAddAColumn"
 import { minHeigtColumn } from "./Column"
 import LoadingColumns from "./LoadingColumns"
-import { supaFetchCols, supaFetchProjects, supaFetchTasks } from "@/utils/supabase/queries"
+import { supaFetchCols, supaFetchTasks } from "@/utils/supabase/queries"
 import { useParams } from "next/navigation"
 import { PacmanLoader } from "react-spinners"
 
 type Props = {
 	projNumCols: ProjNumCols | null
 	projectArray: Project[] | null
+	colsInit: Column[] | null
+	tasksInit: Task[] | null
 }
-export default function Kanban({  projNumCols, projectArray } : Props) {
+export default function Kanban({  projNumCols, projectArray, colsInit, tasksInit } : Props) {
 	const sensors = useSensors( 
 		useSensor(MouseSensor),
 		useSensor(TouchSensor),
 	)
-	const [columns, setColumns] = useState<Column[] | null>(null);
-	const [tasks, setTasks] = useState<Task[] | null>(null);
+	const [columns, setColumns] = useState<Column[] | null>(colsInit);
+	const [tasks, setTasks] = useState<Task[] | null>(tasksInit);
 	//const [projectArray, setProjectArray] = useState<Project[] | null>([]);
 	const [activeColumn, setActiveColumn] = useState<Column | null>(null)
 	const [activeTask, setActiveTask] = useState<Task | null>(null)
@@ -62,7 +64,7 @@ export default function Kanban({  projNumCols, projectArray } : Props) {
 		triggerUpdate, 
 		//projectId
 	])
-	console.log("kanban")	
+	console.log("loading: ", loading)	
 	
 
 	return (

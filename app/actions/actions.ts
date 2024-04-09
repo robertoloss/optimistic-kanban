@@ -1,7 +1,7 @@
 'use server'
 import { revalidateTag } from "next/cache"
 import { createClient } from "@/utils/supabase/server"
-import { Column, Project } from "@prisma/client"
+import { Column, Project, Task } from "@prisma/client"
 
 const supabase = createClient()
 
@@ -80,6 +80,39 @@ export async function actionFetchAllProjects() {
 	}
 }
 
+export async function actionFetchAllCols() {
+	["actionFetchAllCols"]
+	try {
+		const { data: { user } } = await supabase.auth.getUser()
+		let { data }  = await supabase
+			.from('Column')
+			.select('*')
+			.eq('owner', user?.id)
+		if (data) {
+			const res : Column[] = [...data]
+			return res
+		}
+	} catch(error) {
+		console.error("Error: ", error)
+	}
+}
+
+export async function actionFetchALlTasks() {
+	["actionFetchALlTasks"]
+	try {
+		const { data: { user } } = await supabase.auth.getUser()
+		let { data }  = await supabase
+			.from('Tasks')
+			.select('*')
+			.eq('owner', user?.id)
+		if (data) {
+			const res : Task[] = [...data]
+			return res
+		}
+	} catch(error) {
+		console.error("Error: ", error)
+	}
+}
 
 
 
