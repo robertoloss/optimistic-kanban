@@ -2,6 +2,7 @@ import { actionFetchAllCols, actionFetchAllProjects, actionFetchAllTasks, action
 import Kanban from "@/components/kanban/Kanban";
 
 //export const runtime = 'edge'; //...two hours later! 🙄
+export const dynamic = 'force-dynamic'
 
 export type ProjNumCols = {
 	[projectId: string] : number

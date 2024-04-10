@@ -13,9 +13,8 @@ import { Column, Project, Task } from "@prisma/client"
 import ModalAddAColumn from "./ModalAddAColumn"
 import { minHeigtColumn } from "./Column"
 import LoadingColumns from "./LoadingColumns"
-import { supaFetchAllCols, supaFetchAllTasks, supaFetchCols, supaFetchTasks } from "@/utils/supabase/queries"
+import { supaFetchAllCols, supaFetchAllTasks } from "@/utils/supabase/queries"
 import { useParams } from "next/navigation"
-import { PacmanLoader } from "react-spinners"
 
 type Props = {
 	projNumCols: ProjNumCols | null
@@ -30,11 +29,11 @@ export default function Kanban({  projNumCols, projectArray, colsInit, tasksInit
 	)
 	const [columns, setColumns] = useState<Column[] | null>(colsInit);
 	const [tasks, setTasks] = useState<Task[] | null>(tasksInit);
-	//const [projectArray, setProjectArray] = useState<Project[] | null>([]);
 	const [activeColumn, setActiveColumn] = useState<Column | null>(null)
 	const [activeTask, setActiveTask] = useState<Task | null>(null)
 	const [triggerUpdate, setTriggerUpdate] = useState(false)
 	const [updating, setUpdating] = useState(false)
+	const [count, setCount] = useState(0)
 	const { loading, setLoading, numCols } = useChangeProject(state => state)
 
 	const params : {id: string} = useParams()
@@ -58,18 +57,17 @@ export default function Kanban({  projNumCols, projectArray, colsInit, tasksInit
 		if (loading) {
 			setLoading(false)	
 		} 
-		fetchColsAndTasks()
+		if (count > 0) {
+			fetchColsAndTasks()
+		}
 		setUpdating(false)
+		setCount(prev => prev < 10000 ? prev + 1 : 10)
 	},[ triggerUpdate ])
-
-	console.log("colsInit: ", colsInit)
-	console.log("tasksInit: ", tasksInit)
 
 
 	return (
 		<div className="flex flex-col w-full h-full items-start">
 			<div className="h-6 mb-2 p-2">{updating && <p>Saving...</p>}</div>
-			{/* <div className="h-6 mb-2 p-2">{loading && <p>Loading...</p>}</div> */}
 				<DndContext
 					id="list"
 					sensors={sensors}

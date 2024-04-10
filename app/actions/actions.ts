@@ -102,7 +102,7 @@ export async function actionFetchAllTasks() {
 	try {
 		const { data: { user } } = await supabase.auth.getUser()
 		let { data }  = await supabase
-			.from('Tasks')
+			.from('Task')
 			.select('*')
 			.eq('owner', user?.id)
 		if (data) {
