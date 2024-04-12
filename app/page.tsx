@@ -1,6 +1,7 @@
 import Link from "next/link";
 import AuthButton from "../components/AuthButton";
 import Header from "@/components/Header";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const dynamic = 'force-dynamic'
 
@@ -23,6 +24,7 @@ export default async function Index() {
 					`}>
 					Go to Kanban
 				</Link>
+				<SpeedInsights/>
         </main>
       </div>
     </div>

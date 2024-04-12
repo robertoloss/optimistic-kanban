@@ -18,7 +18,7 @@ type Props = {
 	numOfCols: number | undefined
 	projectId: string
 }
-export default function ModalAddAColumn({ setTriggerUpdate, setColumns, setUpdating, numOfCols, projectId } : Props) {
+export default function AddAColumn({ setTriggerUpdate, setColumns, setUpdating, numOfCols, projectId } : Props) {
 	const [open, setOpen] = useState(false)
 
 	async function createColumn(data: FormData, projectId: string) {

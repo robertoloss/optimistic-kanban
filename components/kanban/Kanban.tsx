@@ -10,7 +10,7 @@ import dragEndHandler from "@/dnd-utils/dragEndHandler"
 import dragOverHandler from "@/dnd-utils/dragOverHandler"
 import DragOverlayComponent from "./DragOverlayComponent"
 import { Column, Project, Task } from "@prisma/client"
-import ModalAddAColumn from "./ModalAddAColumn"
+import AddAColumn from "./AddAColumn"
 import { minHeigtColumn } from "./Column"
 import LoadingColumns from "./LoadingColumns"
 import { supaFetchAllCols, supaFetchAllTasks } from "@/utils/supabase/queries"
@@ -47,7 +47,6 @@ export default function Kanban({  projNumCols, projectArray, colsInit, tasksInit
 		.sort((a,b) => a.position! - b.position!)
 
 	useEffect(()=>{
-		console.log("useEffect")
 		async function fetchColsAndTasks() {
 			const columns = await supaFetchAllCols();
 			columns && setColumns(columns)
@@ -107,7 +106,7 @@ export default function Kanban({  projNumCols, projectArray, colsInit, tasksInit
 										/>
 								)})}
 								</SortableContext> 
-								<ModalAddAColumn 
+								<AddAColumn 
 									setColumns={setColumns} 
 									numOfCols={columns?.length} 
 									setTriggerUpdate={setTriggerUpdate}
@@ -121,7 +120,7 @@ export default function Kanban({  projNumCols, projectArray, colsInit, tasksInit
 								: <LoadingColumns numOfCols={1}/>)
 							: numCols && numCols > 0 ? 
 								<LoadingColumns numOfCols={numCols}/>
-								: <ModalAddAColumn 
+								: <AddAColumn 
 										setColumns={setColumns} 
 										numOfCols={columns?.length} 
 										setTriggerUpdate={setTriggerUpdate}

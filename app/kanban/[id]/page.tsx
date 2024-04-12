@@ -1,8 +1,7 @@
 import { actionFetchAllCols, actionFetchAllProjects, actionFetchAllTasks, actionFetchCols } from "@/app/actions/actions";
 import Kanban from "@/components/kanban/Kanban";
+import { revalidateTag } from "next/cache";
 
-//export const runtime = 'edge'; //...two hours later! 🙄
-export const dynamic = 'force-dynamic'
 
 export type ProjNumCols = {
 	[projectId: string] : number
@@ -28,7 +27,7 @@ export default async function KanbanPage() {
 	const projects = await actionFetchAllProjects() || null 
 	const columns = await actionFetchAllCols() || null
 	const tasks = await actionFetchAllTasks() || null
-
+	
 	console.log("tasks: ", tasks)
   
   return (
