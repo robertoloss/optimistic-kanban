@@ -2,13 +2,11 @@
 import { Project } from "@prisma/client"
 import { useState } from "react"
 import { SiderbarContent } from "./SidebarContent"
-import { ProjNumCols } from "@/app/kanban/[id]/page"
 
 type Props = {
 	projects: Project[]
-	projNumCols: ProjNumCols
 }
-export default function Sidebar({ projects, projNumCols }: Props) {
+export default function Sidebar({ projects }: Props) {
 	const [hover, setHover] = useState(false)
 
 	return (
@@ -22,7 +20,6 @@ export default function Sidebar({ projects, projNumCols }: Props) {
 					hover={hover}
 					projects={projects}
 					setHover={setHover}
-					projNumCols={projNumCols}
 				/>
 			</div>
 		</div>

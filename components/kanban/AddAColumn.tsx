@@ -10,6 +10,7 @@ import { Column } from "@prisma/client"
 import { Dispatch, SetStateAction, useState } from "react"
 import { Button } from "../ui/button"
 import { supaCreateColumn, supabase } from "@/utils/supabase/queries"
+import { actionFetchAllCols, revalidateActionFetchAllCols } from "@/app/actions/actions"
 
 type Props = {
 	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
@@ -37,6 +38,7 @@ export default function AddAColumn({ setTriggerUpdate, setColumns, setUpdating, 
 			else return [newColumn]
 		})
 		supaCreateColumn(data, setTriggerUpdate, numOfCols, projectId)
+		revalidateActionFetchAllCols()
 	}
 
 	return (

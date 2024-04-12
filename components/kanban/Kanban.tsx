@@ -1,7 +1,6 @@
 'use client'
 import { useChangeProject } from "@/utils/store/useChangeProject"
 import { useEffect, useState } from "react"
-import { ProjNumCols } from "@/app/kanban/[id]/page"
 import { SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable"
 import ColumnComp from "./Column"
 import { DndContext, useSensors, useSensor, UniqueIdentifier, MouseSensor, TouchSensor } from "@dnd-kit/core"
@@ -17,12 +16,11 @@ import { supaFetchAllCols, supaFetchAllTasks } from "@/utils/supabase/queries"
 import { useParams } from "next/navigation"
 
 type Props = {
-	projNumCols: ProjNumCols | null
 	projectArray: Project[] | null
 	colsInit: Column[] | null
 	tasksInit: Task[] | null
 }
-export default function Kanban({  projNumCols, projectArray, colsInit, tasksInit } : Props) {
+export default function Kanban({ projectArray, colsInit, tasksInit } : Props) {
 	const sensors = useSensors( 
 		useSensor(MouseSensor),
 		useSensor(TouchSensor),
@@ -33,8 +31,9 @@ export default function Kanban({  projNumCols, projectArray, colsInit, tasksInit
 	const [activeTask, setActiveTask] = useState<Task | null>(null)
 	const [triggerUpdate, setTriggerUpdate] = useState(false)
 	const [updating, setUpdating] = useState(false)
-	const [count, setCount] = useState(0)
 	const { loading, setLoading, numCols } = useChangeProject(state => state)
+
+	const [count, setCount] = useState(0)
 
 	const params : {id: string} = useParams()
 	const projectId = params.id
@@ -47,6 +46,8 @@ export default function Kanban({  projNumCols, projectArray, colsInit, tasksInit
 		.sort((a,b) => a.position! - b.position!)
 
 	useEffect(()=>{
+		console.log("useEffect: ", count)
+		setCount(prev => prev + 1)
 		async function fetchColsAndTasks() {
 			const columns = await supaFetchAllCols();
 			columns && setColumns(columns)
@@ -58,10 +59,11 @@ export default function Kanban({  projNumCols, projectArray, colsInit, tasksInit
 		} 
 		if (count > 0) {
 			fetchColsAndTasks()
+			console.log("fetching, since count is ", count)
 		}
 		setUpdating(false)
-		setCount(prev => prev < 10000 ? prev + 1 : 10)
 	},[ triggerUpdate ])
+	console.log("count", count)
 
 
 	return (
@@ -115,9 +117,7 @@ export default function Kanban({  projNumCols, projectArray, colsInit, tasksInit
 								/>
 							</>
 						: Array.isArray(projectArray) || loading ? 
-							!loading ? (projNumCols && Object.keys(projNumCols).length > 0 ?
-									<LoadingColumns numOfCols={projNumCols[projectId]}/> 
-								: <LoadingColumns numOfCols={1}/>)
+							!loading ? <LoadingColumns numOfCols={4}/>
 							: numCols && numCols > 0 ? 
 								<LoadingColumns numOfCols={numCols}/>
 								: <AddAColumn 

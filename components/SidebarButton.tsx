@@ -7,18 +7,16 @@ import { actionDeleteProject } from "@/app/actions/actions"
 import {  Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useProject } from "@/utils/store/useProject"
-import { ProjNumCols } from "@/app/kanban/[id]/page"
 import { usePathname } from "next/navigation"
 
 type Props = {
 	project: Project,
 	updateOptimisticProjects: UpdateOptimisticProjects
 	hover: boolean
-	projNumCols: ProjNumCols
 }
-export default function SidebarButton({ project, updateOptimisticProjects, hover, projNumCols } : Props) {
+export default function SidebarButton({ project, updateOptimisticProjects, hover } : Props) {
 	const setProject = useProject(state => state.setProject)
-	const { setLoading, setNumCols, loading, selectedProjectId, setSelectedProjectId } = useChangeProject(state => state)
+	const { setLoading, loading, selectedProjectId, setSelectedProjectId } = useChangeProject(state => state)
 	const path = usePathname()
 	const pathArray = path.split('/')
 	const currentId = pathArray.at(pathArray.length - 1)
@@ -40,7 +38,6 @@ export default function SidebarButton({ project, updateOptimisticProjects, hover
 					if (project.id != currentId) {
 						setLoading(true)
 						setSelectedProjectId(project.id)
-						setNumCols(projNumCols[project.id])
 						setProject(project)
 					}
 				}}

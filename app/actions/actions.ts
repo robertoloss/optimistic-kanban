@@ -5,6 +5,7 @@ import { Column, Project, Task } from "@prisma/client"
 
 const supabase = createClient()
 
+
 export async function actionCreateProject({ 
 	title,
 } : {
@@ -90,6 +91,7 @@ export async function actionFetchAllCols() {
 			.eq('owner', user?.id)
 		if (data) {
 			const res : Column[] = [...data]
+			console.log("columns fetched")
 			return res
 		}
 	} catch(error) {
@@ -114,7 +116,9 @@ export async function actionFetchAllTasks() {
 	}
 }
 
-
+export async function revalidateActionFetchAllCols() {
+	revalidateTag("actionFetchAllCols")
+}
 
 
 

@@ -8,6 +8,7 @@ import { UniqueIdentifier } from "@dnd-kit/core"
 import { GripHorizontal, Trash2 } from "lucide-react"
 import AddATask from "./AddATask"
 import { supaDeleteColumn } from "@/utils/supabase/queries"
+import { revalidateActionFetchAllCols } from "@/app/actions/actions"
 
 export const minHeigtColumn = 480
 
@@ -58,6 +59,7 @@ export default function Column({
 			else return [];
 		})
 		supaDeleteColumn(column,setTriggerUpdate)
+		revalidateActionFetchAllCols()
 	}
 
 	return (
