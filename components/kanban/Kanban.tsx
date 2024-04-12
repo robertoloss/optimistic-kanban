@@ -1,6 +1,6 @@
 'use client'
 import { useChangeProject } from "@/utils/store/useChangeProject"
-import { useEffect, useState } from "react"
+import { useEffect, useOptimistic, useState, useTransition } from "react"
 import { SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable"
 import ColumnComp from "./Column"
 import { DndContext, useSensors, useSensor, UniqueIdentifier, MouseSensor, TouchSensor } from "@dnd-kit/core"
@@ -31,50 +31,64 @@ export default function Kanban({ projectArray, colsInit, tasksInit } : Props) {
 	const [activeTask, setActiveTask] = useState<Task | null>(null)
 	const [triggerUpdate, setTriggerUpdate] = useState(false)
 	const [updating, setUpdating] = useState(false)
-	const { loading, setLoading, numCols } = useChangeProject(state => state)
+	const { loading, setLoading } = useChangeProject(state => state)
+
+	const [optimisticTasks, updateOptimisticTasks] = useOptimistic(
+		tasksInit, 
+		(state, {action, tasks, newTask, id } : { action: string, tasks?: Task[], newTask?: Task, id?: string}) => {
+			switch (action) {
+				case "update":
+					return tasks ? [...tasks] : []
+				default:
+					return null
+			}
+		}
+	)
+	const [optimisticColumns, updateOptimisticColumns] = useOptimistic(
+		colsInit, 
+		(state, {action, cols, newCol, id } : { action: string, cols?: Column[], newCol?: Column, id?: string}) => {
+			switch (action) {
+				case "update":
+					return cols ? [...cols] : []
+				default:
+					return null
+			}
+		}
+	)
+	const [isPending, startTransition] = useTransition()
 
 	const [count, setCount] = useState(0)
 
 	const params : {id: string} = useParams()
 	const projectId = params.id
 
-	const columnsIds =  columns?.filter(col => col.project === projectId)
+	const columnsIds =  optimisticColumns?.filter(col => col.project === projectId)
 		.sort((a,b) => a.position! - b.position! )
 		.map(column => column.title as UniqueIdentifier)
 
-	const currentColumns = columns?.filter(col => col.project === projectId)
+	const currentColumns = optimisticColumns?.filter(col => col.project === projectId)
 		.sort((a,b) => a.position! - b.position!)
 
 	useEffect(()=>{
 		console.log("useEffect: ", count)
 		setCount(prev => prev + 1)
-		async function fetchColsAndTasks() {
-			const columns = await supaFetchAllCols();
-			columns && setColumns(columns)
-			const tasks = await supaFetchAllTasks();
-			tasks && setTasks(tasks)
-		}
 		if (loading) {
 			setLoading(false)	
 		} 
-		if (count > 0) {
-			fetchColsAndTasks()
-			console.log("fetching, since count is ", count)
-		}
-		setUpdating(false)
 	},[ triggerUpdate ])
 	console.log("count", count)
 
 
 	return (
 		<div className="flex flex-col w-full h-full items-start">
-			<div className="h-6 mb-2 p-2">{updating && <p>Saving...</p>}</div>
+			<div className="h-6 mb-2 p-2 text-muted-foreground">{isPending && <p>Saving...</p>}</div>
 				<DndContext
 					id="list"
 					sensors={sensors}
 					onDragStart={dragStartHandler({ setActiveColumn, setActiveTask })}
 					onDragEnd={dragEndHandler({
-						setActiveColumn, setActiveTask, tasks, columns, setUpdating, setTriggerUpdate
+						setActiveColumn, setActiveTask, tasks, columns, setUpdating, setTriggerUpdate, updateOptimisticTasks, 
+						startTransition, updateOptimisticColumns
 					})}
 					onDragOver={dragOverHandler({ setTasks, setColumns })}
 				>
@@ -94,7 +108,7 @@ export default function Kanban({ projectArray, colsInit, tasksInit } : Props) {
 									strategy={horizontalListSortingStrategy}
 								>
 								{currentColumns?.map(column => {
-									const columnTasks = tasks?.filter(t => t.columnId === column.title)
+									const columnTasks = optimisticTasks?.filter(t => t.columnId === column.title)
 									return (
 										<ColumnComp 
 											projectId={projectId}
@@ -117,16 +131,14 @@ export default function Kanban({ projectArray, colsInit, tasksInit } : Props) {
 								/>
 							</>
 						: Array.isArray(projectArray) || loading ? 
-							!loading ? <LoadingColumns numOfCols={4}/>
-							: numCols && numCols > 0 ? 
-								<LoadingColumns numOfCols={numCols}/>
-								: <AddAColumn 
-										setColumns={setColumns} 
-										numOfCols={columns?.length} 
-										setTriggerUpdate={setTriggerUpdate}
-										setUpdating={setUpdating}
-										projectId={projectId}
-									/>
+							loading ? <LoadingColumns numOfCols={4}/>
+							: <AddAColumn 
+									setColumns={setColumns} 
+									numOfCols={columns?.length} 
+									setTriggerUpdate={setTriggerUpdate}
+									setUpdating={setUpdating}
+									projectId={projectId}
+								/>
 						: <div className="flex flex-row w-[400px]">
 								Nothing found
 							</div>

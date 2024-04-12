@@ -109,6 +109,7 @@ export async function actionFetchAllTasks() {
 			.eq('owner', user?.id)
 		if (data) {
 			const res : Task[] = [...data]
+			console.log("tasks fetched")
 			return res
 		}
 	} catch(error) {
@@ -116,8 +117,33 @@ export async function actionFetchAllTasks() {
 	}
 }
 
+export async function actionUpdateTasks(tasks: Task[]) {
+	try {
+		await supabase
+			.from('Task')
+			.upsert(tasks)
+		revalidateTag("actionFetchAllTasks")
+	} catch (error) {
+		console.error(error)
+	}
+}
+
+export async function actionUpdateColumns(columns: Column[]) {
+	try {
+		await supabase
+			.from('Column')
+			.upsert(columns.map((col,i) => ({...col, position: i})))
+		revalidateTag("actionFetchAllCols")
+	} catch (error) {
+		console.error(error)
+	}
+}
+
 export async function revalidateActionFetchAllCols() {
 	revalidateTag("actionFetchAllCols")
+}
+export async function revalidateActionFetchAllTasks() {
+	revalidateTag("actionFetchAllTasks")
 }
 
 

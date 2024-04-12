@@ -39,6 +39,7 @@ export default function updateTaskOverTask({ activeId, overId, setTasks } : Prop
 										position2 
 										: t.position
 				}})
+				console.log("task over task!")
 			}
 			return newTasks
 		})

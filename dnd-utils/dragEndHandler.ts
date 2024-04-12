@@ -1,7 +1,7 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, TransitionStartFunction } from "react";
 import { DragEndEvent } from "@dnd-kit/core";
 import { Column, Task } from "@prisma/client";
-import { supabase } from "@/utils/supabase/queries";
+import { actionUpdateColumns, actionUpdateTasks } from "@/app/actions/actions";
 
 type Props = {
 	setActiveColumn: Dispatch<SetStateAction<Column | null>>,
@@ -10,31 +10,37 @@ type Props = {
 	columns: Column[] | null
 	setUpdating: Dispatch<SetStateAction<boolean>>
 	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
-}
+	updateOptimisticTasks: (action: {
+		action: string;
+		tasks?: Task[];
+		newTask?: Task;
+		id?: string;
+	}) => void
+	updateOptimisticColumns: (action: {
+			action: string;
+			cols?: Column[];
+			newCol?: Column;
+			id?: string;
+		}) => void
+		startTransition: TransitionStartFunction
+	}
 export default function dragEndHandler({
 	setActiveColumn,
 	setActiveTask,
 	tasks,
 	columns,
-	setUpdating,
-	setTriggerUpdate,
+	updateOptimisticTasks,
+	updateOptimisticColumns,
+	startTransition
 } : Props) {
-	async function updateColsAndTasks(columns: Column[], tasks: Task[]) {
-		setUpdating(true);
-		try {
-			await supabase
-				.from('Column')
-				.upsert(columns.map((col,i) => ({...col, position: i})))
-			await supabase
-				.from('Task')
-				.upsert(tasks)
-		} catch (error) {
-				console.error("Error updating columns:", error);
-		}
-		setTriggerUpdate((prev: boolean) => !prev)
-	}
+	
 	return (_event: DragEndEvent) => {
-		columns && tasks && updateColsAndTasks(columns,tasks)
+		if (columns && tasks) {
+			startTransition(()=>updateOptimisticTasks({action: "update", tasks}))	
+			startTransition(()=>updateOptimisticColumns({action: "update", cols: columns}))	
+			actionUpdateColumns(columns)
+			actionUpdateTasks(tasks)
+		} 
 		setActiveColumn(null);
 		setActiveTask(null);
 	};
