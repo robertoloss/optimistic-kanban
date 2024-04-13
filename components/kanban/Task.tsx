@@ -3,25 +3,23 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Column, Task } from "@prisma/client";
 import { GripVertical, Trash2 } from "lucide-react";
-import { Dispatch, SetStateAction } from "react";
-import { supaDeleteTask } from "@/utils/supabase/queries";
+import { supaDeleteTask, supaFetchAllTasks } from "@/utils/supabase/queries";
+import { useStore } from "@/utils/store/useStore";
 
 type Props = {
 	task: Task
 	column?: Column 
 	overlay?: boolean
-	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
-	setTasks: Dispatch<SetStateAction<Task[] | null>>
-	setUpdating: Dispatch<SetStateAction<boolean>>
 }
-export default function Task({ task, column, overlay, setTriggerUpdate, setTasks, setUpdating } : Props) {
+export default function Task({ task, column, overlay } : Props) {
+	const { store, setStore } = useStore(s => s)
 	const { setNodeRef, attributes, listeners, transform, transition, isDragging,
   } = useSortable({
     id: task.id ,
     data: {
       type: "Task",
       task,
-			columnId: column?.title!
+			columnId: column?.id!
     },
 		animateLayoutChanges: () => true,
 		 transition: {
@@ -35,14 +33,20 @@ export default function Task({ task, column, overlay, setTriggerUpdate, setTasks
   };
 
 	async function deleteTask(task: Task) {
-		setUpdating(true)
-		setTasks(tasks => {
-			if (tasks) {
-				return tasks.filter(t => t.id != task.id)
-			}
-			else return []
+		setStore({
+			...store,
+			tasks: store.tasks?.filter(t => t.id != task.id) || [],
+			updating: true,
+			log: "deleteTask"
 		})
-		supaDeleteTask(task,setTriggerUpdate)
+		await supaDeleteTask(task)
+		const newTasks = await supaFetchAllTasks()
+		setTimeout(() => setStore({
+			...store,
+			tasks: newTasks || store.tasks || [],
+			updating: false,
+			log: "deleteTask"
+		}), 100)
 	}
 
 	return (

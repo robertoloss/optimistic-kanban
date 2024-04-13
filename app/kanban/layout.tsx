@@ -4,7 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import { Project } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { actionFetchAllProjects, actionFetchCols } from "../actions/actions";
-import { ProjNumCols } from "./[id]/page";
+import { ProjNumCols } from "@/components/kanban/Kanban";
 
 type Props = {
   children: React.ReactNode;

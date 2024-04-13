@@ -1,26 +1,19 @@
 import { Dispatch, SetStateAction } from "react";
 import { DragEndEvent } from "@dnd-kit/core";
 import { Column, Task } from "@prisma/client";
-import { supabase } from "@/utils/supabase/queries";
+import { supaFetchAllCols, supaFetchAllTasks, supabase } from "@/utils/supabase/queries";
+import { Store } from "@/utils/store/useStore";
 
 type Props = {
 	setActiveColumn: Dispatch<SetStateAction<Column | null>>,
 	setActiveTask: Dispatch<SetStateAction<Task | null>>,
 	tasks: Task[] | null,
 	columns: Column[] | null
-	setUpdating: Dispatch<SetStateAction<boolean>>
-	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
+	setStore: (store: Store) => void
+	store: Store
 }
-export default function dragEndHandler({
-	setActiveColumn,
-	setActiveTask,
-	tasks,
-	columns,
-	setUpdating,
-	setTriggerUpdate,
-} : Props) {
+export default function dragEndHandler({ setActiveColumn, setActiveTask, tasks, columns, setStore, store } : Props) {
 	async function updateColsAndTasks(columns: Column[], tasks: Task[]) {
-		setUpdating(true);
 		try {
 			await supabase
 				.from('Column')
@@ -28,10 +21,18 @@ export default function dragEndHandler({
 			await supabase
 				.from('Task')
 				.upsert(tasks)
+			const newCols = await supaFetchAllCols()
+			const newTasks = await supaFetchAllTasks()
+			setStore({
+				...store,
+				log: "dragEndHandler",
+				columns: newCols || store.columns || [],
+				tasks: newTasks || store.tasks || []
+			})
 		} catch (error) {
 				console.error("Error updating columns:", error);
 		}
-		setTriggerUpdate((prev: boolean) => !prev)
+		
 	}
 	return (_event: DragEndEvent) => {
 		columns && tasks && updateColsAndTasks(columns,tasks)

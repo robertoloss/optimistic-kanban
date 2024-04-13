@@ -1,14 +1,13 @@
 import { Project } from "@prisma/client"
 import { cn } from "@/lib/utils"
-import { useChangeProject } from "@/utils/store/useChangeProject"
 import { UpdateOptimisticProjects } from "./SidebarContent"
 import { startTransition } from "react"
 import { actionDeleteProject } from "@/app/actions/actions"
 import {  Trash2 } from "lucide-react"
 import Link from "next/link"
-import { useProject } from "@/utils/store/useProject"
-import { ProjNumCols } from "@/app/kanban/[id]/page"
 import { usePathname } from "next/navigation"
+import { ProjNumCols } from "./kanban/Kanban"
+import { useStore } from "@/utils/store/useStore"
 
 type Props = {
 	project: Project,
@@ -17,8 +16,7 @@ type Props = {
 	projNumCols: ProjNumCols
 }
 export default function SidebarButton({ project, updateOptimisticProjects, hover, projNumCols } : Props) {
-	const setProject = useProject(state => state.setProject)
-	const { setLoading, setNumCols, loading, selectedProjectId, setSelectedProjectId } = useChangeProject(state => state)
+	const { store, setStore } = useStore(state => state)
 	const path = usePathname()
 	const pathArray = path.split('/')
 	const currentId = pathArray.at(pathArray.length - 1)
@@ -32,16 +30,20 @@ export default function SidebarButton({ project, updateOptimisticProjects, hover
 					transition hover:text-foreground select-none h-14 border-2 border-muted 
 				`, {
 					'shadow-none border-2 border-foreground text-foreground': 
-						(!loading && currentId === project.id) || 
-						(loading && project.id === selectedProjectId),
+						(!store.loading && currentId === project.id) || 
+						(store.loading && project.id === store.selectedProjectId),
 					})
 				}
 				onClick={()=> {
 					if (project.id != currentId) {
-						setLoading(true)
-						setSelectedProjectId(project.id)
-						setNumCols(projNumCols[project.id])
-						setProject(project)
+						setStore({
+							...store,
+							loading: true,
+							selectedProjectId: project.id,
+							formerProjectId: currentId,
+							numCols : projNumCols[project.id],
+							project: project
+						})
 					}
 				}}
 			>

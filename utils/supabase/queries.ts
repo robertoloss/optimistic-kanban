@@ -32,30 +32,27 @@ export async function supaFetchTasks(projectId: string) {
 		return res
 	}
 }
-export async function supaDeleteColumn(column: Column, setTriggerUpdate: Dispatch<SetStateAction<boolean>>) {
+export async function supaDeleteColumn(column: Column) {
 	console.log("trying to delete column: ", column)
 	try {
 		await supabase.from('Column')
 			.delete()
 			.eq('id', column.id)
-		setTriggerUpdate(prev => !prev)
 	} catch (error) {
 		console.error(error)
 	}
 }
-export async function supaDeleteTask(task: Task, setTriggerUpdate: Dispatch<SetStateAction<boolean>>) {
+export async function supaDeleteTask(task: Task) {
 	try {
 		await supabase.from('Task')
 			.delete()
 			.eq('id', task.id)
-		setTriggerUpdate(prev => !prev)
 	} catch (error) {
 		console.error(error)
 	}
 }
 export async function supaCreateColumn(
 		data: FormData,
-		setTriggerUpdate: Dispatch<SetStateAction<boolean>>,
 		numOfCols: number | undefined,
 		projectId: string
 ) {
@@ -70,7 +67,6 @@ export async function supaCreateColumn(
 					project: projectId
 				}
 			])
-		setTriggerUpdate(prev => !prev)
 	} catch(error) {
 		console.error(error)
 	}
@@ -83,17 +79,15 @@ export async function supaCreateTask(
 		position: number 
 	},
 	column: Column,
-	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
 ) {
 	try {
 		const { data: { user } } = await supabase.auth.getUser()
 		await supabase.rpc(
 			'update_position_for_column', 
-			{ column_id_value: column.title }
+			{ column_id_value: column.id }
 		)
 		await supabase.from('Task')
 			.insert([ {...input, owner: user?.id }])
-		setTriggerUpdate(prev => !prev)
 	} catch(error) {
 		console.error(error)
 	}
@@ -122,7 +116,8 @@ export async function supaFetchAllProjects() {
 		const { data: { user } } = await supabase.auth.getUser()
 		const { data } = await supabase
 			.from('Project')
-			.select()
+			.select('*')
+			.eq('owner', user?.id)
 		if (data) {
 			const res : Project[] = [...data]
 			return res

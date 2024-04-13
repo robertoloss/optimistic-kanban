@@ -1,5 +1,5 @@
 import { cn } from "@/app/utils/cn"
-import { Dispatch, SetStateAction, useMemo } from "react"
+import { useMemo } from "react"
 import { SortableContext, useSortable } from "@dnd-kit/sortable"
 import { CSS } from '@dnd-kit/utilities'
 import { Column as ColumnPrisma, Task as TaskPrisma} from "@prisma/client"
@@ -7,33 +7,19 @@ import Task from "./Task"
 import { UniqueIdentifier } from "@dnd-kit/core"
 import { GripHorizontal, Trash2 } from "lucide-react"
 import AddATask from "./AddATask"
-import { supaDeleteColumn } from "@/utils/supabase/queries"
+import { supaDeleteColumn, supaFetchAllCols } from "@/utils/supabase/queries"
+import { useStore } from "@/utils/store/useStore"
 
 export const minHeigtColumn = 480
-
-
 type Props = {
 	column: ColumnPrisma
 	overlay?: boolean
 	tasks?: TaskPrisma[]
-	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
-	setTasks: Dispatch<SetStateAction<TaskPrisma[] | null>>
-	setUpdating: Dispatch<SetStateAction<boolean>>
-	setColumns: Dispatch<SetStateAction<ColumnPrisma[] | null>>
 	projectId: string
 }
-export default function Column({
-	column, 
-	setUpdating, 
-	setColumns,
-	overlay, 
-	tasks, 
-	setTriggerUpdate,
-	setTasks, 
-	projectId 
-} : Props) {
+export default function Column({ column, overlay, tasks, projectId } : Props) {
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-		id: column.title!,
+		id: column.id!,
 		data: {
       type: "Column",
       column,
@@ -44,6 +30,7 @@ export default function Column({
 			easing: 'ease'
 		}
 	});
+	const { store, setStore } = useStore(s => s) 
 	const sortedTasks = tasks?.sort((a,b) => (a.position || 0) - (b.position || 0))
 	const tasksIds = useMemo(() => sortedTasks?.map(t => (t.id as unknown) as UniqueIdentifier), [tasks])
 	const style = {
@@ -52,12 +39,18 @@ export default function Column({
   };
 
 	async function deleteColumn(column: ColumnPrisma) {
-		setUpdating(true)
-		setColumns(cols => {
-			if (cols) return cols.filter(c => c.id != column.id)
-			else return [];
+		setStore({
+			...store,
+			columns: store.columns?.filter(c => c.id != column.id) || [],
+			updating: true,
 		})
-		supaDeleteColumn(column,setTriggerUpdate)
+		await supaDeleteColumn(column)
+		const newCols = await supaFetchAllCols()
+		setTimeout(()=> setStore({
+			...store,
+			columns: newCols || store.columns || [],
+			updating: true,
+		}),100)
 	}
 
 	return (
@@ -103,9 +96,6 @@ export default function Column({
 					<AddATask 
 						projectId={projectId}
 						column={column}
-						setTriggerUpdate={setTriggerUpdate}
-						setTasks={setTasks}
-						setUpdating={setUpdating}
 					/>
 				</div>
 				<div className="no-scrollbar flex flex-col h-full overflow-y-scroll gap-y-2 pb-10">
@@ -113,11 +103,8 @@ export default function Column({
 					{tasks?.map(task => (
 						<Task 
 							key={task.id}
-							setTasks={setTasks}
-							task={task}
 							column={column}
-							setTriggerUpdate={setTriggerUpdate}
-							setUpdating={setUpdating}
+							task={task}
 						/>
 					))}
 				</SortableContext>}

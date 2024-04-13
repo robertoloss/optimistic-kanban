@@ -2,7 +2,7 @@
 import { Project } from "@prisma/client"
 import { useState } from "react"
 import { SiderbarContent } from "./SidebarContent"
-import { ProjNumCols } from "@/app/kanban/[id]/page"
+import { ProjNumCols } from "./kanban/Kanban" 
 
 type Props = {
 	projects: Project[]

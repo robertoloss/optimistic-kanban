@@ -1,7 +1,5 @@
 'use client'
-import { useChangeProject } from "@/utils/store/useChangeProject"
 import { useEffect, useState } from "react"
-import { ProjNumCols } from "@/app/kanban/[id]/page"
 import { SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable"
 import ColumnComp from "./Column"
 import { DndContext, useSensors, useSensor, UniqueIdentifier, MouseSensor, TouchSensor } from "@dnd-kit/core"
@@ -9,60 +7,71 @@ import dragStartHandler from "@/dnd-utils/dragStartHandler"
 import dragEndHandler from "@/dnd-utils/dragEndHandler"
 import dragOverHandler from "@/dnd-utils/dragOverHandler"
 import DragOverlayComponent from "./DragOverlayComponent"
-import { Column, Project, Task } from "@prisma/client"
+import { Column, Task } from "@prisma/client"
 import AddAColumn from "./AddAColumn"
 import { minHeigtColumn } from "./Column"
 import LoadingColumns from "./LoadingColumns"
-import { supaFetchAllCols, supaFetchAllTasks } from "@/utils/supabase/queries"
+import { supaFetchAllCols, supaFetchAllProjects, supaFetchAllTasks } from "@/utils/supabase/queries"
 import { useParams } from "next/navigation"
+import { useStore } from "@/utils/store/useStore"
 
-type Props = {
-	projNumCols: ProjNumCols | null
-	projectArray: Project[] | null
-	colsInit: Column[] | null
-	tasksInit: Task[] | null
+export type ProjNumCols = {
+	[projectId: string] : number
 }
-export default function Kanban({  projNumCols, projectArray, colsInit, tasksInit } : Props) {
+export default function Kanban() {
 	const sensors = useSensors( 
 		useSensor(MouseSensor),
 		useSensor(TouchSensor),
 	)
-	const [columns, setColumns] = useState<Column[] | null>(colsInit);
-	const [tasks, setTasks] = useState<Task[] | null>(tasksInit);
+	const { store, setStore} = useStore(state => state)
 	const [activeColumn, setActiveColumn] = useState<Column | null>(null)
 	const [activeTask, setActiveTask] = useState<Task | null>(null)
-	const [triggerUpdate, setTriggerUpdate] = useState(false)
-	const [updating, setUpdating] = useState(false)
-	const [count, setCount] = useState(0)
-	const { loading, setLoading, numCols } = useChangeProject(state => state)
+	const { loading, numCols, triggerUpdate, updating } = store
 
 	const params : {id: string} = useParams()
 	const projectId = params.id
 
-	const columnsIds =  columns?.filter(col => col.project === projectId)
+	const columnsIds =  store.columns?.filter(col => col.project === projectId)
 		.sort((a,b) => a.position! - b.position! )
-		.map(column => column.title as UniqueIdentifier)
-
-	const currentColumns = columns?.filter(col => col.project === projectId)
+		.map(column => column.id as UniqueIdentifier)
+	const currentColumns = store.columns?.filter(col => col.project === projectId)
 		.sort((a,b) => a.position! - b.position!)
 
 	useEffect(()=>{
+		console.log("useEffect")
 		async function fetchColsAndTasks() {
+			console.log("FETCHING STUFF")
 			const columns = await supaFetchAllCols();
-			columns && setColumns(columns)
-			const tasks = await supaFetchAllTasks();
-			tasks && setTasks(tasks)
+			const tasks = await supaFetchAllTasks()
+			const projects = await supaFetchAllProjects()
+			if (columns && tasks && projects) {
+				console.log("yup")
+				setStore({
+					...store,
+					columns,
+					tasks,
+					projects,
+					loading: false,
+					updating: false,
+					log: "Kanban-yup"
+				})
+			}
 		}
-		if (loading) {
-			setLoading(false)	
-		} 
-		if (count > 0) {
-			fetchColsAndTasks()
-		}
-		setUpdating(false)
-		setCount(prev => prev < 10000 ? prev + 1 : 10)
+		if (
+			store.formerProjectId === store.selectedProjectId || 
+			(!store.columns || !store.tasks || !store.projects)
+		) fetchColsAndTasks();
+		setStore({
+			...store, 
+			loading: false,
+			updating: false,
+			log: "Kanban"
+		})	
 	},[ triggerUpdate ])
-
+	
+	console.log("loading: ", loading)
+	console.log("updating: ", updating)
+	console.log("log: ", store.log)
 
 	return (
 		<div className="flex flex-col w-full h-full items-start">
@@ -72,9 +81,10 @@ export default function Kanban({  projNumCols, projectArray, colsInit, tasksInit
 					sensors={sensors}
 					onDragStart={dragStartHandler({ setActiveColumn, setActiveTask })}
 					onDragEnd={dragEndHandler({
-						setActiveColumn, setActiveTask, tasks, columns, setUpdating, setTriggerUpdate
+						setActiveColumn, setActiveTask, setStore, store,
+						tasks: store.tasks, columns: store.columns
 					})}
-					onDragOver={dragOverHandler({ setTasks, setColumns })}
+					onDragOver={dragOverHandler({ setStore, store })}
 				>
 					<div className={`flex flex-row flex-shrink w-full px-4 h-full items-start   
 						justify-start gap-x-4 overflow-x-auto py-8`}
@@ -92,57 +102,38 @@ export default function Kanban({  projNumCols, projectArray, colsInit, tasksInit
 									strategy={horizontalListSortingStrategy}
 								>
 								{currentColumns?.map(column => {
-									const columnTasks = tasks?.filter(t => t.columnId === column.title)
+									const columnTasks = store.tasks?.filter(t => t.columnId === column.id)
 									return (
 										<ColumnComp 
 											projectId={projectId}
 											key={column.id}
-											setTasks={setTasks}
 											column={column}
 											tasks={columnTasks}
-											setUpdating={setUpdating}
-											setTriggerUpdate={setTriggerUpdate}
-											setColumns={setColumns}
 										/>
 								)})}
 								</SortableContext> 
 								<AddAColumn 
-									setColumns={setColumns} 
-									numOfCols={columns?.length} 
-									setTriggerUpdate={setTriggerUpdate}
-									setUpdating={setUpdating}
+									numOfCols={store.columns?.length} 
 									projectId={projectId}
 								/>
 							</>
-						: Array.isArray(projectArray) || loading ? 
-							!loading ? (projNumCols && Object.keys(projNumCols).length > 0 ?
-									<LoadingColumns numOfCols={projNumCols[projectId]}/> 
-								: <LoadingColumns numOfCols={1}/>)
-							: numCols && numCols > 0 ? 
-								<LoadingColumns numOfCols={numCols}/>
-								: <AddAColumn 
-										setColumns={setColumns} 
-										numOfCols={columns?.length} 
-										setTriggerUpdate={setTriggerUpdate}
-										setUpdating={setUpdating}
-										projectId={projectId}
-									/>
-						: <div className="flex flex-row w-[400px]">
-								Nothing found
-							</div>
+						: store.projects?.length != undefined || loading || !store.tasks ? 
+							<LoadingColumns numOfCols={numCols}/>
+							: store.projects?.length === 0 ?
+								<AddAColumn 
+									numOfCols={store.columns?.length} 
+									projectId={projectId}
+								/>
+								: <div className="flex flex-row w-[400px]">
+										Nothing found
+									</div>
 					}
 					<div className="flex flex-row w-full" />
 					</div>	
 					<DragOverlayComponent 
 						projectId={projectId}
 						activeColumn={activeColumn}
-						setColumns={setColumns}
 						activeTask={activeTask}
-						tasks={tasks}
-						setTasks={setTasks}
-						setUpdating={setUpdating}
-						columns={columns}
-						setTriggerUpdate={setTriggerUpdate}
 					/>
 				</DndContext>
 		</div>

@@ -7,23 +7,21 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Column } from "@prisma/client"
-import { Dispatch, SetStateAction, useState } from "react"
+import {  useState } from "react"
 import { Button } from "../ui/button"
-import { supaCreateColumn, supabase } from "@/utils/supabase/queries"
+import { supaCreateColumn, supaFetchAllCols, supabase } from "@/utils/supabase/queries"
+import { useStore } from "@/utils/store/useStore"
 
 type Props = {
-	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
-	setColumns: Dispatch<SetStateAction<Column[] | null>>
-	setUpdating: Dispatch<SetStateAction<boolean>>,
 	numOfCols: number | undefined
 	projectId: string
 }
-export default function AddAColumn({ setTriggerUpdate, setColumns, setUpdating, numOfCols, projectId } : Props) {
+export default function AddAColumn({ numOfCols, projectId } : Props) {
+	const { store, setStore } = useStore(s=>s)
 	const [open, setOpen] = useState(false)
 
 	async function createColumn(data: FormData, projectId: string) {
 		const { data: { user } } = await supabase.auth.getUser()
-		setUpdating(true)
 		const newColumn : Column = {
 			id: '9999',
 			title: data.get('title') as string,
@@ -32,11 +30,20 @@ export default function AddAColumn({ setTriggerUpdate, setColumns, setUpdating, 
 			owner: user?.id ? user.id : null,
 			project: projectId
 		}
-		setColumns((c) => {
-			if (c) return [...c, newColumn]
-			else return [newColumn]
+		setStore({
+			...store,
+			updating: true,
+			columns: store.columns ? [ ...store.columns, newColumn ] : [ newColumn ],
+			log: "AddAColumn"
 		})
-		supaCreateColumn(data, setTriggerUpdate, numOfCols, projectId)
+		await supaCreateColumn(data, numOfCols, projectId)
+		const newCols = await supaFetchAllCols()
+		setTimeout(() => setStore({
+			...store,
+			updating: false,
+			columns: newCols || store.columns || [],
+			log: "AddAColumn"
+		}), 100)
 	}
 
 	return (

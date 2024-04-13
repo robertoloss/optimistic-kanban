@@ -2,7 +2,8 @@ import { Project } from "@prisma/client";
 import { Dispatch, SetStateAction, useOptimistic } from "react";
 import AddAProject from "./kanban/AddAProject";
 import SidebarButton from "./SidebarButton";
-import { ProjNumCols } from "@/app/kanban/[id]/page";
+import { ProjNumCols } from "./kanban/Kanban";
+import { useStore } from "@/utils/store/useStore";
 
 export type UpdateOptimisticProjects = (action: { action: string; title?: string | undefined; id?: string | undefined; }) => void
 const generateRandomString = function() {
@@ -15,6 +16,8 @@ type Props = {
 	projNumCols: ProjNumCols
 }
 export function SiderbarContent({ projects, hover, setHover, projNumCols } : Props) {
+	const { store, setStore } = useStore(s=>s)
+
 	const [optimisticProjects, updateOptimisticProjects] = useOptimistic(projects,
     (state, { action, title, id }: { action: string; title?: string; id?: string }) => {
 			switch (action) {

@@ -6,46 +6,53 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Column, Task } from "@prisma/client"
-import { Dispatch, SetStateAction, useState } from "react"
+import { Column } from "@prisma/client"
+import { useState } from "react"
 import { Button } from "../ui/button"
-import { supaCreateTask, supabase } from "@/utils/supabase/queries"
+import { supaCreateTask, supaFetchAllTasks, supabase } from "@/utils/supabase/queries"
+import { useStore } from "@/utils/store/useStore"
 
 type Props = {
 	column: Column
-	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
-	setTasks: Dispatch<SetStateAction<Task[] | null>>
-	setUpdating: Dispatch<SetStateAction<boolean>>
 	projectId: string
 }
-export default function AddATask({ column, setTriggerUpdate, setTasks, setUpdating, projectId } : Props) {
+export default function AddATask({ column, projectId } : Props) {
 	const [open, setOpen] = useState(false)
+	const { store, setStore } = useStore(s => s)
 
 	async function createTask(data: FormData) {
 		const { data: { user } } = await supabase.auth.getUser()
-		setUpdating(true)
 		const newTask = {
 			id: '9999',
 			title: data.get('title') as string,
 			content: data.get('content') as string,
-			columnId: column.title as string,
+			columnId: column.id as string,
 			created_at: new Date(), 
 			position: -1,
 			owner: user?.id ? user.id : null,
 			project: projectId
 		}
-		setTasks((t) => {
-			if (t) return [...t, newTask]
-			else return [newTask]
-		})
+		setStore({
+			...store,
+			updating: true,
+			tasks: store.tasks ? [...store.tasks, newTask] : [newTask],
+			log: "AddATask before"
+		}) 
 		const input = {
 			title: data.get('title'),
 			content: data.get('content'),
-			columnId: column.title,
+			columnId: column.id,
 			position: 0, 
 			project: projectId 
 		}
-		supaCreateTask(input, column, setTriggerUpdate)
+		await supaCreateTask(input, column)
+		const newTasks = await supaFetchAllTasks()
+		setTimeout(() => setStore({
+			...store,
+			updating: false,
+			tasks: newTasks || store.tasks || [], 
+			log: "AddATask after supa"
+		}), 100) 
 	}
 
 	return (

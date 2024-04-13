@@ -1,15 +1,14 @@
 import { DragOverEvent } from "@dnd-kit/core";
-import { Column, Task } from "@prisma/client";
-import { Dispatch, SetStateAction } from "react";
 import updateTaskOverTask from "./updateTaskOverTask";
 import updateTaskOverColumn from "./updateTaskOverColumn";
 import updateColumnOverColumn from "./updateColumnOverColumn";
+import { Store } from "@/utils/store/useStore";
 
 type Props = {
-	setTasks: Dispatch<SetStateAction<Task[] | null>>
-	setColumns: Dispatch<SetStateAction<Column[] | null>>
+	setStore: (store: Store) => void
+	store: Store
 }
-export default function dragOverHandler({ setTasks, setColumns } : Props) {
+export default function dragOverHandler({ setStore, store } : Props) {
 	return (event: DragOverEvent) => {
 		const { active, over } = event;
 		if (!over) return;
@@ -24,13 +23,13 @@ export default function dragOverHandler({ setTasks, setColumns } : Props) {
 		const isOverAColumn = over.data.current?.type === "Column";
 
 		if (isActiveATask && isOverATask) {
-			updateTaskOverTask({activeId, overId, setTasks})
+			updateTaskOverTask({activeId, overId, setStore, store })
 		}
 		if (isActiveATask && isOverAColumn) {
-			updateTaskOverColumn({activeId, over, setTasks})
+			updateTaskOverColumn({activeId, over, setStore, store })
 		}
 		if (isActiveAColumn && isActiveAColumn) {
-			updateColumnOverColumn({setColumns, activeId, overId})
+			updateColumnOverColumn({setStore, store, activeId, overId})
 		}
 	}
 }
