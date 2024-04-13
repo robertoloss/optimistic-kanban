@@ -45,6 +45,39 @@ export async function actionDeleteProject({
 	}
 }
 
+export async function actionDeleteTask({ id } : { id: string }) {
+	console.log("action delete Task")
+	try {
+		await supabase.from('Task')
+			.delete()
+			.eq('id',id)
+		revalidateTag("actionFetchAllTasks")
+	} catch (error) {
+		console.error(error)
+	}
+}
+export async function actionCreateTask(task : {
+	title: string,
+	content:  string,
+	columnId:  string,
+	position: number,
+	owner: string | null,
+	project: string
+}) {
+	console.log("action create Task")
+	try {
+		await supabase.rpc(
+			'update_position_for_column', 
+			{ column_id_value: task.columnId}
+		)
+		await supabase.from('Task')
+			.insert(task)
+		revalidateTag("actionFetchAllTasks")
+	} catch (error) {
+		console.error(error)
+	}
+}
+
 export async function actionFetchCols({ projectId } : { projectId: string }) {
 	try {
 		const { data: { user } } = await supabase.auth.getUser()

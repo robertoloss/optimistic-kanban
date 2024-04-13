@@ -7,45 +7,49 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Column, Task } from "@prisma/client"
-import { Dispatch, SetStateAction, useState } from "react"
+import { Dispatch, SetStateAction, startTransition, useState } from "react"
 import { Button } from "../ui/button"
 import { supaCreateTask, supabase } from "@/utils/supabase/queries"
+import { actionCreateTask } from "@/app/actions/actions"
 
 type Props = {
 	column: Column
 	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
-	setTasks: Dispatch<SetStateAction<Task[] | null>>
-	setUpdating: Dispatch<SetStateAction<boolean>>
+	updateOptimisticTasks: (action: {
+		action: string;
+		tasks?: Task[];
+		newTask?: Task;
+		id?: string;
+	}) => void
 	projectId: string
 }
-export default function AddATask({ column, setTriggerUpdate, setTasks, setUpdating, projectId } : Props) {
+export default function AddATask({ column, updateOptimisticTasks, projectId } : Props) {
 	const [open, setOpen] = useState(false)
 
 	async function createTask(data: FormData) {
 		const { data: { user } } = await supabase.auth.getUser()
-		setUpdating(true)
 		const newTask = {
 			id: '9999',
 			title: data.get('title') as string,
 			content: data.get('content') as string,
-			columnId: column.title as string,
+			columnId: column.id as string,
 			created_at: new Date(), 
 			position: -1,
 			owner: user?.id ? user.id : null,
 			project: projectId
 		}
-		setTasks((t) => {
-			if (t) return [...t, newTask]
-			else return [newTask]
+		startTransition(() => updateOptimisticTasks({
+			action: "add",
+			newTask
+		}))
+		actionCreateTask({
+			title: data.get('title') as string,
+			content: data.get('content') as string,
+			columnId: column.id as string,
+			position: 0,
+			owner: user?.id ? user.id : null,
+			project: projectId
 		})
-		const input = {
-			title: data.get('title'),
-			content: data.get('content'),
-			columnId: column.title,
-			position: 0, 
-			project: projectId 
-		}
-		supaCreateTask(input, column, setTriggerUpdate)
 	}
 
 	return (

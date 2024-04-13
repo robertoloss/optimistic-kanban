@@ -8,8 +8,6 @@ type Props = {
 	setActiveTask: Dispatch<SetStateAction<Task | null>>,
 	tasks: Task[] | null,
 	columns: Column[] | null
-	setUpdating: Dispatch<SetStateAction<boolean>>
-	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
 	updateOptimisticTasks: (action: {
 		action: string;
 		tasks?: Task[];
@@ -26,9 +24,9 @@ type Props = {
 	}
 export default function dragEndHandler({
 	setActiveColumn,
-	setActiveTask,
 	tasks,
 	columns,
+	setActiveTask,
 	updateOptimisticTasks,
 	updateOptimisticColumns,
 	startTransition
@@ -36,8 +34,8 @@ export default function dragEndHandler({
 	
 	return (_event: DragEndEvent) => {
 		if (columns && tasks) {
-			startTransition(()=>updateOptimisticTasks({action: "update", tasks}))	
-			startTransition(()=>updateOptimisticColumns({action: "update", cols: columns}))	
+			startTransition(() =>updateOptimisticTasks({action: "update", tasks}))	
+			startTransition(() => updateOptimisticColumns({action: "update", cols: columns}))	
 			actionUpdateColumns(columns)
 			actionUpdateTasks(tasks)
 		} 
