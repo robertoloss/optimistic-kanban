@@ -10,17 +10,14 @@ type Props = {
 	tasks: TaskPrismaType[] | undefined | null,
 	columns: ColumnType[] | null
 	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
+	setUpdating: Dispatch<SetStateAction<boolean>>
+	setTasks: Dispatch<SetStateAction<TaskPrismaType[] | null>>
+	setColumns: Dispatch<SetStateAction<ColumnType[] | null>>
 	projectId: string
-	updateOptimisticTasks: (action: {
-		action: string;
-		tasks?: TaskPrismaType[];
-		newTask?: TaskPrismaType;
-		id?: string;
-	}) => void
 }
-export default function DragOverlayComponent({activeColumn, updateOptimisticTasks, projectId, activeTask, columns, tasks, setTriggerUpdate } : Props) {
-	const column = columns?.filter((col: ColumnType) => col.id === activeTask?.columnId )[0]
-	const columnTasks = tasks?.filter(t => t.columnId === activeColumn?.id)
+export default function DragOverlayComponent({activeColumn, projectId, setColumns, setUpdating, activeTask, columns, tasks, setTriggerUpdate, setTasks} : Props) {
+	const column = columns?.filter((col: ColumnType) => col.title === activeTask?.columnId )[0]
+	const columnTasks = tasks?.filter(t => t.columnId === activeColumn?.title)
 
 	return (
 		<DragOverlay>
@@ -29,16 +26,19 @@ export default function DragOverlayComponent({activeColumn, updateOptimisticTask
 					projectId={projectId}
 					column={activeColumn}
 					overlay={true}
-					updateOptimisticTasks={updateOptimisticTasks}
+					setUpdating={setUpdating}
+					setTasks={setTasks}
 					tasks={columnTasks}
 					setTriggerUpdate={setTriggerUpdate}
+					setColumns={setColumns}
 				/>
 			)}
 			{activeTask && (
 				<Task
 					task={activeTask}
-					updateOptimisticTasks={updateOptimisticTasks}
+					setTasks={setTasks}
 					setTriggerUpdate={setTriggerUpdate}
+					setUpdating={setUpdating}
 					column={column}				
 					overlay={true}
 				/>

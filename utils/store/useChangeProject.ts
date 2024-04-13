@@ -10,7 +10,7 @@ type Store = {
 }
 export const useChangeProject = create<Store>()((set) => ({
   loading: false,
-	numCols: 4,
+	numCols: 3,
 	selectedProjectId: "",
   setLoading: (b: boolean) => set(() => ({ loading: b })),
 	setNumCols: (n: number) => set(() => ({ numCols: n})),

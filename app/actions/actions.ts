@@ -5,7 +5,6 @@ import { Column, Project, Task } from "@prisma/client"
 
 const supabase = createClient()
 
-
 export async function actionCreateProject({ 
 	title,
 } : {
@@ -40,39 +39,6 @@ export async function actionDeleteProject({
 			.delete()
 			.eq('id',id)
 		revalidateTag("getNumberOfColumns")
-	} catch (error) {
-		console.error(error)
-	}
-}
-
-export async function actionDeleteTask({ id } : { id: string }) {
-	console.log("action delete Task")
-	try {
-		await supabase.from('Task')
-			.delete()
-			.eq('id',id)
-		revalidateTag("actionFetchAllTasks")
-	} catch (error) {
-		console.error(error)
-	}
-}
-export async function actionCreateTask(task : {
-	title: string,
-	content:  string,
-	columnId:  string,
-	position: number,
-	owner: string | null,
-	project: string
-}) {
-	console.log("action create Task")
-	try {
-		await supabase.rpc(
-			'update_position_for_column', 
-			{ column_id_value: task.columnId}
-		)
-		await supabase.from('Task')
-			.insert(task)
-		revalidateTag("actionFetchAllTasks")
 	} catch (error) {
 		console.error(error)
 	}
@@ -124,7 +90,6 @@ export async function actionFetchAllCols() {
 			.eq('owner', user?.id)
 		if (data) {
 			const res : Column[] = [...data]
-			console.log("columns fetched")
 			return res
 		}
 	} catch(error) {
@@ -142,7 +107,6 @@ export async function actionFetchAllTasks() {
 			.eq('owner', user?.id)
 		if (data) {
 			const res : Task[] = [...data]
-			console.log("tasks fetched")
 			return res
 		}
 	} catch(error) {
@@ -150,34 +114,7 @@ export async function actionFetchAllTasks() {
 	}
 }
 
-export async function actionUpdateTasks(tasks: Task[]) {
-	try {
-		await supabase
-			.from('Task')
-			.upsert(tasks)
-		revalidateTag("actionFetchAllTasks")
-	} catch (error) {
-		console.error(error)
-	}
-}
 
-export async function actionUpdateColumns(columns: Column[]) {
-	try {
-		await supabase
-			.from('Column')
-			.upsert(columns.map((col,i) => ({...col, position: i})))
-		revalidateTag("actionFetchAllCols")
-	} catch (error) {
-		console.error(error)
-	}
-}
-
-export async function revalidateActionFetchAllCols() {
-	revalidateTag("actionFetchAllCols")
-}
-export async function revalidateActionFetchAllTasks() {
-	revalidateTag("actionFetchAllTasks")
-}
 
 
 

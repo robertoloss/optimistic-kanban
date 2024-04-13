@@ -3,29 +3,25 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Column, Task } from "@prisma/client";
 import { GripVertical, Trash2 } from "lucide-react";
-import { Dispatch, SetStateAction, startTransition } from "react";
-import { actionDeleteTask } from "@/app/actions/actions";
+import { Dispatch, SetStateAction } from "react";
+import { supaDeleteTask } from "@/utils/supabase/queries";
 
 type Props = {
 	task: Task
 	column?: Column 
 	overlay?: boolean
 	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
-	updateOptimisticTasks: (action: {
-		action: string;
-		tasks?: Task[];
-		newTask?: Task;
-		id?: string;
-	}) => void
+	setTasks: Dispatch<SetStateAction<Task[] | null>>
+	setUpdating: Dispatch<SetStateAction<boolean>>
 }
-export default function Task({ task, updateOptimisticTasks, column, overlay } : Props) {
+export default function Task({ task, column, overlay, setTriggerUpdate, setTasks, setUpdating } : Props) {
 	const { setNodeRef, attributes, listeners, transform, transition, isDragging,
   } = useSortable({
     id: task.id ,
     data: {
       type: "Task",
       task,
-			columnId: column?.id!
+			columnId: column?.title!
     },
 		animateLayoutChanges: () => true,
 		 transition: {
@@ -39,11 +35,14 @@ export default function Task({ task, updateOptimisticTasks, column, overlay } : 
   };
 
 	async function deleteTask(task: Task) {
-		startTransition(() => updateOptimisticTasks({
-			action: "delete",
-			id: task.id
-		}))
-		actionDeleteTask({ id: task.id })
+		setUpdating(true)
+		setTasks(tasks => {
+			if (tasks) {
+				return tasks.filter(t => t.id != task.id)
+			}
+			else return []
+		})
+		supaDeleteTask(task,setTriggerUpdate)
 	}
 
 	return (

@@ -10,18 +10,20 @@ import { Column } from "@prisma/client"
 import { Dispatch, SetStateAction, useState } from "react"
 import { Button } from "../ui/button"
 import { supaCreateColumn, supabase } from "@/utils/supabase/queries"
-import { actionFetchAllCols, revalidateActionFetchAllCols } from "@/app/actions/actions"
 
 type Props = {
 	setTriggerUpdate: Dispatch<SetStateAction<boolean>>
+	setColumns: Dispatch<SetStateAction<Column[] | null>>
+	setUpdating: Dispatch<SetStateAction<boolean>>,
 	numOfCols: number | undefined
 	projectId: string
 }
-export default function AddAColumn({ setTriggerUpdate, numOfCols, projectId } : Props) {
+export default function AddAColumn({ setTriggerUpdate, setColumns, setUpdating, numOfCols, projectId } : Props) {
 	const [open, setOpen] = useState(false)
 
 	async function createColumn(data: FormData, projectId: string) {
 		const { data: { user } } = await supabase.auth.getUser()
+		setUpdating(true)
 		const newColumn : Column = {
 			id: '9999',
 			title: data.get('title') as string,
@@ -30,6 +32,11 @@ export default function AddAColumn({ setTriggerUpdate, numOfCols, projectId } : 
 			owner: user?.id ? user.id : null,
 			project: projectId
 		}
+		setColumns((c) => {
+			if (c) return [...c, newColumn]
+			else return [newColumn]
+		})
+		supaCreateColumn(data, setTriggerUpdate, numOfCols, projectId)
 	}
 
 	return (
