@@ -1,4 +1,3 @@
-import { actionCreateProject } from "@/app/actions/actions";
 import {
   Dialog,
   DialogContent,
@@ -8,20 +7,49 @@ import {
 	DialogOverlay
 } from "@/components/ui/dialog"
 import { Button } from "../ui/button";
-import { Dispatch, SetStateAction, useState, useTransition } from "react";
-import { UpdateOptimisticProjects } from "../SidebarContent";
-import { revalidateTag } from "next/cache";
-
+import { Dispatch, SetStateAction, useState } from "react";
+import { Project } from "@prisma/client";
+import { useStore } from "@/utils/store/useStore";
+import { supaCreateProject, supaFetchAllProjects, supabase } from "@/utils/supabase/queries";
+import { useRouter } from "next/navigation";
 
 
 type Props = {
-	updateOptimisticProjects: UpdateOptimisticProjects
 	hover: boolean
 	setHover: Dispatch<SetStateAction<boolean>>
 }
-export default function AddAProject({ updateOptimisticProjects, setHover } : Props) {
+export default function AddAProject({ setHover } : Props) {
 	const [open, setOpen] = useState(false)
-	const [_isPending, startTransition] = useTransition()
+	const { store, setStore } = useStore(s=>s) 
+	const router = useRouter()
+
+	async function createNewProject(title: string) {
+		const { data: { user } } = await supabase.auth.getUser()
+		const dummyProject : Project = {
+			id: "dummy",
+			created_at: new Date,
+			title,
+			owner: user?.id || null
+		}
+		console.log("dummy project: ", dummyProject)
+		setStore({
+			...store,
+			loading: true,
+			updating: true,
+			projects: store.projects ? [...store.projects, dummyProject] : [ dummyProject ],
+			log: "createNewProject before"
+		})
+		const newProject = await supaCreateProject(title, user?.id || "none")
+		const newProjects = await supaFetchAllProjects()
+		setStore({
+			...store,
+			loading: false,
+			updating: false,
+			projects: newProjects || store.projects || [],
+			log: "createNewProject after"
+		})
+		router.push(`/kanban/${newProject?.id || 'home'}`)
+	}
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
@@ -50,12 +78,7 @@ export default function AddAProject({ updateOptimisticProjects, setHover } : Pro
 							className="flex flex-col gap-y-4 text-foreground"
 							action={(data: FormData)=>{
 								const title = JSON.stringify(data.get('title')).split(`"`)[1]
-								startTransition(()=>updateOptimisticProjects({
-									action: "create",
-									title,
-								}))
-								title && actionCreateProject({ title })
-								revalidateTag("getNumberOfColumns")
+								createNewProject(title)
 							}}
 						>
 							<div className="flex flex-col w-full">
@@ -67,7 +90,9 @@ export default function AddAProject({ updateOptimisticProjects, setHover } : Pro
 								/>
 							</div>
 							<Button 
-								onClick={()=>setOpen(false)}
+								onClick={()=>{
+									setOpen(false)
+								}}
 								className="w-[180x] self-end"
 								type="submit"
 							>

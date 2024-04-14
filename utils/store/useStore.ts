@@ -13,6 +13,7 @@ export type Store = {
 	triggerUpdate: boolean
 	updating: boolean
 	log: string
+	revalidateProjects: boolean
 }
 type UseStore = {
 	store: Store,
@@ -30,7 +31,8 @@ export const useStore = create<UseStore>()((set) => ({
 		projects: null,
 		triggerUpdate: false,
 		updating: false,
-		log: "[empty]"
+		log: "[empty]",
+		revalidateProjects: false
 	},
 	setStore: (c: Store) => set(() => ({ store: c }))
 }))

@@ -14,6 +14,7 @@ import LoadingColumns from "./LoadingColumns"
 import { supaFetchAllCols, supaFetchAllProjects, supaFetchAllTasks } from "@/utils/supabase/queries"
 import { useParams } from "next/navigation"
 import { useStore } from "@/utils/store/useStore"
+import { cn } from "@/lib/utils"
 
 export type ProjNumCols = {
 	[projectId: string] : number
@@ -29,7 +30,11 @@ export default function Kanban() {
 	const { loading, numCols, triggerUpdate, updating } = store
 
 	const params : {id: string} = useParams()
-	const projectId = params.id
+	const projectId = store.selectedProjectId === "" 
+										? params.id
+										: store.selectedProjectId != params.id
+											? store.selectedProjectId
+											: params.id
 
 	const columnsIds =  store.columns?.filter(col => col.project === projectId)
 		.sort((a,b) => a.position! - b.position! )
@@ -70,12 +75,19 @@ export default function Kanban() {
 	},[ triggerUpdate ])
 	
 	console.log("loading: ", loading)
-	console.log("updating: ", updating)
-	console.log("log: ", store.log)
+	console.log("diff: ", ( params.id != store.selectedProjectId))
+	console.log(`params.id != 'home'`, params.id != 'home')
 
 	return (
-		<div className="flex flex-col w-full h-full items-start">
-			<div className="h-6 mb-2 p-2">{updating && <p>Saving...</p>}</div>
+		<div className="flex flex-col w-full h-full items-start ">
+			<div className="flex flex-row w-full justify-between">
+				<div className={cn("text-md font-semibold ml-4 mt-4", {
+					//"opacity-0": loading || params.id != store.selectedProjectId
+					})}>
+						{store.project?.title}
+					</div>
+				{/*<div className="h-6 mb-2 p-2">{updating && <p>Saving...</p>}</div>*/}
+			</div>
 				<DndContext
 					id="list"
 					sensors={sensors}
@@ -95,7 +107,7 @@ export default function Kanban() {
 						}}
 					>
 					{
-						!loading && columnsIds ? 
+						(!loading && columnsIds && params.id === store.selectedProjectId) || true && columnsIds? 
 							<>
 								<SortableContext 
 									items={columnsIds}
@@ -117,9 +129,15 @@ export default function Kanban() {
 									projectId={projectId}
 								/>
 							</>
-						: store.projects?.length != undefined || loading || !store.tasks ? 
+						: (
+								store.projects?.length != undefined || 
+								loading || 
+								!store.tasks
+							) 
+							&& params.id != 'home'
+						? 
 							<LoadingColumns numOfCols={numCols}/>
-							: store.projects?.length === 0 ?
+							: store.projects?.length === 0 || params.id === 'home'?
 								<AddAColumn 
 									numOfCols={store.columns?.length} 
 									projectId={projectId}

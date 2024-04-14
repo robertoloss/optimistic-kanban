@@ -1,28 +1,66 @@
 import { Project } from "@prisma/client"
 import { cn } from "@/lib/utils"
-import { UpdateOptimisticProjects } from "./SidebarContent"
-import { startTransition } from "react"
-import { actionDeleteProject } from "@/app/actions/actions"
-import {  Trash2 } from "lucide-react"
+import { Trash2 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { ProjNumCols } from "./kanban/Kanban"
 import { useStore } from "@/utils/store/useStore"
+import { supaDeleteProject, supaFetchAllProjects, supabase } from "@/utils/supabase/queries"
+import { useRouter } from "next/navigation"
 
 type Props = {
 	project: Project,
-	updateOptimisticProjects: UpdateOptimisticProjects
 	hover: boolean
-	projNumCols: ProjNumCols
 }
-export default function SidebarButton({ project, updateOptimisticProjects, hover, projNumCols } : Props) {
+export default function SidebarButton({ project, hover } : Props) {
 	const { store, setStore } = useStore(state => state)
 	const path = usePathname()
 	const pathArray = path.split('/')
 	const currentId = pathArray.at(pathArray.length - 1)
+	const router = useRouter()
+
+	async function getNumCols(project: Project) {
+		const { data } = await supabase
+			.from("Column")
+			.select()
+			.eq('project', project.id)
+		return data?.length || 4
+	}
+	async function navigateToProject() {
+		const num = 4 // await getNumCols(project)
+		setStore({
+			...store,
+			loading: true,
+			triggerUpdate: !store.triggerUpdate,
+			selectedProjectId: project.id,
+			formerProjectId: currentId,
+			numCols: num,
+			project: project
+		})
+		router.push(`/kanban/${project.id}`)
+	}
+
+	async function deleteProject() {
+		router.push('/kanban/home')
+		setStore({
+			...store,
+			log: "deleteProject",
+			updating: true,
+			loading: true,
+			projects: store?.projects?.filter(p => p.id != project.id) || [] 
+		})
+		await supaDeleteProject(project.id)
+		const newProjects = await supaFetchAllProjects()
+		setTimeout(() => setStore({
+			...store,
+			log: "deleteProject after",
+			updating: false,
+			loading: false,
+			projects: newProjects || store.projects || []
+		}) , 100)
+	}
 
 	return (
-		<Link href={`/kanban/${project.id}`}>
+		<div>
 			<div 
 				className={cn(`
 					flex flex-row justify-between p-4 cursor-pointer rounded-lg text-muted-foreground
@@ -30,21 +68,17 @@ export default function SidebarButton({ project, updateOptimisticProjects, hover
 					transition hover:text-foreground select-none h-14 border-2 border-muted 
 				`, {
 					'shadow-none border-2 border-foreground text-foreground': 
-						(!store.loading && currentId === project.id) || 
-						(store.loading && project.id === store.selectedProjectId),
+						(store.selectedProjectId === "" && currentId === project.id) || 
+						(store.selectedProjectId === project.id),
 					})
 				}
 				onClick={()=> {
-					if (project.id != currentId) {
-						setStore({
-							...store,
-							loading: true,
-							selectedProjectId: project.id,
-							formerProjectId: currentId,
-							numCols : projNumCols[project.id],
-							project: project
-						})
-					}
+					setStore({
+						...store,
+						loading: true
+					})
+					console.log("LINK WAS CLICKED")
+					if (project.id != currentId) navigateToProject()
 				}}
 			>
 				<div className={`
@@ -60,16 +94,13 @@ export default function SidebarButton({ project, updateOptimisticProjects, hover
 				</p>
 				<div className={`xl:block ${hover ? 'block' : 'hidden'}`} 
 					onClick={(e)=>{
+						console.log("Trash was clicked")
 						e.stopPropagation()
-						startTransition(()=>updateOptimisticProjects({
-							action: "delete",
-							id: project.id,
-					}))
-					actionDeleteProject({ id: project.id })
+						deleteProject()	
 				}}>
 					<Trash2 size="16" className="text-muted-foreground place-self-center hover:text-foreground"/>
 				</div>
 			</div>
-		</Link>
+		</div>
 	)
 }

@@ -1,8 +1,36 @@
 import { Column, Project, Task } from "@prisma/client"
 import { createClient } from "@/utils/supabase/client"
-import { Dispatch, SetStateAction } from "react"
 
 export const supabase = createClient()
+
+
+export async function supaDeleteProject(projectId: string) {
+	try {
+		await supabase
+			.from("Project")
+			.delete()
+			.eq('id', projectId)
+	} catch(error) {
+		console.error(error)
+	}
+}
+
+export async function supaCreateProject(title: string, owner: string) {
+	try {
+		const { data } = await supabase
+			.from("Project")
+			.insert({
+				title,
+				owner
+			})
+		if (data) {
+			const project : Project = data[0]
+			return project
+		}
+	} catch (error) {
+		console.error(error)
+	}
+}
 
 export async function supaFetchCols( projectId: string) {
 	try {
