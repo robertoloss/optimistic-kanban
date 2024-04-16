@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { DragEndEvent } from "@dnd-kit/core";
 import { Column, Task } from "@prisma/client";
-import { supaFetchAllCols, supaFetchAllTasks, supabase } from "@/utils/supabase/queries";
+import { supabase } from "@/utils/supabase/queries";
 import { Store } from "@/utils/store/useStore";
 
 type Props = {
@@ -15,19 +15,17 @@ type Props = {
 export default function dragEndHandler({ setActiveColumn, setActiveTask, tasks, columns, setStore, store } : Props) {
 	async function updateColsAndTasks(columns: Column[], tasks: Task[]) {
 		try {
+			console.log("dragEnd: ", columns)
 			await supabase
 				.from('Column')
 				.upsert(columns.map((col,i) => ({...col, position: i})))
 			await supabase
 				.from('Task')
 				.upsert(tasks)
-			const newCols = await supaFetchAllCols()
-			const newTasks = await supaFetchAllTasks()
 			setStore({
 				...store,
 				log: "dragEndHandler",
-				columns: newCols || store.columns || [],
-				tasks: newTasks || store.tasks || []
+				triggerUpdate: !store.triggerUpdate
 			})
 		} catch (error) {
 				console.error("Error updating columns:", error);

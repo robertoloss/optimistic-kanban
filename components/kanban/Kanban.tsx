@@ -74,9 +74,8 @@ export default function Kanban() {
 		})	
 	},[ triggerUpdate ])
 	
-	console.log("loading: ", loading)
-	console.log("diff: ", ( params.id != store.selectedProjectId))
-	console.log(`params.id != 'home'`, params.id != 'home')
+	console.log("cols: ", store.columns)
+	console.log("log: ", store.log)
 
 	return (
 		<div className="flex flex-col w-full h-full items-start ">
