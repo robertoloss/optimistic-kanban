@@ -1,22 +1,13 @@
 'use client'
 import { useState } from "react"
 import { SiderbarContent } from "./SidebarContent"
+import { Project } from "@prisma/client"
 
-export default function Sidebar() {
+type Props = {
+	projects: Project[] | null
+}
+export default function Sidebar({ projects } : Props) {
 	const [ hover, setHover ] = useState(false)
-	//const { store, setStore } = useStore(s=>s)
-
-	//useEffect(() => {
-	//	console.log("setting projects")
-	//	async function setProjects() {
-	//		const projects = await supaFetchAllProjects()
-	//		setStore({
-	//			...store,
-	//			projects: projects || []
-	//		})
-	//	}
-	//	setProjects()
-	//},[store.revalidateProjects])
 
 	return (
 		<div 
@@ -28,6 +19,7 @@ export default function Sidebar() {
 				<SiderbarContent 
 					hover={hover}
 					setHover={setHover}
+					projects={projects}
 				/>
 			</div>
 		</div>

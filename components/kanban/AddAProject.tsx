@@ -7,17 +7,23 @@ import {
 	DialogOverlay
 } from "@/components/ui/dialog"
 import { Button } from "../ui/button";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, startTransition, useState } from "react";
 import { Project } from "@prisma/client";
 import { useStore } from "@/utils/store/useStore";
-import { supaCreateProject, supaFetchAllProjects, supabase } from "@/utils/supabase/queries";
+import { supabase } from "@/utils/supabase/queries";
 import { useParams, useRouter } from "next/navigation";
+import { actionCreateProject } from "@/app/actions/actions";
 
 type Props = {
 	hover: boolean
 	setHover: Dispatch<SetStateAction<boolean>>
+	setOptimisticProjects:  (action: {
+		action: string;
+		project?: Project | undefined;
+		id?: string | undefined;
+	}) => void
 }
-export default function AddAProject({ setHover } : Props) {
+export default function AddAProject({ setHover, setOptimisticProjects } : Props) {
 	const [open, setOpen] = useState(false)
 	const { store, setStore } = useStore(s=>s) 
 	const router = useRouter()
@@ -38,19 +44,17 @@ export default function AddAProject({ setHover } : Props) {
 			updating: true,
 			selectedProjectId: dummyProject.id,
 			formerProjectId: params.id,
-			projects: store.projects ? [...store.projects, dummyProject] : [ dummyProject ],
 			log: "createNewProject before"
 		})
-		const newProject = await supaCreateProject(title, user?.id || "none")
+		startTransition(() => setOptimisticProjects({ action: "create", project: dummyProject }))
+		const newProject = await actionCreateProject({ title })
 		console.log(newProject)
-		const newProjects = await supaFetchAllProjects()
 		setStore({
 			...store,
 			loading: false,
 			updating: false,
 			selectedProjectId: newProject?.id || "dummy",
 			formerProjectId: params.id,
-			projects: newProjects || store.projects || [],
 			log: "createNewProject after"
 		})
 		router.push(`/kanban/${newProject?.id}`)

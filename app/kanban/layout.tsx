@@ -2,15 +2,16 @@ import AuthButton from "@/components/AuthButton";
 import Sidebar from "@/components/Sidebar";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import { actionFetchAllProjects } from "../actions/actions";
 
 type Props = {
   children: React.ReactNode;
 }
-
 export default async function KanbanLayout({ children }: Props ) {
 	const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) { return redirect("/login") }
+	const projects = await actionFetchAllProjects()
 
   return (
 		<div className="flex flex-col w-screen h-screen overflow-hidden">
@@ -26,7 +27,7 @@ export default async function KanbanLayout({ children }: Props ) {
 					hidden sm:grid sm:grid-cols-[116px] hover:grid-cols-[240px] transition-all
 					xl:grid-cols-[240px]
 				`}>
-					<Sidebar/>
+					{ projects && <Sidebar projects={projects}/> }
 				</div>
 				<div className=" w-full overflow-auto h-full">
 					{ children }

@@ -1,44 +1,40 @@
 'use server'
-import { revalidateTag } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
 import { createClient } from "@/utils/supabase/server"
 import { Column, Project, Task } from "@prisma/client"
 
 const supabase = createClient()
 
-export async function actionCreateProject({ 
-	title,
-} : {
-	title: string
-}) {
+export async function actionCreateProject({ title } : { title: string }) {
 	console.log("action create Project")
 	try {
 		const { data: { user }} = await supabase.auth.getUser()
 		if (user) {
 			const id = user.id
-			await supabase.from('Project')
+			const { data } = await supabase.from('Project')
 				.insert({
 					title: title,
 					owner: id
 				})
-			revalidateTag("getNumberOfColumns")
+				.select()
+			if (data) {
+				const res : Project =data[0]
+				return res
+			}
+			revalidatePath('/kanban', 'layout')
 		}
-		
 	} catch (error) {
 		console.error(error)
 	}
 }
 
-export async function actionDeleteProject({
-	id,
-} : {
-	id: string
-}) {
+export async function actionDeleteProject({ id } : { id: string }) {
 	console.log("action delete Project")
 	try {
 		await supabase.from('Project')
 			.delete()
 			.eq('id',id)
-		revalidateTag("getNumberOfColumns")
+		revalidatePath('/kanban', 'layout')
 	} catch (error) {
 		console.error(error)
 	}

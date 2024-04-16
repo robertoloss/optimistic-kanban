@@ -11,7 +11,7 @@ import { Column, Task } from "@prisma/client"
 import AddAColumn from "./AddAColumn"
 import { minHeigtColumn } from "./Column"
 import LoadingColumns from "./LoadingColumns"
-import { supaFetchAllCols, supaFetchAllProjects, supaFetchAllTasks } from "@/utils/supabase/queries"
+import { supaFetchAllCols, supaFetchAllTasks } from "@/utils/supabase/queries"
 import { useParams } from "next/navigation"
 import { useStore } from "@/utils/store/useStore"
 import { cn } from "@/lib/utils"
@@ -48,17 +48,14 @@ export default function Kanban() {
 	useEffect(()=>{
 		console.log("useEffect")
 		async function fetchColsAndTasks() {
-			//console.log("fetchColsAndTasks")
 			const columns = await supaFetchAllCols();
 			const tasks = await supaFetchAllTasks()
-			const projects = await supaFetchAllProjects()
-			if (columns && tasks && projects) {
+			if (columns && tasks) {
 				console.log("yup")
 				setStore({
 					...store,
 					columns,
 					tasks,
-					projects,
 					loading: false,
 					updating: false,
 					log: "Kanban-yup"
