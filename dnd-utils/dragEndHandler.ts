@@ -17,21 +17,18 @@ export default function dragEndHandler({ setActiveColumn, setActiveTask, tasks, 
 		try {
 			await supabase
 				.from('Column')
-				.upsert(columns)
+				.upsert(columns.map((col,i) => ({...col, position: i})))
 			await supabase
 				.from('Task')
 				.upsert(tasks)
 			const newCols = await supaFetchAllCols()
 			const newTasks = await supaFetchAllTasks()
-			if (newCols && newTasks) {
-				setStore({
-					...store,
-					log: "dragEndHandler",
-					columns: newCols,
-					tasks: newTasks
-				})
-			}
-			else console.log("FAIL!")
+			setStore({
+				...store,
+				log: "dragEndHandler",
+				columns: newCols || store.columns || [],
+				tasks: newTasks || store.tasks || []
+			})
 		} catch (error) {
 				console.error("Error updating columns:", error);
 		}

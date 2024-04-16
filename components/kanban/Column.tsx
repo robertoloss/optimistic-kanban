@@ -50,7 +50,7 @@ export default function Column({ column, overlay, tasks, projectId } : Props) {
 			...store,
 			columns: newCols || store.columns || [],
 			updating: true,
-		}), 1)
+		}),100)
 	}
 
 	return (

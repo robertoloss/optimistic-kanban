@@ -23,9 +23,7 @@ export async function supaCreateProject(title: string, owner: string) {
 				title,
 				owner
 			})
-			.select()
 		if (data) {
-			console.log("DATA! ", data)
 			const project : Project = data[0]
 			return project
 		}

@@ -39,5 +39,5 @@ export default function updateTaskOverColumn({ activeId, over, store, setStore  
 				log: "updateTaskOverColumn"
 			})
 		}
-	}, 1)
+	}, 0)
 }

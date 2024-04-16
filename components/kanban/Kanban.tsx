@@ -11,7 +11,7 @@ import { Column, Task } from "@prisma/client"
 import AddAColumn from "./AddAColumn"
 import { minHeigtColumn } from "./Column"
 import LoadingColumns from "./LoadingColumns"
-import { supaFetchAllCols, supaFetchAllTasks } from "@/utils/supabase/queries"
+import { supaFetchAllCols, supaFetchAllProjects, supaFetchAllTasks } from "@/utils/supabase/queries"
 import { useParams } from "next/navigation"
 import { useStore } from "@/utils/store/useStore"
 import { cn } from "@/lib/utils"
@@ -27,7 +27,7 @@ export default function Kanban() {
 	const { store, setStore} = useStore(state => state)
 	const [activeColumn, setActiveColumn] = useState<Column | null>(null)
 	const [activeTask, setActiveTask] = useState<Task | null>(null)
-	const { loading, numCols, triggerUpdate } = store
+	const { loading, numCols, triggerUpdate, updating } = store
 
 	const params : {id: string} = useParams()
 	const projectId = store.selectedProjectId === "" 
@@ -35,9 +35,6 @@ export default function Kanban() {
 										: store.selectedProjectId != params.id
 											? store.selectedProjectId
 											: params.id
-	const projectTitle =	store.projects?.filter(p => p.id === projectId)[0]
-												? store.projects?.filter(p => p.id === projectId)[0].title
-												: ""
 
 	const columnsIds =  store.columns?.filter(col => col.project === projectId)
 		.sort((a,b) => a.position! - b.position! )
@@ -48,14 +45,17 @@ export default function Kanban() {
 	useEffect(()=>{
 		console.log("useEffect")
 		async function fetchColsAndTasks() {
+			console.log("FETCHING STUFF")
 			const columns = await supaFetchAllCols();
 			const tasks = await supaFetchAllTasks()
-			if (columns && tasks) {
+			const projects = await supaFetchAllProjects()
+			if (columns && tasks && projects) {
 				console.log("yup")
 				setStore({
 					...store,
 					columns,
 					tasks,
+					projects,
 					loading: false,
 					updating: false,
 					log: "Kanban-yup"
@@ -73,8 +73,10 @@ export default function Kanban() {
 			log: "Kanban"
 		})	
 	},[ triggerUpdate ])
-
-	//console.log("K store.cols: ", store.columns)
+	
+	console.log("loading: ", loading)
+	console.log("diff: ", ( params.id != store.selectedProjectId))
+	console.log(`params.id != 'home'`, params.id != 'home')
 
 	return (
 		<div className="flex flex-col w-full h-full items-start ">
@@ -82,7 +84,7 @@ export default function Kanban() {
 				<div className={cn("text-md font-semibold ml-4 mt-4", {
 					//"opacity-0": loading || params.id != store.selectedProjectId
 					})}>
-						{projectTitle}
+						{store.project?.title}
 					</div>
 				{/*<div className="h-6 mb-2 p-2">{updating && <p>Saving...</p>}</div>*/}
 			</div>

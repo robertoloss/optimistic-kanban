@@ -7,27 +7,21 @@ import {
 	DialogOverlay
 } from "@/components/ui/dialog"
 import { Button } from "../ui/button";
-import { Dispatch, SetStateAction, startTransition, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Project } from "@prisma/client";
 import { useStore } from "@/utils/store/useStore";
-import { supabase } from "@/utils/supabase/queries";
-import { useParams, useRouter } from "next/navigation";
-import { actionCreateProject } from "@/app/actions/actions";
+import { supaCreateProject, supaFetchAllProjects, supabase } from "@/utils/supabase/queries";
+import { useRouter } from "next/navigation";
+
 
 type Props = {
 	hover: boolean
 	setHover: Dispatch<SetStateAction<boolean>>
-	setOptimisticProjects:  (action: {
-		action: string;
-		project?: Project | undefined;
-		id?: string | undefined;
-	}) => void
 }
-export default function AddAProject({ setHover, setOptimisticProjects } : Props) {
+export default function AddAProject({ setHover } : Props) {
 	const [open, setOpen] = useState(false)
 	const { store, setStore } = useStore(s=>s) 
 	const router = useRouter()
-	const params : {id: string} = useParams()
 
 	async function createNewProject(title: string) {
 		const { data: { user } } = await supabase.auth.getUser()
@@ -42,22 +36,19 @@ export default function AddAProject({ setHover, setOptimisticProjects } : Props)
 			...store,
 			loading: true,
 			updating: true,
-			selectedProjectId: dummyProject.id,
-			formerProjectId: params.id,
+			projects: store.projects ? [...store.projects, dummyProject] : [ dummyProject ],
 			log: "createNewProject before"
 		})
-		startTransition(() => setOptimisticProjects({ action: "create", project: dummyProject }))
-		const newProject = await actionCreateProject({ title })
-		console.log(newProject)
+		const newProject = await supaCreateProject(title, user?.id || "none")
+		const newProjects = await supaFetchAllProjects()
 		setStore({
 			...store,
 			loading: false,
 			updating: false,
-			selectedProjectId: newProject?.id || "dummy",
-			formerProjectId: params.id,
+			projects: newProjects || store.projects || [],
 			log: "createNewProject after"
 		})
-		router.push(`/kanban/${newProject?.id}`)
+		router.push(`/kanban/${newProject?.id || 'home'}`)
 	}
 
 	return (
@@ -95,7 +86,6 @@ export default function AddAProject({ setHover, setOptimisticProjects } : Props)
 								<input 
 									type="text" 
 									name="title"
-									maxLength={15}
 									className="bg-pure border border-muted-foreground rounded-md p-2"
 								/>
 							</div>
