@@ -11,8 +11,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { Project } from "@prisma/client";
 import { useStore } from "@/utils/store/useStore";
 import { supaCreateProject, supaFetchAllProjects, supabase } from "@/utils/supabase/queries";
-import { useRouter } from "next/navigation";
-
+import { useParams, useRouter } from "next/navigation";
 
 type Props = {
 	hover: boolean
@@ -22,6 +21,7 @@ export default function AddAProject({ setHover } : Props) {
 	const [open, setOpen] = useState(false)
 	const { store, setStore } = useStore(s=>s) 
 	const router = useRouter()
+	const params : {id: string} = useParams()
 
 	async function createNewProject(title: string) {
 		const { data: { user } } = await supabase.auth.getUser()
@@ -36,19 +36,24 @@ export default function AddAProject({ setHover } : Props) {
 			...store,
 			loading: true,
 			updating: true,
+			selectedProjectId: dummyProject.id,
+			formerProjectId: params.id,
 			projects: store.projects ? [...store.projects, dummyProject] : [ dummyProject ],
 			log: "createNewProject before"
 		})
 		const newProject = await supaCreateProject(title, user?.id || "none")
+		console.log(newProject)
 		const newProjects = await supaFetchAllProjects()
 		setStore({
 			...store,
 			loading: false,
 			updating: false,
+			selectedProjectId: newProject?.id || "dummy",
+			formerProjectId: params.id,
 			projects: newProjects || store.projects || [],
 			log: "createNewProject after"
 		})
-		router.push(`/kanban/${newProject?.id || 'home'}`)
+		router.push(`/kanban/${newProject?.id}`)
 	}
 
 	return (
@@ -86,6 +91,7 @@ export default function AddAProject({ setHover } : Props) {
 								<input 
 									type="text" 
 									name="title"
+									maxLength={15}
 									className="bg-pure border border-muted-foreground rounded-md p-2"
 								/>
 							</div>

@@ -11,6 +11,7 @@ import {  useState } from "react"
 import { Button } from "../ui/button"
 import { supaCreateColumn, supaFetchAllCols, supabase } from "@/utils/supabase/queries"
 import { useStore } from "@/utils/store/useStore"
+import { useParams } from "next/navigation"
 
 type Props = {
 	numOfCols: number | undefined
@@ -19,6 +20,8 @@ type Props = {
 export default function AddAColumn({ numOfCols, projectId } : Props) {
 	const { store, setStore } = useStore(s=>s)
 	const [open, setOpen] = useState(false)
+	const params : {id: string} = useParams()
+	const paramsId = params.id
 
 	async function createColumn(data: FormData, projectId: string) {
 		const { data: { user } } = await supabase.auth.getUser()
@@ -26,7 +29,9 @@ export default function AddAColumn({ numOfCols, projectId } : Props) {
 			id: '9999',
 			title: data.get('title') as string,
 			created_at: new Date(), 
-			position: numOfCols ? numOfCols : 0,
+			position: store.columns?.filter(c => c.project === paramsId).length 
+								? store.columns?.filter(c => c.project === paramsId).length 
+								: 0,
 			owner: user?.id ? user.id : null,
 			project: projectId
 		}
@@ -36,7 +41,7 @@ export default function AddAColumn({ numOfCols, projectId } : Props) {
 			columns: store.columns ? [ ...store.columns, newColumn ] : [ newColumn ],
 			log: "AddAColumn"
 		})
-		await supaCreateColumn(data, numOfCols, projectId)
+		await supaCreateColumn(data, store.columns?.filter(c => c.project === paramsId).length ? store.columns?.filter(c => c.project === paramsId).length : 0, projectId)
 		const newCols = await supaFetchAllCols()
 		setTimeout(() => setStore({
 			...store,

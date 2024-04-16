@@ -13,7 +13,7 @@ export function SiderbarContent({ hover, setHover } : Props) {
 	return (
 		<div className="flex flex-col gap-y-2">
 			<div className="flex flex-col gap-y-2">
-				{store.projects?.map(project => (
+				{store.projects?.sort((a,b) => Number(a.created_at.getTime) - Number(b.created_at.getTime)).map(project => (
 					<SidebarButton 
 						hover={hover}
 						key={project.id}

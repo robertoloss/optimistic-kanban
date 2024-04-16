@@ -11,17 +11,22 @@ export default function updateColumnOverColumn({ setStore, store, activeId, over
 	setTimeout(() => { 
 		const activeColumn = store.columns?.filter((col) => col.id === activeId)[0];
 		const overColumn = store.columns?.filter((col) => col.id === overId)[0];
+		//console.log(`
+		//	activeColumn pos: ${activeColumn?.position}
+		//	overColumn pos: ${overColumn?.position}
+		//`)
 		if (store.columns && activeColumn != undefined && overColumn != undefined) {
 			const res = store.columns.map(col => {
-				if (col.id === activeId) return {...overColumn, position: activeColumn.position}
-				if (col.id === overId) return {...activeColumn, position: overColumn.position};
+				if (col.id === activeId) return {...activeColumn, position: overColumn.position}
+				if (col.id === overId) return {...overColumn, position: activeColumn.position};
 				return col
 			})	
+			console.log(`cols: `, res)
 			setStore({
 				...store, 
 				columns: res,
 				log: "updateColumnOverColumn"
 			})
 		}  
-	}, 0)
+	}, 1)
 }
