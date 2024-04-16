@@ -13,8 +13,8 @@ export default function updateColumnOverColumn({ setStore, store, activeId, over
 		const overColumn = store.columns?.filter((col) => col.id === overId)[0];
 		if (store.columns && activeColumn != undefined && overColumn != undefined) {
 			const res = store.columns.map(col => {
-				if (col.id === activeId) return {...overColumn, position: activeColumn.position}
-				if (col.id === overId) return {...activeColumn, position: overColumn.position};
+				if (col.id === activeId) return {...activeColumn, position: overColumn.position}
+				if (col.id === overId) return {...overColumn, position: activeColumn.position};
 				return col
 			})	
 			setStore({
