@@ -25,7 +25,7 @@ export default function dragEndHandler({ setActiveColumn, setActiveTask, tasks, 
 			setStore({
 				...store,
 				log: "dragEndHandler",
-				triggerUpdate: !store.triggerUpdate
+				triggerUpdate: true 
 			})
 		} catch (error) {
 				console.error("Error updating columns:", error);

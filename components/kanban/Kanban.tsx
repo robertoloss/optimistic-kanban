@@ -50,7 +50,6 @@ export default function Kanban() {
 			const tasks = await supaFetchAllTasks()
 			const projects = await supaFetchAllProjects()
 			if (columns && tasks && projects) {
-				console.log("yup")
 				setStore({
 					...store,
 					columns,
@@ -58,7 +57,8 @@ export default function Kanban() {
 					projects,
 					loading: false,
 					updating: false,
-					log: "Kanban-yup"
+					triggerUpdate: false,
+					log: "Kanban-setColTaskProj"
 				})
 			}
 		}
@@ -70,20 +70,22 @@ export default function Kanban() {
 			...store, 
 			loading: false,
 			updating: false,
+			triggerUpdate: false,
 			log: "Kanban"
 		})	
 	},[ triggerUpdate ])
 	
-	console.log("cols: ", store.columns)
+	console.log("params: ", params.id)
 	console.log("log: ", store.log)
+	console.log("triggerUpdate: ", store.triggerUpdate)
 
 	return (
 		<div className="flex flex-col w-full h-full items-start ">
 			<div className="flex flex-row w-full justify-between">
-				<div className={cn("text-md font-semibold ml-4 mt-4", {
-					//"opacity-0": loading || params.id != store.selectedProjectId
+				<div className={cn("text-lg font-semibold ml-4 mt-4 min-h-8", {
+					"text-muted-foreground": !store.project || !store.project.title 
 					})}>
-						{store.project?.title}
+						{ store.project?.title || "Home"}
 					</div>
 				{/*<div className="h-6 mb-2 p-2">{updating && <p>Saving...</p>}</div>*/}
 			</div>

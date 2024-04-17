@@ -40,6 +40,7 @@ export default function AddAProject({ setHover } : Props) {
 			log: "createNewProject before"
 		})
 		const newProject = await supaCreateProject(title, user?.id || "none")
+		console.log("newProject: ", newProject)
 		const newProjects = await supaFetchAllProjects()
 		setStore({
 			...store,

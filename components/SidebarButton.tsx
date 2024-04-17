@@ -18,19 +18,12 @@ export default function SidebarButton({ project, hover } : Props) {
 	const currentId = pathArray.at(pathArray.length - 1)
 	const router = useRouter()
 
-	async function getNumCols(project: Project) {
-		const { data } = await supabase
-			.from("Column")
-			.select()
-			.eq('project', project.id)
-		return data?.length || 4
-	}
 	async function navigateToProject() {
-		const num = 4 // await getNumCols(project)
+		const num = 4 
 		setStore({
 			...store,
 			loading: true,
-			triggerUpdate: !store.triggerUpdate,
+			triggerUpdate: true,
 			selectedProjectId: project.id,
 			formerProjectId: currentId,
 			numCols: num,
@@ -46,14 +39,19 @@ export default function SidebarButton({ project, hover } : Props) {
 			log: "deleteProject",
 			updating: true,
 			loading: true,
+			triggerUpdate: true,
+			project: null,
 			projects: store?.projects?.filter(p => p.id != project.id) || [] 
 		})
+		router.push(`/kanban/home`)
 		await supaDeleteProject(project.id)
 		const newProjects = await supaFetchAllProjects()
 		setTimeout(() => setStore({
 			...store,
 			log: "deleteProject after",
 			updating: false,
+			project: null,
+			triggerUpdate: true,
 			loading: false,
 			projects: newProjects || store.projects || []
 		}) , 100)
