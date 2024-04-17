@@ -66,8 +66,8 @@ export default function SidebarButton({ project, hover } : Props) {
 					transition hover:text-foreground select-none h-14 border-2 border-muted 
 				`, {
 					'shadow-none border-2 border-foreground text-foreground': 
-						(store.selectedProjectId === "" && currentId === project.id) || 
-						(store.selectedProjectId === project.id),
+						(store.selectedProjectId === project.id) && store.project?.id !== 'dummy' ||
+						project.id === 'dummy'
 					})
 				}
 				onClick={()=> {
@@ -84,7 +84,9 @@ export default function SidebarButton({ project, hover } : Props) {
 					 overflow-hidden
 				`}>
 					<p className={`xl:block`}>
-						{project.title}
+						{ 
+							project.title
+						}
 					</p>
 				</div>
 				<p className={`xl:hidden font-semibold w-full self-center text-center ${hover ? 'hidden' : ''}`}>

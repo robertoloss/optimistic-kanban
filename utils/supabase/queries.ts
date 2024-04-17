@@ -147,6 +147,7 @@ export async function supaFetchAllProjects() {
 			.from('Project')
 			.select('*')
 			.eq('owner', user?.id)
+			.order('created_at', { ascending: true })
 		if (data) {
 			const res : Project[] = [...data]
 			return res

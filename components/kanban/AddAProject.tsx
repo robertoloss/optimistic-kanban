@@ -36,6 +36,7 @@ export default function AddAProject({ setHover } : Props) {
 			...store,
 			loading: true,
 			updating: true,
+			project: dummyProject,
 			projects: store.projects ? [...store.projects, dummyProject] : [ dummyProject ],
 			log: "createNewProject before"
 		})
@@ -46,6 +47,8 @@ export default function AddAProject({ setHover } : Props) {
 			...store,
 			loading: false,
 			updating: false,
+			selectedProjectId: newProject?.id || "",
+			project: newProject || null,
 			projects: newProjects || store.projects || [],
 			log: "createNewProject after"
 		})
