@@ -38,6 +38,7 @@ export default function SidebarButton({ project, hover } : Props) {
 			...store,
 			log: "deleteProject",
 			updating: true,
+			deleting: true,
 			loading: true,
 			triggerUpdate: true,
 			project: null,
@@ -51,6 +52,7 @@ export default function SidebarButton({ project, hover } : Props) {
 			log: "deleteProject after",
 			updating: false,
 			project: null,
+			deleting: false,
 			triggerUpdate: true,
 			loading: false,
 			projects: newProjects || store.projects || []
@@ -75,7 +77,6 @@ export default function SidebarButton({ project, hover } : Props) {
 						...store,
 						loading: true
 					})
-					console.log("LINK WAS CLICKED")
 					if (project.id != currentId) navigateToProject()
 				}}
 			>
@@ -96,7 +97,7 @@ export default function SidebarButton({ project, hover } : Props) {
 					onClick={(e)=>{
 						console.log("Trash was clicked")
 						e.stopPropagation()
-						deleteProject()	
+						if (!store.deleting) deleteProject()	
 				}}>
 					<Trash2 size="16" className="text-muted-foreground place-self-center hover:text-foreground"/>
 				</div>

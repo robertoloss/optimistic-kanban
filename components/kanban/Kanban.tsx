@@ -75,9 +75,8 @@ export default function Kanban() {
 		})	
 	},[ triggerUpdate ])
 	
-	console.log("params: ", params.id)
+	///console.log("params: ", params.id)
 	console.log("log: ", store.log)
-	console.log("triggerUpdate: ", store.triggerUpdate)
 
 	return (
 		<div className="flex flex-col w-full h-full items-start ">
