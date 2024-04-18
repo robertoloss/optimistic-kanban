@@ -1,19 +1,19 @@
 import { Dispatch, SetStateAction } from "react";
 import AddAProject from "./kanban/AddAProject";
 import SidebarButton from "./SidebarButton";
-import { useStore } from "@/utils/store/useStore";
+import { Project } from "@prisma/client";
 
 type Props = {
 	hover: boolean
 	setHover: Dispatch<SetStateAction<boolean>>			
+	projects: Project[] | null
 }
-export function SiderbarContent({ hover, setHover } : Props) {
-	const { store } = useStore(s=>s)
+export function SiderbarContent({ hover, setHover, projects } : Props) {
 
 	return (
 		<div className="flex flex-col gap-y-2">
 			<div className="flex flex-col gap-y-2">
-				{store.projects?.map(project => (
+				{projects?.map(project => (
 					<SidebarButton 
 						hover={hover}
 						key={project.id}
