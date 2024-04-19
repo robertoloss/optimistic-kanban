@@ -9,7 +9,7 @@ type Props = {
 export default function Sidebar({ projects } : Props) {
 	const [ hover, setHover ] = useState(false)
 
-	console.log("projects from Sidebar: ", projects)
+	//console.log("projects from Sidebar: ", projects)
 
 	return (
 		<div 

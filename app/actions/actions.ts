@@ -15,12 +15,17 @@ export async function actionCreateProject({
 		const { data: { user }} = await supabase.auth.getUser()
 		if (user) {
 			const id = user.id
-			await supabase.from('Project')
+			const { data } = await supabase.from('Project')
 				.insert({
 					title: title,
 					owner: id
 				})
-			revalidateTag("getNumberOfColumns")
+				.select()
+			if (data) {
+				const res : Project = data[0]
+				revalidateTag("actionFetchAllProjects")
+				return res
+			}
 		}
 		
 	} catch (error) {

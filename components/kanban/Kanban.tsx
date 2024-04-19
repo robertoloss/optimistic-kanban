@@ -48,15 +48,16 @@ export default function Kanban() {
 			console.log("FETCHING STUFF")
 			const columns = await supaFetchAllCols();
 			const tasks = await supaFetchAllTasks()
-			const projects = await supaFetchAllProjects()
-			if (columns && tasks && projects) {
+			//const projects = await supaFetchAllProjects()
+			if (columns && tasks ) {
 				setStore({
 					...store,
 					columns,
 					tasks,
-					projects,
+				//	projects,
 					loading: false,
 					updating: false,
+					deleting: false,
 					triggerUpdate: false,
 					log: "Kanban-setColTaskProj"
 				})
@@ -71,12 +72,14 @@ export default function Kanban() {
 			loading: false,
 			updating: false,
 			triggerUpdate: false,
+			deleting: false,
 			log: "Kanban"
 		})	
 	},[ triggerUpdate ])
 	
 	///console.log("params: ", params.id)
-	console.log("log: ", store.log)
+	//console.log("log: ", store.log)
+	console.log("deleting: ", store.deleting)
 
 	return (
 		<div className="flex flex-col w-full h-full items-start ">

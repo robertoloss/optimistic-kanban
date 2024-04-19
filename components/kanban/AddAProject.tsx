@@ -7,18 +7,24 @@ import {
 	DialogOverlay
 } from "@/components/ui/dialog"
 import { Button } from "../ui/button";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, startTransition, useState } from "react";
 import { Project } from "@prisma/client";
 import { useStore } from "@/utils/store/useStore";
-import { supaCreateProject, supaFetchAllProjects, supabase } from "@/utils/supabase/queries";
+import { supabase } from "@/utils/supabase/queries";
 import { useRouter } from "next/navigation";
+import { actionCreateProject } from "@/app/actions/actions";
 
 
 type Props = {
 	hover: boolean
 	setHover: Dispatch<SetStateAction<boolean>>
+	updateOptimisticProjects: (action: {
+		action: any;
+		project?: any;
+		id?: any;
+	}) => void
 }
-export default function AddAProject({ setHover } : Props) {
+export default function AddAProject({ setHover, updateOptimisticProjects } : Props) {
 	const [open, setOpen] = useState(false)
 	const { store, setStore } = useStore(s=>s) 
 	const router = useRouter()
@@ -31,25 +37,25 @@ export default function AddAProject({ setHover } : Props) {
 			title,
 			owner: user?.id || null
 		}
-		console.log("dummy project: ", dummyProject)
+		startTransition(() => updateOptimisticProjects({
+			action: "create",
+			project: dummyProject
+		}))
 		setStore({
 			...store,
 			loading: true,
 			updating: true,
 			project: dummyProject,
-			projects: store.projects ? [...store.projects, dummyProject] : [ dummyProject ],
+			selectedProjectId: "",
 			log: "createNewProject before"
 		})
-		const newProject = await supaCreateProject(title, user?.id || "none")
-		console.log("newProject: ", newProject)
-		const newProjects = await supaFetchAllProjects()
+		const newProject = await actionCreateProject({ title })
 		setStore({
 			...store,
 			loading: false,
 			updating: false,
 			selectedProjectId: newProject?.id || "",
 			project: newProject || null,
-			projects: newProjects || store.projects || [],
 			log: "createNewProject after"
 		})
 		router.push(`/kanban/${newProject?.id || 'home'}`)

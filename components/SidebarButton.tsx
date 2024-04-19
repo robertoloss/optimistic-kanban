@@ -6,12 +6,19 @@ import { usePathname } from "next/navigation"
 import { useStore } from "@/utils/store/useStore"
 import { supaDeleteProject, supaFetchAllProjects, supabase } from "@/utils/supabase/queries"
 import { useRouter } from "next/navigation"
+import { actionDeleteProject } from "@/app/actions/actions"
+import { startTransition } from "react"
 
 type Props = {
 	project: Project,
 	hover: boolean
+	updateOptimisticProjects: (action: {
+		action: any;
+		project?: any;
+		id?: any;
+	}) => void
 }
-export default function SidebarButton({ project, hover } : Props) {
+export default function SidebarButton({ project, hover, updateOptimisticProjects } : Props) {
 	const { store, setStore } = useStore(state => state)
 	const path = usePathname()
 	const pathArray = path.split('/')
@@ -40,23 +47,23 @@ export default function SidebarButton({ project, hover } : Props) {
 			updating: true,
 			deleting: true,
 			loading: true,
-			triggerUpdate: true,
 			project: null,
 			projects: store?.projects?.filter(p => p.id != project.id) || [] 
 		})
 		router.push(`/kanban/home`)
-		await supaDeleteProject(project.id)
-		const newProjects = await supaFetchAllProjects()
-		setTimeout(() => setStore({
+		startTransition(()=>updateOptimisticProjects({
+			action: "delete",
+			id: project.id
+		}))
+	  await actionDeleteProject({ id: project.id })
+		setStore({
 			...store,
 			log: "deleteProject after",
 			updating: false,
 			project: null,
 			deleting: false,
-			triggerUpdate: true,
 			loading: false,
-			projects: newProjects || store.projects || []
-		}) , 100)
+		})
 	}
 
 	return (
@@ -99,7 +106,10 @@ export default function SidebarButton({ project, hover } : Props) {
 						e.stopPropagation()
 						if (!store.deleting) deleteProject()	
 				}}>
-					<Trash2 size="16" className="text-muted-foreground place-self-center hover:text-foreground"/>
+					<Trash2 size="16" className={`
+						text-muted-foreground 
+						place-self-center hover:text-foreground transition-all
+					`}/>
 				</div>
 			</div>
 		</div>

@@ -29,7 +29,7 @@ export default async function KanbanLayout({ children }: Props ) {
 					hidden sm:grid sm:grid-cols-[116px] hover:grid-cols-[240px] transition-all
 					xl:grid-cols-[240px]
 				`}>
-					<Sidebar projects={projects}/>
+					<Sidebar projects={projects || null}/>
 				</div>
 				<div className=" w-full overflow-auto h-full">
 					{ children }
