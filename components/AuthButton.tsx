@@ -2,8 +2,9 @@ import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ThemeToggle } from "./theme-toggle";
+import { cn } from "@/lib/utils";
 
-export default async function AuthButton() {
+export default async function AuthButton({ drawer } : { drawer? : boolean}) {
   const supabase = createClient();
 
   const {
@@ -19,7 +20,12 @@ export default async function AuthButton() {
   };
 
   return user ? (
-    <div className="flex items-center gap-4">
+    <div className={cn(
+			`flex items-center gap-4`,
+			{
+				'flex-col': drawer
+			}
+		)}>
       Hey, {user.email}!
 			<ThemeToggle />
       <form action={signOut}>

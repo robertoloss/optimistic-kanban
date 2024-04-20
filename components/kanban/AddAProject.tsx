@@ -32,7 +32,7 @@ export default function AddAProject({ setHover, updateOptimisticProjects } : Pro
 	async function createNewProject(title: string) {
 		const { data: { user } } = await supabase.auth.getUser()
 		const dummyProject : Project = {
-			id: "dummy",
+			id: `dummy_${Math.floor((Math.random() * 100))}`,
 			created_at: new Date,
 			title,
 			owner: user?.id || null
@@ -44,17 +44,13 @@ export default function AddAProject({ setHover, updateOptimisticProjects } : Pro
 		setStore({
 			...store,
 			loading: true,
-			updating: true,
 			project: dummyProject,
-			selectedProjectId: "",
 			log: "createNewProject before"
 		})
 		const newProject = await actionCreateProject({ title })
 		setStore({
 			...store,
 			loading: false,
-			updating: false,
-			selectedProjectId: newProject?.id || "",
 			project: newProject || null,
 			log: "createNewProject after"
 		})

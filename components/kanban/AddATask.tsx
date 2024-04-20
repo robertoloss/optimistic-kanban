@@ -34,7 +34,6 @@ export default function AddATask({ column, projectId } : Props) {
 		}
 		setStore({
 			...store,
-			updating: true,
 			tasks: store.tasks ? [...store.tasks, newTask] : [newTask],
 			log: "AddATask before"
 		}) 
@@ -49,7 +48,6 @@ export default function AddATask({ column, projectId } : Props) {
 		const newTasks = await supaFetchAllTasks()
 		setTimeout(() => setStore({
 			...store,
-			updating: false,
 			tasks: newTasks || store.tasks || [], 
 			log: "AddATask after supa"
 		}), 100) 

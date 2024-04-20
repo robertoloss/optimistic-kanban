@@ -5,8 +5,9 @@ import { Project } from "@prisma/client"
 
 type Props = {
 	projects: Project[] | null
+	drawer: boolean
 }
-export default function Sidebar({ projects } : Props) {
+export default function Sidebar({ projects, drawer } : Props) {
 	const [ hover, setHover ] = useState(false)
 
 	//console.log("projects from Sidebar: ", projects)
@@ -17,11 +18,12 @@ export default function Sidebar({ projects } : Props) {
 			onMouseEnter={()=>setHover(true)}
 			onMouseLeave={()=>setHover(false)}
 		>
-			<div className={`flex flex-col h-full w-full bg-layout rounded-xl p-4 border dark:border-none `}>
+			<div className={`flex flex-col h-full w-full ${drawer ? '' : 'bg-layout'} rounded-xl p-4 border dark:border-none `}>
 				<SiderbarContent 
 					projects={projects}
 					hover={hover}
 					setHover={setHover}
+					drawer={drawer}
 				/>
 			</div>
 		</div>

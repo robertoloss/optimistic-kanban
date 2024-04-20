@@ -25,15 +25,11 @@ export default function Kanban() {
 		useSensor(TouchSensor),
 	)
 	const { store, setStore} = useStore(state => state)
-	const [activeColumn, setActiveColumn] = useState<Column | null>(null)
-	const [activeTask, setActiveTask] = useState<Task | null>(null)
+	const [ activeColumn, setActiveColumn ] = useState<Column | null>(null)
+	const [ activeTask, setActiveTask ] = useState<Task | null>(null)
 	const { loading, numCols } = store
 
 	const params : {id: string} = useParams()
-
-	console.log("!store.project.id: ", !store.project?.id)
-	console.log("store.project.id != params.id ", store.project?.id != params.id)
-	//const projectId = params.id
 	const projectId = !store.project?.id
 										? params.id
 										: store.project.id != params.id
@@ -56,18 +52,16 @@ export default function Kanban() {
 					columns,
 					tasks,
 					loading: false,
-					updating: false,
 					deleting: false,
-					triggerUpdate: false,
-					log: "Kanban-setColTaskProj"
+					log: "Kanban"
 				})
 			}
 		}
 		if (!columnsIds) fetchColsAndTasks();
 	},[])
 	
-	console.log("\n\nprojectId: ", projectId)
-	console.log("formerProjectId: ", store.formerProjectId)
+	//console.log("\n\nprojectId: ", projectId)
+	//console.log("formerProjectId: ", store.formerProjectId)
 	//console.log("log: ", store.log)
 	
 	return (
@@ -78,7 +72,6 @@ export default function Kanban() {
 					})}>
 						{ store.project?.title || "Home"}
 					</div>
-				{/*<div className="h-6 mb-2 p-2">{updating && <p>Saving...</p>}</div>*/}
 			</div>
 				<DndContext
 					id="list"
@@ -99,7 +92,7 @@ export default function Kanban() {
 						}}
 					>
 					{
-						(!loading && columnsIds && params.id === store.selectedProjectId) || true && columnsIds? 
+						(!loading && columnsIds && params.id === store.project?.id) || true && columnsIds? 
 							<>
 								<SortableContext 
 									items={columnsIds}
@@ -122,14 +115,13 @@ export default function Kanban() {
 								/>
 							</>
 						: (
-								store.projects?.length != undefined || 
 								loading || 
 								!store.tasks
 							) 
 							&& params.id != 'home'
 						? 
 							<LoadingColumns numOfCols={numCols}/>
-							: store.projects?.length === 0 || params.id === 'home'?
+							:  params.id === 'home'?
 								<AddAColumn 
 									numOfCols={store.columns?.length} 
 									projectId={projectId}

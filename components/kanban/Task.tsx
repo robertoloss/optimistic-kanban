@@ -36,7 +36,6 @@ export default function Task({ task, column, overlay } : Props) {
 		setStore({
 			...store,
 			tasks: store.tasks?.filter(t => t.id != task.id) || [],
-			updating: true,
 			log: "deleteTask"
 		})
 		await supaDeleteTask(task)
@@ -44,7 +43,6 @@ export default function Task({ task, column, overlay } : Props) {
 		setTimeout(() => setStore({
 			...store,
 			tasks: newTasks || store.tasks || [],
-			updating: false,
 			log: "deleteTask"
 		}), 100)
 	}

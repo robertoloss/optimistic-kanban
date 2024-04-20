@@ -1,10 +1,8 @@
 import { Project } from "@prisma/client"
 import { cn } from "@/lib/utils"
 import { Trash2 } from "lucide-react"
-import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useStore } from "@/utils/store/useStore"
-import { supaDeleteProject, supaFetchAllCols, supaFetchAllProjects, supaFetchAllTasks, supabase } from "@/utils/supabase/queries"
 import { useRouter } from "next/navigation"
 import { actionDeleteProject } from "@/app/actions/actions"
 import { startTransition } from "react"
@@ -17,8 +15,9 @@ type Props = {
 		project?: any;
 		id?: any;
 	}) => void
+	drawer: boolean
 }
-export default function SidebarButton({ project, hover, updateOptimisticProjects } : Props) {
+export default function SidebarButton({ project, hover, drawer, updateOptimisticProjects } : Props) {
 	const { store, setStore } = useStore(state => state)
 	const path = usePathname()
 	const pathArray = path.split('/')
@@ -30,7 +29,6 @@ export default function SidebarButton({ project, hover, updateOptimisticProjects
 		setStore({
 			...store,
 			loading: true,
-			selectedProjectId: project.id,
 			formerProjectId: currentId,
 			numCols: num,
 			project: project
@@ -43,11 +41,9 @@ export default function SidebarButton({ project, hover, updateOptimisticProjects
 		setStore({
 			...store,
 			log: "deleteProject",
-			updating: true,
 			deleting: true,
 			loading: true,
 			project: null,
-			projects: store?.projects?.filter(p => p.id != project.id) || [] 
 		})
 		router.push(`/kanban/home`)
 		startTransition(()=>updateOptimisticProjects({
@@ -58,7 +54,6 @@ export default function SidebarButton({ project, hover, updateOptimisticProjects
 		setStore({
 			...store,
 			log: "deleteProject after",
-			updating: false,
 			project: null,
 			deleting: false,
 			loading: false,
@@ -74,8 +69,9 @@ export default function SidebarButton({ project, hover, updateOptimisticProjects
 					transition hover:text-foreground select-none h-14 border-2 border-muted 
 				`, {
 					'shadow-none border-2 border-foreground text-foreground': 
-						(store.selectedProjectId === project.id) && store.project?.id !== 'dummy' ||
-						project.id === 'dummy'
+						(store.project?.id === project.id) && !store.project?.id.includes('dummy') ||
+						project.id === 'dummy',
+					'shadow-none': drawer
 					})
 				}
 				onClick={()=> {
@@ -87,19 +83,22 @@ export default function SidebarButton({ project, hover, updateOptimisticProjects
 				}}
 			>
 				<div className={`
-					grid xl:grid-cols-[auto]  ${hover ? 'grid grid-cols-[120px]' : 'grid-cols-[0px]'}
+					grid xl:grid-cols-[auto]  ${hover || drawer ? 'grid grid-cols-[120px]' : 'grid-cols-[0px]'}
 					 overflow-hidden
 				`}>
-					<p className={`xl:block`}>
+					<p className={cn(``,{
+						'block w-full': drawer,
+						'xl:block': !drawer
+					})}>
 						{ 
 							project.title
 						}
 					</p>
 				</div>
-				<p className={`xl:hidden font-semibold w-full self-center text-center ${hover ? 'hidden' : ''}`}>
+				{!drawer && <p className={`xl:hidden font-semibold w-full self-center text-center ${hover ? 'hidden' : ''}`}>
 					{project.title?.at(0)?.toUpperCase()}
-				</p>
-				<div className={`xl:block ${hover ? 'block' : 'hidden'}`} 
+				</p>}
+				<div className={`xl:block ${hover || drawer ? 'block' : 'hidden'}`} 
 					onClick={(e)=>{
 						console.log("Trash was clicked")
 						e.stopPropagation()

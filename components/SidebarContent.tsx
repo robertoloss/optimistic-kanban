@@ -7,8 +7,9 @@ type Props = {
 	hover: boolean
 	setHover: Dispatch<SetStateAction<boolean>>			
 	projects: Project[] | null
+	drawer: boolean
 }
-export function SiderbarContent({ hover, setHover, projects } : Props) {
+export function SiderbarContent({ hover, setHover, projects, drawer } : Props) {
 	const [ optimisticProjects, updateOptimisticProjects ] = useOptimistic(projects, 
 		(state, {action, project, id}: {action: string, project?: Project, id?: string}) => {
 			switch (action) {
@@ -30,6 +31,7 @@ export function SiderbarContent({ hover, setHover, projects } : Props) {
 						key={project.id}
 						project={project}
 						updateOptimisticProjects={updateOptimisticProjects}
+						drawer={drawer}
 					/>
 				))}
 			</div>

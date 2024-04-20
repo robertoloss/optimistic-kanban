@@ -32,7 +32,6 @@ export default function AddAColumn({ numOfCols, projectId } : Props) {
 		}
 		setStore({
 			...store,
-			updating: true,
 			columns: store.columns ? [ ...store.columns, newColumn ] : [ newColumn ],
 			log: "AddAColumn"
 		})
@@ -40,7 +39,6 @@ export default function AddAColumn({ numOfCols, projectId } : Props) {
 		const newCols = await supaFetchAllCols()
 		setTimeout(() => setStore({
 			...store,
-			updating: false,
 			columns: newCols || store.columns || [],
 			log: "AddAColumn"
 		}), 100)
