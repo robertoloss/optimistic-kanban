@@ -5,7 +5,7 @@ import { Project } from "@prisma/client"
 
 type Props = {
 	projects: Project[] | null
-	drawer: boolean
+	drawer?: boolean
 }
 export default function Sidebar({ projects, drawer } : Props) {
 	const [ hover, setHover ] = useState(false)

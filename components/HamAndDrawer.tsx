@@ -13,7 +13,7 @@ import Sidebar from "./Sidebar"
 import { Project } from "@prisma/client"
 
 type Props = {
-	projects: Project[]
+	projects: Project[] | null
 }
 export default function MobileDrawer({ projects }: Props) {
 

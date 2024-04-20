@@ -7,7 +7,7 @@ type Props = {
 	hover: boolean
 	setHover: Dispatch<SetStateAction<boolean>>			
 	projects: Project[] | null
-	drawer: boolean
+	drawer?: boolean
 }
 export function SiderbarContent({ hover, setHover, projects, drawer } : Props) {
 	const [ optimisticProjects, updateOptimisticProjects ] = useOptimistic(projects, 

@@ -42,14 +42,12 @@ export default function Column({ column, overlay, tasks, projectId } : Props) {
 		setStore({
 			...store,
 			columns: store.columns?.filter(c => c.id != column.id) || [],
-			updating: true,
 		})
 		await supaDeleteColumn(column)
 		const newCols = await supaFetchAllCols()
 		setTimeout(()=> setStore({
 			...store,
 			columns: newCols || store.columns || [],
-			updating: true,
 		}),100)
 	}
 

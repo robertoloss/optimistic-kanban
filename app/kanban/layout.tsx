@@ -24,7 +24,7 @@ export default async function KanbanLayout({ children }: Props ) {
 						<AuthButton />
 					</div>
 					<div className="md:hidden  p-4 flex flex-col justify-center items-center">
-						<HamAndDrawer projects={projects}/>
+						<HamAndDrawer projects={projects || null}/>
 					</div>
 				</nav>
 			</div>

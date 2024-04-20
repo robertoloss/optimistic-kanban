@@ -15,7 +15,7 @@ type Props = {
 		project?: any;
 		id?: any;
 	}) => void
-	drawer: boolean
+	drawer?: boolean
 }
 export default function SidebarButton({ project, hover, drawer, updateOptimisticProjects } : Props) {
 	const { store, setStore } = useStore(state => state)
