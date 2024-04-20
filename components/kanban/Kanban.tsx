@@ -11,7 +11,7 @@ import { Column, Task } from "@prisma/client"
 import AddAColumn from "./AddAColumn"
 import { minHeigtColumn } from "./Column"
 import LoadingColumns from "./LoadingColumns"
-import { supaFetchAllCols, supaFetchAllProjects, supaFetchAllTasks } from "@/utils/supabase/queries"
+import { supaFetchAllCols, supaFetchAllTasks } from "@/utils/supabase/queries"
 import { useParams } from "next/navigation"
 import { useStore } from "@/utils/store/useStore"
 import { cn } from "@/lib/utils"
@@ -27,13 +27,17 @@ export default function Kanban() {
 	const { store, setStore} = useStore(state => state)
 	const [activeColumn, setActiveColumn] = useState<Column | null>(null)
 	const [activeTask, setActiveTask] = useState<Task | null>(null)
-	const { loading, numCols, triggerUpdate, updating } = store
+	const { loading, numCols } = store
 
 	const params : {id: string} = useParams()
-	const projectId = store.selectedProjectId === "" 
+
+	console.log("!store.project.id: ", !store.project?.id)
+	console.log("store.project.id != params.id ", store.project?.id != params.id)
+	//const projectId = params.id
+	const projectId = !store.project?.id
 										? params.id
-										: store.selectedProjectId != params.id
-											? store.selectedProjectId
+										: store.project.id != params.id
+											? store.project.id
 											: params.id
 
 	const columnsIds =  store.columns?.filter(col => col.project === projectId)
@@ -43,18 +47,14 @@ export default function Kanban() {
 		.sort((a,b) => a.position! - b.position!)
 
 	useEffect(()=>{
-		console.log("useEffect")
 		async function fetchColsAndTasks() {
-			console.log("FETCHING STUFF")
 			const columns = await supaFetchAllCols();
 			const tasks = await supaFetchAllTasks()
-			//const projects = await supaFetchAllProjects()
 			if (columns && tasks ) {
 				setStore({
 					...store,
 					columns,
 					tasks,
-				//	projects,
 					loading: false,
 					updating: false,
 					deleting: false,
@@ -63,24 +63,13 @@ export default function Kanban() {
 				})
 			}
 		}
-		if (
-			store.formerProjectId === store.selectedProjectId || 
-			(!store.columns || !store.tasks || !store.projects)
-		) fetchColsAndTasks();
-		setStore({
-			...store, 
-			loading: false,
-			updating: false,
-			triggerUpdate: false,
-			deleting: false,
-			log: "Kanban"
-		})	
-	},[ triggerUpdate ])
+		if (!columnsIds) fetchColsAndTasks();
+	},[])
 	
-	///console.log("params: ", params.id)
+	console.log("\n\nprojectId: ", projectId)
+	console.log("formerProjectId: ", store.formerProjectId)
 	//console.log("log: ", store.log)
-	console.log("deleting: ", store.deleting)
-
+	
 	return (
 		<div className="flex flex-col w-full h-full items-start ">
 			<div className="flex flex-row w-full justify-between">

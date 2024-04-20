@@ -4,7 +4,7 @@ import { Trash2 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useStore } from "@/utils/store/useStore"
-import { supaDeleteProject, supaFetchAllProjects, supabase } from "@/utils/supabase/queries"
+import { supaDeleteProject, supaFetchAllCols, supaFetchAllProjects, supaFetchAllTasks, supabase } from "@/utils/supabase/queries"
 import { useRouter } from "next/navigation"
 import { actionDeleteProject } from "@/app/actions/actions"
 import { startTransition } from "react"
@@ -30,7 +30,6 @@ export default function SidebarButton({ project, hover, updateOptimisticProjects
 		setStore({
 			...store,
 			loading: true,
-			triggerUpdate: true,
 			selectedProjectId: project.id,
 			formerProjectId: currentId,
 			numCols: num,

@@ -167,7 +167,6 @@ export async function supaFetchAllCols() {
 			.eq('owner', user?.id)
 		if (data) {
 			const res : Column[] = [...data]
-			console.log("supaFetchAllCols: ", res)
 			return res
 		}
 	} catch(error) {
