@@ -1,6 +1,7 @@
 import { Menu } from "lucide-react"
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
   DrawerFooter,
   DrawerHeader,
@@ -31,7 +32,9 @@ export default function MobileDrawer({ projects }: Props) {
 					<Sidebar projects={projects} drawer={true}/>
 				</div>
 				<DrawerFooter>
-						<Button variant="outline">Close</Button>
+					<DrawerClose className="border border-muted px-6 py-2 w-fit self-center">
+						Close
+					</DrawerClose>
 				</DrawerFooter>
 			</DrawerContent>
 		</Drawer>

@@ -17,7 +17,7 @@ export default async function Index() {
       <div className="flex-1 flex flex-col gap-20  max-w-4xl px-3 items-center">
         <Header />
         <main className="flex-1 flex flex-col gap-6">
-				<Link href='/kanban' 
+				<Link href='/kanban/home' 
 					className={`
 						flex flex-row justify-center py-2 px-4 rounded-lg 
 						w-fit h-fit bg-primary text-foreground hover:bg-primary-hover transition
