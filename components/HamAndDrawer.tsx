@@ -1,3 +1,4 @@
+'use client'
 import { Menu } from "lucide-react"
 import {
   Drawer,
@@ -7,26 +8,30 @@ import {
   DrawerHeader,
   DrawerTrigger,
 } from "@/components/ui/drawer"
-import { Button } from "./ui/button"
 import AuthButton from "./AuthButton"
 import Sidebar from "./Sidebar"
 import { Project } from "@prisma/client"
+import { useDrawerStore } from "@/utils/store/useStore"
 
 type Props = {
 	projects: Project[] | null
+	children: React.ReactNode
 }
-export default function MobileDrawer({ projects }: Props) {
+export default function MobileDrawer({ projects, children }: Props) {
+	const { isOpen, setIsOpen } = useDrawerStore(s=>s)
 
 	return (
 		<Drawer
 			direction="left"
+			open={isOpen}
+			onOpenChange={setIsOpen}
 		>
 			<DrawerTrigger>
 				<Menu size={24}/>
 			</DrawerTrigger>
 			<DrawerContent className="h-full border-none w-[85%] rounded-none p-4">
-				<DrawerHeader>
-					<AuthButton drawer={true}/>
+				<DrawerHeader >
+					{ children }
 				</DrawerHeader>
 				<div className="flex flex-col max-h-[360px] overflow-scroll">
 					<Sidebar projects={projects} drawer={true}/>

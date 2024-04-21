@@ -28,3 +28,13 @@ export const useStore = create<UseStore>()((set) => ({
 	},
 	setStore: (c: Store) => set(() => ({ store: c }))
 }))
+
+
+export type DrawerStore = {
+	isOpen: boolean,
+	setIsOpen: (b: boolean) => void
+}
+export const useDrawerStore = create<DrawerStore>()((set) => ({
+	isOpen: false,
+	setIsOpen: (b:boolean) => set(() => ({isOpen: b}))
+}))

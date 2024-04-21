@@ -2,7 +2,7 @@ import { Project } from "@prisma/client"
 import { cn } from "@/lib/utils"
 import { Trash2 } from "lucide-react"
 import { usePathname } from "next/navigation"
-import { useStore } from "@/utils/store/useStore"
+import { useDrawerStore, useStore } from "@/utils/store/useStore"
 import { useRouter } from "next/navigation"
 import { actionDeleteProject } from "@/app/actions/actions"
 import { startTransition } from "react"
@@ -19,6 +19,7 @@ type Props = {
 }
 export default function SidebarButton({ project, hover, drawer, updateOptimisticProjects } : Props) {
 	const { store, setStore } = useStore(state => state)
+	const { setIsOpen } = useDrawerStore(s=>s)
 	const path = usePathname()
 	const pathArray = path.split('/')
 	const currentId = pathArray.at(pathArray.length - 1)
@@ -34,6 +35,7 @@ export default function SidebarButton({ project, hover, drawer, updateOptimistic
 			project: project
 		})
 		router.push(`/kanban/${project.id}`)
+		setIsOpen(false)
 	}
 
 	async function deleteProject() {

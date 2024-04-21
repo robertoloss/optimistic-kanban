@@ -8,7 +8,6 @@ import HamAndDrawer from "@/components/HamAndDrawer";
 type Props = {
   children: React.ReactNode;
 }
-
 export default async function KanbanLayout({ children }: Props ) {
 	const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -24,7 +23,9 @@ export default async function KanbanLayout({ children }: Props ) {
 						<AuthButton />
 					</div>
 					<div className="md:hidden  p-4 flex flex-col justify-center items-center">
-						<HamAndDrawer projects={projects || null}/>
+						<HamAndDrawer projects={projects || null}>
+							<AuthButton drawer={true}/>
+						</HamAndDrawer>
 					</div>
 				</nav>
 			</div>

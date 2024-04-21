@@ -9,7 +9,7 @@ import {
 import { Button } from "../ui/button";
 import { Dispatch, SetStateAction, startTransition, useState } from "react";
 import { Project } from "@prisma/client";
-import { useStore } from "@/utils/store/useStore";
+import { useDrawerStore, useStore } from "@/utils/store/useStore";
 import { supabase } from "@/utils/supabase/queries";
 import { useRouter } from "next/navigation";
 import { actionCreateProject } from "@/app/actions/actions";
@@ -27,6 +27,7 @@ type Props = {
 export default function AddAProject({ setHover, updateOptimisticProjects } : Props) {
 	const [open, setOpen] = useState(false)
 	const { store, setStore } = useStore(s=>s) 
+	const { setIsOpen } = useDrawerStore(s=>s)
 	const router = useRouter()
 
 	async function createNewProject(title: string) {
@@ -47,6 +48,7 @@ export default function AddAProject({ setHover, updateOptimisticProjects } : Pro
 			project: dummyProject,
 			log: "createNewProject before"
 		})
+		setIsOpen(false)
 		const newProject = await actionCreateProject({ title })
 		setStore({
 			...store,

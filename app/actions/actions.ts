@@ -2,8 +2,14 @@
 import { revalidateTag } from "next/cache"
 import { createClient } from "@/utils/supabase/server"
 import { Column, Project, Task } from "@prisma/client"
+import { redirect } from "next/navigation";
 
 const supabase = createClient()
+
+export const actionSignOut = async () => {
+	await supabase.auth.signOut();
+	return redirect("/login");
+};
 
 export async function actionCreateProject({ 
 	title,

@@ -1,8 +1,10 @@
+"use server"
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { ThemeToggle } from "./theme-toggle";
 import { cn } from "@/lib/utils";
+import { actionSignOut } from "@/app/actions/actions";
+import { SubmitButton } from "@/app/login/submit-button";
 
 export default async function AuthButton({ drawer } : { drawer? : boolean}) {
   const supabase = createClient();
@@ -11,13 +13,6 @@ export default async function AuthButton({ drawer } : { drawer? : boolean}) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const signOut = async () => {
-    "use server";
-
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    return redirect("/login");
-  };
 
   return user ? (
     <div className={cn(
@@ -28,11 +23,19 @@ export default async function AuthButton({ drawer } : { drawer? : boolean}) {
 		)}>
       Hey, {user.email}!
 			<ThemeToggle />
-      <form action={signOut}>
-        <button className="py-2 px-4 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover">
-          Logout
-        </button>
-      </form>
+			<form>
+				<SubmitButton
+					pendingText="Logging out..."	
+					formAction={actionSignOut}
+				>
+					Logout
+				</SubmitButton>
+			</form>
+			{/*<form action={actionSignOut}>
+			<button className="py-2 px-4 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover">
+			Logout
+			</button>
+			</form>*/}
     </div>
   ) : (
     <Link
