@@ -49,7 +49,7 @@ export default function Login({
       return redirect("/login?message=Could not authenticate user");
     }
 
-    return redirect("/login?message=Check email to continue sign in process");
+    return redirect(`/login?message=You can now login using these credentials (click "Sign In")`);
   };
 
   return (
