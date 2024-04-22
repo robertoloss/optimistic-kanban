@@ -31,11 +31,6 @@ export default async function AuthButton({ drawer } : { drawer? : boolean}) {
 					Logout
 				</SubmitButton>
 			</form>
-			{/*<form action={actionSignOut}>
-			<button className="py-2 px-4 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover">
-			Logout
-			</button>
-			</form>*/}
     </div>
   ) : (
     <Link

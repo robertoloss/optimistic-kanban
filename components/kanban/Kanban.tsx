@@ -109,10 +109,10 @@ export default function Kanban() {
 										/>
 								)})}
 								</SortableContext> 
-								<AddAColumn 
+								{params.id != 'home' && <AddAColumn 
 									numOfCols={store.columns?.length} 
 									projectId={projectId}
-								/>
+									/>}
 							</>
 						: (
 								loading || 
@@ -122,10 +122,7 @@ export default function Kanban() {
 						? 
 							<LoadingColumns numOfCols={numCols}/>
 							:  params.id === 'home'?
-								<AddAColumn 
-									numOfCols={store.columns?.length} 
-									projectId={projectId}
-								/>
+								<div />
 								: <div className="flex flex-row w-[400px]">
 										Nothing found
 									</div>
