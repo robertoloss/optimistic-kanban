@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation"
 import { useDrawerStore, useHoverStore, useStore } from "@/utils/store/useStore"
 import { useRouter } from "next/navigation"
 import { actionDeleteProject } from "@/app/actions/actions"
-import { startTransition } from "react"
+import { Dispatch, SetStateAction, startTransition } from "react"
 import { useSortable } from "@dnd-kit/sortable"
 import { UniqueIdentifier } from "@dnd-kit/core";
 
@@ -18,8 +18,9 @@ type Props = {
 		id?: any;
 	}) => void
 	drawer?: boolean
+	setDndProjects: Dispatch<SetStateAction<Project[] | null>>
 }
-export default function SidebarButton({ project, drawer, updateOptimisticProjects } : Props) {
+export default function SidebarButton({ project, drawer, updateOptimisticProjects, setDndProjects } : Props) {
 	const { hover } = useHoverStore(s=>s)
 	const {
     attributes,
@@ -33,11 +34,11 @@ export default function SidebarButton({ project, drawer, updateOptimisticProject
 		data: {
 			project
 		},
-		animateLayoutChanges: () => false,
-	//	 transition: {
-	//		duration: 200, // milliseconds
-	//		easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
-	//	},
+		animateLayoutChanges: () => true,
+		 transition: {
+			duration: 200, // milliseconds
+			easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+		},
 	});
   
   const style = {
@@ -74,10 +75,11 @@ export default function SidebarButton({ project, drawer, updateOptimisticProject
 			project: null,
 		})
 		router.push(`/kanban/home`)
-		startTransition(()=>updateOptimisticProjects({
-			action: "delete",
-			id: project.id
-		}))
+		setDndProjects(prev => prev ? prev.filter(p => p.id != project.id) : [])
+		//startTransition(()=>updateOptimisticProjects({
+		//	action: "delete",
+		//	id: project.id
+		//}))
 	  await actionDeleteProject({ id: project.id as string })
 		setStore({
 			...store,

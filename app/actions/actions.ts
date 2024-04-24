@@ -28,17 +28,24 @@ export async function actionCreateProject({
 } : {
 	title: string
 }) {
-	console.log("action create Project")
+	console.log("action create Project: ", title)
 	try {
 		const { data: { user }} = await supabase.auth.getUser()
 		if (user) {
+			console.log("User ok: ", user)
 			const id = user.id
+			const { count } = await supabase
+				.from('Project')
+				.select('*', { count: 'exact', head: true })
+				.eq('owner', id)
 			const { data } = await supabase.from('Project')
 				.insert({
 					title: title,
-					owner: id
+					owner: id,
+					position: count
 				})
 				.select()
+				console.log("DATA: ", data)
 			if (data) {
 				const res : Project = data[0]
 				revalidateTag("actionFetchAllProjects")
