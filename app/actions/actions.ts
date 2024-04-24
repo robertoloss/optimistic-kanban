@@ -11,6 +11,18 @@ export const actionSignOut = async () => {
 	return redirect("/login");
 };
 
+export async function actionUpdateProjects(newProjects: Project[]) {
+	try {
+		if (newProjects.length > 0) {
+			await supabase.from('Project')
+				.upsert(newProjects)
+			revalidateTag("actionFetchAllProjects")
+		}
+	} catch (error) {
+		console.error(error)
+	}
+}
+
 export async function actionCreateProject({ 
 	title,
 } : {
@@ -80,7 +92,7 @@ export async function actionFetchAllProjects() {
 			.from('Project')
 			.select()
 			.eq('owner',user?.id)
-			.order('created_at', {ascending: true})
+			.order('position', {ascending: true})
 		if (data) {
 			const res : Project[] = [...data]
 			return res

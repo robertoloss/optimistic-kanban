@@ -7,24 +7,23 @@ import {
 	DialogOverlay
 } from "@/components/ui/dialog"
 import { Button } from "../ui/button";
-import { Dispatch, SetStateAction, startTransition, useState } from "react";
+import { startTransition, useState } from "react";
 import { Project } from "@prisma/client";
-import { useDrawerStore, useStore } from "@/utils/store/useStore";
+import { useDrawerStore, useHoverStore, useStore } from "@/utils/store/useStore";
 import { supabase } from "@/utils/supabase/queries";
 import { useRouter } from "next/navigation";
 import { actionCreateProject } from "@/app/actions/actions";
 
 
 type Props = {
-	hover: boolean
-	setHover: Dispatch<SetStateAction<boolean>>
 	updateOptimisticProjects: (action: {
 		action: any;
 		project?: any;
 		id?: any;
 	}) => void
 }
-export default function AddAProject({ setHover, updateOptimisticProjects } : Props) {
+export default function AddAProject({ updateOptimisticProjects } : Props) {
+	const { setHover } = useHoverStore(s=>s)
 	const [open, setOpen] = useState(false)
 	const { store, setStore } = useStore(s=>s) 
 	const { setIsOpen } = useDrawerStore(s=>s)
@@ -36,7 +35,8 @@ export default function AddAProject({ setHover, updateOptimisticProjects } : Pro
 			id: `dummy_${Math.floor((Math.random() * 100))}`,
 			created_at: new Date,
 			title,
-			owner: user?.id || null
+			owner: user?.id || null,
+			position: 99 // change this
 		}
 		startTransition(() => updateOptimisticProjects({
 			action: "create",

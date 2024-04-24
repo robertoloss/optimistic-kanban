@@ -1,5 +1,5 @@
 'use client'
-import { useState } from "react"
+import { useHoverStore } from "@/utils/store/useStore"
 import { SiderbarContent } from "./SidebarContent"
 import { Project } from "@prisma/client"
 
@@ -8,9 +8,8 @@ type Props = {
 	drawer?: boolean
 }
 export default function Sidebar({ projects, drawer } : Props) {
-	const [ hover, setHover ] = useState(false)
+	const { setHover } = useHoverStore(s => s)
 
-	//console.log("projects from Sidebar: ", projects)
 
 	return (
 		<div 
@@ -21,8 +20,6 @@ export default function Sidebar({ projects, drawer } : Props) {
 			<div className={`flex flex-col h-full w-full ${drawer ? '' : 'bg-layout'} rounded-xl p-4 border dark:border-none `}>
 				<SiderbarContent 
 					projects={projects}
-					hover={hover}
-					setHover={setHover}
 					drawer={drawer}
 				/>
 			</div>

@@ -1,14 +1,6 @@
 'use client'
 import { Menu } from "lucide-react"
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTrigger,
-} from "@/components/ui/drawer"
-import AuthButton from "./AuthButton"
+import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTrigger } from "@/components/ui/drawer"
 import Sidebar from "./Sidebar"
 import { Project } from "@prisma/client"
 import { useDrawerStore } from "@/utils/store/useStore"

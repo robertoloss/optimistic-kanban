@@ -18,7 +18,7 @@ model Column {
   project    String?  @db.Uuid
   owner      String?  @db.Uuid
   users      users?   @relation(fields: [owner], references: [id], onDelete: Cascade, map: "public_Column_owner_fkey")
-  Project    Project? @relation(fields: [project], references: [id], onDelete: NoAction, map: "public_Column_project_fkey")
+  Project    Project? @relation(fields: [project], references: [id], onDelete: Cascade, map: "public_Column_project_fkey")
 
   @@schema("public")
 }
@@ -34,7 +34,7 @@ model Task {
   project    String?  @db.Uuid
   owner      String?  @db.Uuid
   users      users?   @relation(fields: [owner], references: [id], onDelete: Cascade, map: "public_Task_owner_fkey")
-  Project    Project? @relation(fields: [project], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "public_Task_project_fkey")
+  Project    Project? @relation(fields: [project], references: [id], onDelete: Cascade, map: "public_Task_project_fkey")
 
   @@schema("public")
 }
@@ -64,6 +64,7 @@ model flow_state {
   created_at             DateTime?             @db.Timestamptz(6)
   updated_at             DateTime?             @db.Timestamptz(6)
   authentication_method  String
+  auth_code_issued_at    DateTime?             @db.Timestamptz(6)
   saml_relay_states      saml_relay_states[]
 
   @@index([created_at(sort: Desc)])
@@ -178,6 +179,7 @@ model saml_providers {
   attribute_mapping Json?
   created_at        DateTime?     @db.Timestamptz(6)
   updated_at        DateTime?     @db.Timestamptz(6)
+  name_id_format    String?
   sso_providers     sso_providers @relation(fields: [sso_provider_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([sso_provider_id])
@@ -321,6 +323,7 @@ model Project {
   created_at DateTime @default(now()) @db.Timestamptz(6)
   title      String?
   owner      String?  @db.Uuid
+  position   Int
   Column     Column[]
   users      users?   @relation(fields: [owner], references: [id], onDelete: Cascade, map: "public_Project_owner_fkey")
   Task       Task[]

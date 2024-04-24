@@ -38,3 +38,13 @@ export const useDrawerStore = create<DrawerStore>()((set) => ({
 	isOpen: false,
 	setIsOpen: (b:boolean) => set(() => ({isOpen: b}))
 }))
+
+
+export type HoverStore = {
+	hover: boolean,
+	setHover: (b: boolean) => void
+}
+export const useHoverStore = create<HoverStore>()((set) => ({
+	hover: false,
+	setHover: (b: boolean) => set(() => ({ hover: b}))
+}))
