@@ -25,11 +25,11 @@ export default function SidebarButton({ project, drawer, setDndProjects } : Prop
     transition,
 		isDragging
   } = useSortable({
-		id: project.id as UniqueIdentifier,
+		id: project.id,
 		data: {
 			project
 		},
-		animateLayoutChanges: () => true,
+		animateLayoutChanges: () => false,
 		 transition: {
 			duration: 200, // milliseconds
 			easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
@@ -71,10 +71,6 @@ export default function SidebarButton({ project, drawer, setDndProjects } : Prop
 		})
 		router.push(`/kanban/home`)
 		setDndProjects(prev => prev ? prev.filter(p => p.id != project.id) : [])
-		//startTransition(()=>updateOptimisticProjects({
-		//	action: "delete",
-		//	id: project.id
-		//}))
 	  await actionDeleteProject({ id: project.id as string })
 		setStore({
 			...store,

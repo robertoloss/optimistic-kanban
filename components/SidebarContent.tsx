@@ -2,9 +2,9 @@ import {memo, useEffect, useState } from "react";
 import AddAProject from "./kanban/AddAProject";
 import SidebarButton from "./SidebarButton";
 import { Project } from "@prisma/client";
-import { SortableContext } from "@dnd-kit/sortable";
+import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { DndContext, DragOverEvent, MouseSensor, TouchSensor, UniqueIdentifier, useSensor, useSensors } from "@dnd-kit/core";
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
+import { restrictToParentElement, restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { actionUpdateProjects } from "@/app/actions/actions";
 
 type Props = {
@@ -31,37 +31,26 @@ export const SiderbarContent = memo(function({ projects, drawer } : Props) {
 			<DndContext
 				sensors={sensors}
 				id="projects"
-				onDragStart={() => true}
-				onDragEnd={() => { dndProjects && actionUpdateProjects(dndProjects) }}
-				onDragOver={(event: DragOverEvent)=>{
-					const {active, over} = event;
-					if (active.id !== over?.id && over) {
-						//setTimeout(() => 
-							setDndProjects(prev => {
-								if (prev) {
-									const activePos = prev 
-										.filter(p => p.id === active.id)
-										.at(0)
-										?.position || 0
-									const overPos = prev
-										.filter(p => p.id === over.id)
-										.at(0)
-										?.position || 0
-									console.log("active, over: ", activePos, overPos)
-									return prev
-										.map(p => {
-											if (![active.id, over.id].includes(p.id)) return p
-											if (p.id === active.id) return {...p, position: overPos}
-											return {...p, position: activePos}
-										})
-										.sort((a,b) => a.position - b.position)
-								} 
-								return prev
-						})
-						//, 0)	
-					}
+				modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+				onDragEnd={(event) => { 
+					const { active, over } = event
+					setDndProjects(prev => {
+						const activeProject = prev?.find(p => p.id === active.id)	
+						const overProject = prev?.find(p => p.id === over?.id)
+						if (activeProject && overProject && prev) {
+							const oldIndex = prev?.indexOf(activeProject);
+							const newIndex = prev?.indexOf(overProject);
+							
+							const tmpArray = arrayMove(prev, oldIndex, newIndex);
+							const newArray = tmpArray.map((p, i) => {
+								return {...p, position: i}
+							})
+							setTimeout(() => actionUpdateProjects(newArray), 0)
+							return newArray
+						}
+						return prev
+					})
 				}}
-				modifiers={[restrictToVerticalAxis]}
 			>
 				{projectsIds && 
 					<SortableContext items={projectsIds}>
