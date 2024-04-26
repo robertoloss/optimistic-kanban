@@ -6,21 +6,16 @@ import { usePathname } from "next/navigation"
 import { useDrawerStore, useHoverStore, useStore } from "@/utils/store/useStore"
 import { useRouter } from "next/navigation"
 import { actionDeleteProject } from "@/app/actions/actions"
-import { Dispatch, SetStateAction, startTransition } from "react"
+import { Dispatch, SetStateAction } from "react"
 import { useSortable } from "@dnd-kit/sortable"
 import { UniqueIdentifier } from "@dnd-kit/core";
 
 type Props = {
 	project: Omit<Project, 'id'> & { id: UniqueIdentifier },
-	updateOptimisticProjects: (action: {
-		action: any;
-		project?: any;
-		id?: any;
-	}) => void
 	drawer?: boolean
 	setDndProjects: Dispatch<SetStateAction<Project[] | null>>
 }
-export default function SidebarButton({ project, drawer, updateOptimisticProjects, setDndProjects } : Props) {
+export default function SidebarButton({ project, drawer, setDndProjects } : Props) {
 	const { hover } = useHoverStore(s=>s)
 	const {
     attributes,

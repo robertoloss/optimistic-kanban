@@ -109,7 +109,7 @@ export default function Kanban() {
 										/>
 								)})}
 								</SortableContext> 
-								{params.id != 'home' && <AddAColumn 
+								{<AddAColumn 
 									numOfCols={store.columns?.length} 
 									projectId={projectId}
 									/>}

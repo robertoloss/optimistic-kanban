@@ -7,7 +7,7 @@ import {
 	DialogOverlay
 } from "@/components/ui/dialog"
 import { Button } from "../ui/button";
-import { Dispatch, SetStateAction, startTransition, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Project } from "@prisma/client";
 import { useDrawerStore, useHoverStore, useStore } from "@/utils/store/useStore";
 import { supabase } from "@/utils/supabase/queries";
@@ -16,14 +16,9 @@ import { actionCreateProject } from "@/app/actions/actions";
 
 
 type Props = {
-	updateOptimisticProjects: (action: {
-		action: any;
-		project?: any;
-		id?: any;
-	}) => void
 	setDndProjects: Dispatch<SetStateAction< Project[] | null>>
 }
-export default function AddAProject({ updateOptimisticProjects, setDndProjects } : Props) {
+export default function AddAProject({ setDndProjects } : Props) {
 	const { setHover } = useHoverStore(s=>s)
 	const [open, setOpen] = useState(false)
 	const { store, setStore } = useStore(s=>s) 
@@ -40,10 +35,6 @@ export default function AddAProject({ updateOptimisticProjects, setDndProjects }
 			position: 99 // change this
 		}
 		setDndProjects(prev => prev ? [...prev, dummyProject] : [ dummyProject ])
-		//startTransition(() => updateOptimisticProjects({
-		//	action: "create",
-		//	project: dummyProject
-		//}))
 		setStore({
 			...store,
 			loading: true,
