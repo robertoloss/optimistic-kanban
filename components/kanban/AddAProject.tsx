@@ -7,23 +7,25 @@ import {
 	DialogOverlay
 } from "@/components/ui/dialog"
 import { Button } from "../ui/button";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState, useTransition } from "react";
 import { Project } from "@prisma/client";
 import { useDrawerStore, useHoverStore, useStore } from "@/utils/store/useStore";
 import { supabase } from "@/utils/supabase/queries";
 import { useRouter } from "next/navigation";
 import { actionCreateProject } from "@/app/actions/actions";
+import { UpdateOptimisticProjects } from "../SidebarContent";
 
 
 type Props = {
-	setDndProjects: Dispatch<SetStateAction< Project[] | null>>
+	updateOptimisticProjects: UpdateOptimisticProjects
 }
-export default function AddAProject({ setDndProjects } : Props) {
+export default function AddAProject({ updateOptimisticProjects } : Props) {
 	const { setHover } = useHoverStore(s=>s)
 	const [open, setOpen] = useState(false)
 	const { store, setStore } = useStore(s=>s) 
 	const { setIsOpen } = useDrawerStore(s=>s)
 	const router = useRouter()
+	const [ _, startTransition ] = useTransition()
 
 	async function createNewProject(title: string) {
 		const { data: { user } } = await supabase.auth.getUser()
@@ -34,7 +36,10 @@ export default function AddAProject({ setDndProjects } : Props) {
 			owner: user?.id || null,
 			position: 99 // change this
 		}
-		setDndProjects(prev => prev ? [...prev, dummyProject] : [ dummyProject ])
+		startTransition(() => updateOptimisticProjects({
+			action: "create",
+			project: dummyProject
+		}))
 		setStore({
 			...store,
 			loading: true,
