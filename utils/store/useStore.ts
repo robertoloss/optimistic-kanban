@@ -10,6 +10,7 @@ export type Store = {
 	columns: Column[] | null
 	log: string
 	deleting: boolean
+	optimisticUpdate: boolean
 }
 type UseStore = {
 	store: Store,
@@ -25,6 +26,7 @@ export const useStore = create<UseStore>()((set) => ({
 		columns: null,
 		log: "[empty]",
 		deleting: false,
+		optimisticUpdate: false
 	},
 	setStore: (c: Store) => set(() => ({ store: c }))
 }))

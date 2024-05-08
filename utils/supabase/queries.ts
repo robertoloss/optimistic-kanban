@@ -3,6 +3,23 @@ import { createClient } from "@/utils/supabase/client"
 
 export const supabase = createClient()
 
+export async function supaUpdateTask({ newTitle, newContent, taskId} : {
+	newTitle: string,
+	newContent: string
+	taskId: string
+}) {
+	try {
+		await supabase
+			.from('Task')
+			.update({
+				title: newTitle,
+				content: newContent
+			})
+			.eq('id', taskId)
+	} catch(error) {
+		console.error()
+	}
+}
 
 export async function supaDeleteProject(projectId: string) {
 	try {

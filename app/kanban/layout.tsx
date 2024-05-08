@@ -31,7 +31,7 @@ export default async function KanbanLayout({ children }: Props ) {
 			</div>
 			<div className="flex flex-row justify-between w-full h-full pb-4 overflow-hidden">
 				<div className={`
-					hidden md:grid md:grid-cols-[116px] hover:grid-cols-[240px] transition-all
+					hidden md:grid md:grid-cols-[240px] transition-all
 					xl:grid-cols-[240px]
 				`}>
 					<Sidebar projects={projects || null}/>

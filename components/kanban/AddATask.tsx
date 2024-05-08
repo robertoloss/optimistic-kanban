@@ -35,7 +35,8 @@ export default function AddATask({ column, projectId } : Props) {
 		setStore({
 			...store,
 			tasks: store.tasks ? [...store.tasks, newTask] : [newTask],
-			log: "AddATask before"
+			log: "AddATask before",
+			optimisticUpdate: true
 		}) 
 		const input = {
 			title: data.get('title'),
@@ -49,7 +50,8 @@ export default function AddATask({ column, projectId } : Props) {
 		setTimeout(() => setStore({
 			...store,
 			tasks: newTasks || store.tasks || [], 
-			log: "AddATask after supa"
+			log: "AddATask after supa",
+			optimisticUpdate: false
 		}), 100) 
 	}
 
@@ -88,7 +90,7 @@ export default function AddATask({ column, projectId } : Props) {
 								<textarea 
 									name="content"
 									className="bg-pure rounded-md border border-muted-foreground p-2 min-h-[64px]"
-									maxLength={120}
+									maxLength={400}
 								/>
 							</div>
 							<Button 

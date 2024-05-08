@@ -125,7 +125,7 @@ export default function SidebarButton({ project, drawer, updateOptimisticProject
 					/>
 				</div>
 				<div className={`
-					grid xl:grid-cols-[auto]  ${hover || drawer ? 'grid grid-cols-[120px]' : 'grid-cols-[0px]'}
+					grid grid-cols-[auto]  ${ drawer ? 'grid grid-cols-[120px]' : 'grid-cols-[0px]'}
 					 overflow-hidden justify-start items-start
 				`}>
 					<p className={cn(`text-left self-start justify-self-start`,{
@@ -137,10 +137,10 @@ export default function SidebarButton({ project, drawer, updateOptimisticProject
 						}
 					</p>
 				</div>
-				{!drawer && <p className={`xl:hidden font-semibold w-full self-center text-center ${hover ? 'hidden' : ''}`}>
+				{!drawer && <p className={`hidden font-semibold w-full self-center text-center ${hover ? '' : ''}`}>
 					{project.title?.at(0)?.toUpperCase()}
 				</p>}
-				<div className={`xl:block ${hover || drawer ? 'block' : 'hidden'}`} 
+				<div className={`md:block ${ drawer ? 'block' : 'hidden'}`} 
 					onClick={(e)=>{
 						console.log("Trash was clicked")
 						e.stopPropagation()
