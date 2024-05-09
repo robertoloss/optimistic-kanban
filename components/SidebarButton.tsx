@@ -99,8 +99,8 @@ export default function SidebarButton({ project, drawer, updateOptimisticProject
 		)}>
 			<div
 				className={cn(`
-					flex flex-row justify-between py-4 px-1 cursor-pointer rounded-lg text-muted-foreground
-					bg-muted items-center z-10 text-sm shadow shadow-muted-foreground
+					flex flex-row justify-between py-4 px-1 cursor-pointer rounded-lg dark:text-muted-foreground
+					text-foreground bg-muted items-center z-10 text-sm shadow shadow-muted-foreground
 					transition hover:text-foreground select-none h-14 border-2 border-muted 
 				`,
 				{
@@ -132,9 +132,9 @@ export default function SidebarButton({ project, drawer, updateOptimisticProject
 				</div>
 				<div className={`
 					grid grid-cols-[auto]  ${ drawer ? 'grid grid-cols-[120px]' : 'grid-cols-[0px]'}
-					 overflow-hidden justify-start items-start
+					 overflow-hidden justify-start items-start 
 				`}>
-					<p className={cn(`text-left self-start justify-self-start`,{
+					<p className={cn(`text-left self-start justify-self-start light:text-foreground`,{
 						'block w-full': drawer,
 						'xl:block': !drawer
 					})}>

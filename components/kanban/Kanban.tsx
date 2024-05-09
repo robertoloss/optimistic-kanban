@@ -38,11 +38,12 @@ export default function Kanban() {
 											? store.project.id
 											: params.id
 
-	const columnsIds =  store.columns?.filter(col => col.project === projectId)
+	const columnsIds =  store.columns?.filter(col => (col.project === projectId && col.id != store.justUpdatedColId))
 		.sort((a,b) => a.position! - b.position! )
 		.map(column => column.id as UniqueIdentifier)
-	const currentColumns = store.columns?.filter(col => col.project === projectId)
+	const currentColumns = store.columns?.filter(col => (col.project === projectId && col.id != store.justUpdatedColId))
 		.sort((a,b) => a.position! - b.position!)
+	const colJustUpdatedId = store.justUpdatedColId
 
 	useEffect(()=>{
 		async function fetchColsAndTasks() {
@@ -63,6 +64,8 @@ export default function Kanban() {
 		}
 		if (!columnsIds) fetchColsAndTasks();
 	},[store.project])
+
+	console.log("Kanban")
 	
 	return (
 		<div className="flex flex-col w-full h-full items-start ">
@@ -106,7 +109,14 @@ export default function Kanban() {
 								strategy={horizontalListSortingStrategy}
 							>
 							{currentColumns?.map(column => {
-								const columnTasks = store.tasks?.filter(t => t.columnId === column.id)
+								const columnTasks = store.tasks?.filter(t => {
+									if ( column.id === 'update' ) {
+										console.log("id = update: ", colJustUpdatedId)
+										return t.columnId === colJustUpdatedId
+									}
+									return t.columnId === column.id
+								})
+								
 								return (
 									<ColumnComp 
 										projectId={projectId}

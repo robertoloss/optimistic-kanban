@@ -1,5 +1,4 @@
 import { cn } from "@/app/utils/cn"
-import { useMemo } from "react"
 import { SortableContext, useSortable } from "@dnd-kit/sortable"
 import { CSS } from '@dnd-kit/utilities'
 import { Column as ColumnPrisma, Task as TaskPrisma} from "@prisma/client"
@@ -34,7 +33,7 @@ export default function Column({ column, overlay, tasks, projectId } : Props) {
 	});
 	const { store, setStore } = useStore(s => s) 
 	const sortedTasks = tasks?.sort((a,b) => (a.position || 0) - (b.position || 0))
-	const tasksIds = useMemo(() => sortedTasks?.map(t => (t.id as unknown) as UniqueIdentifier), [tasks])
+	const tasksIds = sortedTasks?.map(t => (t.id as unknown) as UniqueIdentifier)
 	const style = {
     transform: CSS.Transform.toString(transform),
     transition,

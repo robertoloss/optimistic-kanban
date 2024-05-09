@@ -47,7 +47,7 @@ export default function AddAColumn({ numOfCols, projectId } : Props) {
 	return (
 		<div className={`flex flex-col mt-[minHeigtColumn] justify-start `}>
 			<Dialog open={open} onOpenChange={setOpen}>
-				<DialogTrigger>
+				<DialogTrigger disabled={store.optimisticUpdate}>
 					<div className={`
 						group bg-background p-4 flex flex-col justify-center border-2 rounded-lg border-muted-foreground 
 						hover:border-foreground hover:cursor-pointer border-dashed transition

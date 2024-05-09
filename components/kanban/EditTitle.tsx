@@ -25,9 +25,10 @@ export default function({ children, column, project } : Props) {
 			}
 			setStore({
 				...store,
-				columns: store.columns ? [...store.columns.filter(c=>c.id!=column.id), updatedColumn] : [updatedColumn],
+				columns: store.columns ? [...store.columns.filter(col => col.id != column.id), updatedColumn] : [updatedColumn],
 				log: "updateTask before",
-				optimisticUpdate: true
+				optimisticUpdate: true,
+				justUpdatedColId: column.id
 			}) 
 			await supaUpdateColumn({ newTitle, columnId: column.id })
 			const newCols = await supaFetchAllCols()
@@ -50,7 +51,8 @@ export default function({ children, column, project } : Props) {
 				...store,
 				project: optimisticProject,
 				log: "updatedProject before",
-				optimisticUpdate: true
+				optimisticUpdate: true,
+				justUpdatedColId: ""
 			}) 
 			const updatedProject = await supaUpdateProject({ 
 				newTitle, projectId: project.id 
