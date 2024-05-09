@@ -61,13 +61,13 @@ export default function({ children, task, action } : Props) {
 				<DialogContent >
 					<form 
 						action={(data: FormData)=>updateTask(data)}
-						className="flex flex-col max-h-[280px] min-h-[200px] justify-between items-start"
+						className="flex flex-col  min-h-[216px] justify-between items-start"
 					>
 					<DialogHeader className="h-full w-full">
 						<div
 							className="flex flex-col gap-y-4 w-full"
 						>
-							<DialogTitle className="text-md font-semibold w-full h-fit">
+							<DialogTitle className="mt-4 text-md font-semibold w-full h-fit">
 								{!edit && 
 									<p className="p-2 font-medium">
 										{task.title}

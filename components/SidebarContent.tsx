@@ -1,4 +1,5 @@
-import {memo, useOptimistic, useTransition } from "react";
+import {memo, useEffect, useOptimistic, useTransition } from "react";
+import { useStore } from "@/utils/store/useStore"
 import AddAProject from "./kanban/AddAProject";
 import SidebarButton from "./SidebarButton";
 import { Project } from "@prisma/client";
@@ -6,6 +7,7 @@ import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { DndContext, MouseSensor, TouchSensor, UniqueIdentifier, useSensor, useSensors } from "@dnd-kit/core";
 import { restrictToParentElement, restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { actionUpdateProjects } from "@/app/actions/actions";
+import { supaFetchAllProjects } from "@/utils/supabase/queries";
 
 type Props = {
 	projects: Project[] | null
@@ -50,11 +52,27 @@ export const SiderbarContent = memo(function({ projects, drawer } : Props) {
 					return state
 			}
 	})
+	const { store } = useStore(s=>s)
+  useEffect(() => {
+		async function update() {
+			const newProjects = await supaFetchAllProjects()
+			startTransition(() => updateOptimisticProjects({
+				action: "update",
+				newProjects: newProjects || []
+			}))
+			newProjects && actionUpdateProjects(newProjects)
+		}
+		if (!store.project?.id?.includes('dummy') && !store.ignoreUseEffectSidebar) {
+			update()
+		}
+	},[store.project])
+
 	const [ _, startTransition ] = useTransition()	
 
 	const projectsIds = optimisticProjects?.
 		sort((a,b) => a.position - b.position).
 		map(p => p.id as UniqueIdentifier)
+
 
 	return (
 		<div className="flex flex-col gap-y-2">

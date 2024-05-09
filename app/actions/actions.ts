@@ -11,6 +11,27 @@ export const actionSignOut = async () => {
 	return redirect("/login");
 };
 
+
+export async function actionRevalidateFetchProjects() {
+	revalidateTag("actionFetchAllProjects")
+}
+
+export async function actionUpdateProjectTitle({ newTitle, projectId } : {
+	newTitle: string,
+	projectId: string
+}) {
+	try {
+		await supabase
+			.from('Project')
+			.update({
+				title: newTitle
+			})
+			.eq('id', projectId)
+	} catch(error) {
+		console.error(error)
+	}
+}
+
 export async function actionUpdateProjects(newProjects: Project[]) {
 	try {
 		if (newProjects.length > 0) {

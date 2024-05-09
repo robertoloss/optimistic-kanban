@@ -11,6 +11,7 @@ export type Store = {
 	log: string
 	deleting: boolean
 	optimisticUpdate: boolean
+	ignoreUseEffectSidebar: boolean
 }
 type UseStore = {
 	store: Store,
@@ -26,7 +27,8 @@ export const useStore = create<UseStore>()((set) => ({
 		columns: null,
 		log: "[empty]",
 		deleting: false,
-		optimisticUpdate: false
+		optimisticUpdate: false,
+		ignoreUseEffectSidebar: false
 	},
 	setStore: (c: Store) => set(() => ({ store: c }))
 }))
@@ -50,3 +52,4 @@ export const useHoverStore = create<HoverStore>()((set) => ({
 	hover: false,
 	setHover: (b: boolean) => set(() => ({ hover: b}))
 }))
+

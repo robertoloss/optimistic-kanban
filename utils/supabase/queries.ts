@@ -3,6 +3,60 @@ import { createClient } from "@/utils/supabase/client"
 
 export const supabase = createClient()
 
+export async function supaFetchProject({ projectId } : {
+	projectId: string
+}) {
+	try {
+		const { data } = await supabase
+			.from('Project')
+			.select()
+			.eq('id', projectId)
+		if (data && data.length > 0) {
+			const project : Project = data[0]
+			return project
+		}
+	} catch(error) {
+		console.error(error)
+	}
+}
+
+export async function supaUpdateProject({ newTitle, projectId } : {
+	newTitle: string,
+	projectId: string
+}) {
+	try {
+		const { data } = await supabase
+			.from('Project')
+			.update({
+				title: newTitle
+			})
+			.eq('id', projectId)
+			.select()
+		if (data) {
+			const project : Project = data[0] 
+			return project
+		}
+	} catch(error) {
+		console.error(error)
+	}
+}
+
+export async function supaUpdateColumn({ newTitle, columnId } : {
+	newTitle: string,
+	columnId: string
+}) {
+	try {
+		await supabase
+			.from('Column')
+			.update({
+				title: newTitle
+			})
+			.eq('id', columnId)
+	} catch(error) {
+		console.error(error)
+	}
+}
+
 export async function supaUpdateTask({ newTitle, newContent, taskId} : {
 	newTitle: string,
 	newContent: string

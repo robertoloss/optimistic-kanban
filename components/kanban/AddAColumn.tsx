@@ -48,10 +48,13 @@ export default function AddAColumn({ numOfCols, projectId } : Props) {
 		<div className={`flex flex-col mt-[minHeigtColumn] justify-start `}>
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogTrigger>
-				<div className="group p-4 flex flex-col justify-center border-2 rounded-lg border-border hover:border-muted-foreground hover:cursor-pointer border-dashed transition ">
-					<div className="flex flex-col h-6 hover:cursor-pointer rounded-full w-6 transition">
-						<CirclePlus className="text-border group-hover:text-muted-foreground transition" />
-					</div>
+					<div className={`
+						group bg-background p-4 flex flex-col justify-center border-2 rounded-lg border-muted-foreground 
+						hover:border-foreground hover:cursor-pointer border-dashed transition
+					`}>
+						<div className="flex flex-col h-6 hover:cursor-pointer rounded-full w-6 transition">
+							<CirclePlus className="text-muted-foreground group-hover:text-foreground transition" />
+						</div>
 					</div>
 				</DialogTrigger>
 				<DialogContent>

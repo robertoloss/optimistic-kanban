@@ -10,6 +10,7 @@ import { useSortable } from "@dnd-kit/sortable"
 import { UniqueIdentifier } from "@dnd-kit/core";
 import { UpdateOptimisticProjects } from "./SidebarContent";
 import { useTransition } from "react";
+import AlertComponent from "./kanban/AlertComponent";
 
 type Props = {
 	project: Omit<Project, 'id'> & { id: UniqueIdentifier },
@@ -70,6 +71,8 @@ export default function SidebarButton({ project, drawer, updateOptimisticProject
 			deleting: true,
 			loading: true,
 			project: null,
+			optimisticUpdate: true,
+			ignoreUseEffectSidebar: true
 		})
 		startTransition(() => updateOptimisticProjects({
 			action: "delete",
@@ -83,6 +86,8 @@ export default function SidebarButton({ project, drawer, updateOptimisticProject
 			project: null,
 			deleting: false,
 			loading: false,
+			optimisticUpdate: false,
+			ignoreUseEffectSidebar: false
 		})
 	}
 
@@ -101,7 +106,7 @@ export default function SidebarButton({ project, drawer, updateOptimisticProject
 				{
 					'shadow-none border-2 border-foreground text-foreground': 
 						(store.project?.id === project.id) && !store.project?.id.includes('dummy') ||
-						project.id === 'dummy',
+						String(project.id).includes('dummy'),
 					'shadow-none': drawer,
 					'z-50': isDragging
 				})}
@@ -110,7 +115,8 @@ export default function SidebarButton({ project, drawer, updateOptimisticProject
 						...store,
 						loading: true
 					})
-					if (project.id != currentId) navigateToProject()
+					//if (project.id != currentId) 
+						navigateToProject()
 				}}
 			>
 				<div {...listeners}
@@ -142,14 +148,19 @@ export default function SidebarButton({ project, drawer, updateOptimisticProject
 				</p>}
 				<div className={`md:block ${ drawer ? 'block' : 'hidden'}`} 
 					onClick={(e)=>{
-						console.log("Trash was clicked")
 						e.stopPropagation()
-						if (!store.deleting) deleteProject()	
 				}}>
-					<Trash2 size="16" className={`
-						text-muted-foreground 
-						place-self-center hover:text-foreground transition-all
-					`}/>
+						<AlertComponent
+							title="Delete a Project"
+							content="Are you sure you want to delete this Project? This action cannot be undone."
+							action={() => deleteProject()}
+						>
+						<Trash2 size="16" className={cn(
+							`text-muted-foreground place-self-center hover:text-foreground transition-all`, {
+								'opacity-50': store.optimisticUpdate
+							}
+						)}/>
+					</AlertComponent>
 				</div>
 			</div>
 		</div>
