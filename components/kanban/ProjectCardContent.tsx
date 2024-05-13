@@ -30,9 +30,9 @@ export default function ProectCardContent({ project, colsNum, tasksNum } : Props
 		<div 
 			className="
 				flex flex-col flex-grow w-full  h-full min-h-[200px] rounded-lg 
-				bg-background border-2 border-muted-foreground p-6 justify-between
+				bg-background border border-muted-foreground p-6 justify-between
 				hover:shadow-[-4px_4px_var(--foreground)] transition
-				hover:translate-x-1 hover:-translate-y-1 cursor-pointer
+				hover:translate-x-1 hover:-translate-y-1 cursor-pointer hover:border-foreground
 				active:shadow-none active:translate-x-0 active:translate-y-0"
 			onMouseUp={() => navigateToProject()}
 		>
