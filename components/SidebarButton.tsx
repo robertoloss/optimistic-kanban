@@ -52,15 +52,16 @@ export default function SidebarButton({ project, drawer, updateOptimisticProject
 
 	async function navigateToProject() {
 		const num = 4 
-		setStore({
+		router.push(`/kanban/${project.id}`)
+		setTimeout(() => { setStore({
 			...store,
 			loading: true,
 			formerProjectId: currentId,
 			numCols: num,
-			project: {...project, id: project.id as string }
+			project: {...project, id: project.id as string },
+			home: false,
 		})
-		router.push(`/kanban/${project.id}`)
-		setIsOpen(false)
+		setIsOpen(false) }, 100)
 	}
 
 	async function deleteProject() {
@@ -110,14 +111,7 @@ export default function SidebarButton({ project, drawer, updateOptimisticProject
 					'shadow-none': drawer,
 					'z-50': isDragging
 				})}
-				onClick={()=> {
-					setStore({
-						...store,
-						loading: true
-					})
-					//if (project.id != currentId) 
-						navigateToProject()
-				}}
+				onClick={()=> navigateToProject()}
 			>
 				<div {...listeners}
 					className={cn(`flex flex-col justify-center h-[64px] cursor-grab active:grabbing`, {
@@ -132,9 +126,10 @@ export default function SidebarButton({ project, drawer, updateOptimisticProject
 				</div>
 				<div className={`
 					grid grid-cols-[auto]  ${ drawer ? 'grid grid-cols-[120px]' : 'grid-cols-[0px]'}
-					 overflow-hidden justify-start items-start 
+					 overflow-hidden justify-start items-start group-hover:text-foreground
 				`}>
-					<p className={cn(`text-left self-start justify-self-start light:text-foreground`,{
+					<p className={cn(`text-left self-start justify-self-start light:text-foreground`,
+					{
 						'block w-full': drawer,
 						'xl:block': !drawer
 					})}>

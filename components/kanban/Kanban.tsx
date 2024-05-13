@@ -12,7 +12,7 @@ import AddAColumn from "./AddAColumn"
 import { minHeigtColumn } from "./Column"
 import LoadingColumns from "./LoadingColumns"
 import { supaFetchAllCols, supaFetchAllTasks, supaFetchProject } from "@/utils/supabase/queries"
-import { useParams } from "next/navigation"
+import { useParams, usePathname } from "next/navigation"
 import { useStore } from "@/utils/store/useStore"
 import { cn } from "@/lib/utils"
 import { Pencil } from "lucide-react"
@@ -21,7 +21,10 @@ import EditTitle from "./EditTitle"
 export type ProjNumCols = {
 	[projectId: string] : number
 }
-export default function Kanban() {
+type Props = {
+	children: React.ReactNode
+}
+export default function Kanban({ children } : Props) {
 	const sensors = useSensors( 
 		useSensor(MouseSensor),
 		useSensor(TouchSensor),
@@ -31,6 +34,8 @@ export default function Kanban() {
 	const [ activeTask, setActiveTask ] = useState<Task | null>(null)
 	const { loading, numCols } = store
 
+	const pathname = usePathname()
+	const pathnameLast = pathname.split('/').slice(-1)
 	const params : {id: string} = useParams()
 	const projectId = (!store.project?.id || store.project.id === 'update')
 										? params.id
@@ -65,24 +70,36 @@ export default function Kanban() {
 		if (!columnsIds) fetchColsAndTasks();
 	},[store.project])
 
-	console.log("Kanban")
 	
 	return (
 		<div className="flex flex-col w-full h-full items-start ">
 			<div className="flex flex-row h-fit w-fit gap-2 justify-start items-center ml-4 mt-4 group hover:cursor-pointer">
 				<EditTitle project={store.project || undefined}>
 					<div className="flex flex-row gap-2 justify-start items-center w-fit h-fit p-2 rounded-lg">
-						<div className={cn("text-lg font-semibold group-hover:text-muted-foreground transition", {
+						<div className={cn("text-lg font-semibold group-hover:text-muted-foreground -ml-2 transition", {
 							//"text-muted-foreground": !store.project || !store.project.title 
 						})}>
-							{ store.project?.title || ""}
+							{ (!store.home && store.project) || store.home && !store.loading && (pathnameLast.length > 0 && pathnameLast[0] != 'home') 
+									? (store.project?.title || "...") 
+									: store.home 
+										? "Home" 
+										: ""
+							}
 						</div>
-						<div className={`transition opacity-0 group-hover:opacity-100`}>
+						{!store.home && <div className={`transition opacity-0 group-hover:opacity-100`}>
 							<Pencil size={16} className="text-muted-foreground"/>
-						</div>
+						</div>}
 					</div>
 				</EditTitle>
 			</div>
+			{(
+					((pathnameLast.length > 0 && pathnameLast[0] === 'home') && !store.project) ||
+					(store.home && store.loading && children)
+			 ) && children}
+			{(
+				(store.home && !store.loading && pathnameLast.length > 0 && pathnameLast[0] != 'home') ||
+				store.project
+				) &&
 			<DndContext
 				id="list"
 				sensors={sensors}
@@ -151,7 +168,7 @@ export default function Kanban() {
 					activeColumn={activeColumn}
 					activeTask={activeTask}
 				/>
-			</DndContext>
+			</DndContext>}
 		</div>
 	)
 }

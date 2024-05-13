@@ -79,6 +79,61 @@ export async function actionCreateProject({
 	}
 }
 
+export async function createFirstProjectColumnsTasks() {
+	try {
+		const { data: { user }} = await supabase.auth.getUser()
+		if (!user) return
+		const { data } = await supabase
+			.from('Project')
+			.insert({ title: 'First Project', owner: user.id, position: 0  })
+			.select()
+		if (!data || data.length === 0) {
+			console.log("No data after project creation")
+			return
+		}
+		const project = data[0]	
+		const { data: columns } = await supabase
+			.from('Column')
+			.insert([
+				{ title: 'To-Do',  project: project.id, owner: user.id, position: 0},
+				{ title: 'In Progress',  project: project.id, owner: user.id, position: 1},
+				{ title: 'Completed',  project: project.id, owner: user.id, position: 2 },
+			])
+			.select()
+		if (!columns || columns.length != 3) return
+		await supabase
+			.from('Task')
+			.insert([
+				{ 
+					title: 'First Task', 
+					content: 'This is your first task! Edit it and/or move it to other columns!',
+					position: 0,
+					columnId: columns[0].id,
+					project: project.id,
+					owner: user.id
+				},
+				{ 
+					title: 'Second Task', 
+					content: 'This is your second task! Edit it and/or move it to other columns!',
+					position: 1,
+					columnId: columns[0].id,
+					project: project.id,
+					owner: user.id
+				},
+				{ 
+					title: 'Third Task', 
+					content: 'This is your third task! Edit it and/or move it to other columns!',
+					position: 2,
+					columnId: columns[0].id,
+					project: project.id,
+					owner: user.id
+				},
+			])
+	} catch(error) {
+		console.error(error)
+	}
+}
+
 export async function actionDeleteProject({
 	id,
 } : {
@@ -162,6 +217,23 @@ export async function actionFetchAllTasks() {
 		}
 	} catch(error) {
 		console.error("Error: ", error)
+	}
+}
+
+
+export async function actionFetchTasksOfProject({ projectId } : 
+{ projectId: string }) {
+	try {
+		const { data } = await supabase
+			.from('Task')
+			.select()
+			.eq('project', projectId)
+		if (data) {
+			const tasks : Task[] = data
+			return tasks
+		}
+	} catch(error) {
+		console.error(error)
 	}
 }
 

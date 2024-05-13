@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { SubmitButton } from "./submit-button";
+import { createFirstProjectColumnsTasks } from "../actions/actions";
 
 export default function Login({
   searchParams,
@@ -43,6 +44,8 @@ export default function Login({
         emailRedirectTo: `${origin}/auth/callback`,
       },
     });
+		createFirstProjectColumnsTasks()
+
 
     if (error) {
 			console.error(error)

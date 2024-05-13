@@ -8,6 +8,7 @@ import { DndContext, MouseSensor, TouchSensor, UniqueIdentifier, useSensor, useS
 import { restrictToParentElement, restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { actionUpdateProjects } from "@/app/actions/actions";
 import { supaFetchAllProjects } from "@/utils/supabase/queries";
+import SidebarHome from "./SidebarHome";
 
 type Props = {
 	projects: Project[] | null
@@ -76,6 +77,7 @@ export const SiderbarContent = memo(function({ projects, drawer } : Props) {
 
 	return (
 		<div className="flex flex-col gap-y-2">
+			<SidebarHome drawer={drawer}/>
 			<div className="flex flex-col gap-y-2">
 			<DndContext
 				sensors={sensors}
