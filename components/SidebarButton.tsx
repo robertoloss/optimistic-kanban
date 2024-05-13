@@ -102,10 +102,10 @@ export default function SidebarButton({ project, drawer, updateOptimisticProject
 				className={cn(`
 					flex flex-row justify-between py-4 px-1 cursor-pointer rounded-lg dark:text-muted-foreground
 					text-foreground bg-muted items-center z-10 text-sm shadow shadow-muted-foreground
-					transition hover:text-foreground select-none h-14 border-2 border-muted 
+					transition hover:text-foreground select-none h-14 border border-muted 
 				`,
 				{
-					'shadow-none border-2 border-foreground text-foreground': 
+					'shadow-none border border-foreground text-foreground': 
 						(store.project?.id === project.id) && !store.project?.id.includes('dummy') ||
 						String(project.id).includes('dummy'),
 					'shadow-none': drawer,

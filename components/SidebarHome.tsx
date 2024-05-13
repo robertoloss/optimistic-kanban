@@ -29,10 +29,10 @@ export default function SidebarHome({ drawer } : Props) {
 			className={cn(`
 				flex flex-row justify-center py-4 px-1 gap-x-2 cursor-pointer rounded-lg dark:text-muted-foreground
 				text-foreground bg-muted items-center z-10 text-sm shadow shadow-muted-foreground
-				transition hover:text-foreground select-none h-14 border-2 border-muted 
+				transition hover:text-foreground select-none h-14 border border-muted 
 			`,
 			{
-				'border-foreground border-2 shadow-none': store.home && !store.project || (
+				'border-foreground border shadow-none': store.home && !store.project || (
 					pathname.split('/').slice(-1).length > 0 && 
 					pathname.split('/').slice(-1)[0] === 'home' &&
 					!store.project
