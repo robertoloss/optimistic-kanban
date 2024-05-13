@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation"
 import { useRouter } from "next/navigation"
 
 type Props = {
-	drawer: boolean
+	drawer: boolean | undefined
 }
 export default function SidebarHome({ drawer } : Props) {
 	const { store, setStore } = useStore(s=>s)
