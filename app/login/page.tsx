@@ -58,10 +58,11 @@ export default function Login({
 	async function sendResetPassword(formData: FormData) {
 		"use server"
 		const supabase = createClient() 
+    const origin = headers().get("origin");
 		const { data, error } = await supabase.auth
 			.resetPasswordForEmail(
 				formData.get("email") as string, {
-					redirectTo: `http://localhost:3000/update-password`
+					redirectTo: `${origin}/update-password`
 				}
 			)
 	}

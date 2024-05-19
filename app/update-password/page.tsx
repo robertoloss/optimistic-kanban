@@ -3,9 +3,11 @@
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { SubmitButton } from "../login/submit-button";
+import { useState } from "react";
 
 export default function UpdatePassword() {
   const supabase = createClient();
+	const [ passwordUpdated, setPasswordUpdated ] = useState(false)
   const router = useRouter();
 
 	async function resetPassword(formData: FormData) {
@@ -16,6 +18,7 @@ export default function UpdatePassword() {
 			alert("There was an error updating your password.");
 			console.error(error);
 		} else {
+			setPasswordUpdated(true)
 			alert("Password updated successfully!");
 			router.push(`/kanban/home`);
 		}
@@ -47,6 +50,11 @@ export default function UpdatePassword() {
 					>
 						Reset Password
 					</SubmitButton>
+					{passwordUpdated && 
+						<h1 className="w-full">
+							Redirecting you home...
+						</h1>
+					}
 				</form>
 			</div>
 		</div>
