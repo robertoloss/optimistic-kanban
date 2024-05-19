@@ -12,7 +12,7 @@ export default function UpdatePassword() {
 			const newPassword = prompt("What would you like your new password to be?");
 			if (newPassword) {
 				console.log("new password")
-				const { data, error } = await supabase.auth.updateUser({ password: newPassword })
+				//const { data, error } = await supabase.auth.updateUser({ password: newPassword })
 				router.push(`kanban/home`)
 			}
 		})
