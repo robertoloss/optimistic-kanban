@@ -18,7 +18,7 @@ export default function UpdatePassword() {
 					if (error) alert("There was an error updating your password.")
 				}
 			} else {
-				console.log("no PASSWORD_RECOVERY")
+				console.log("no PASSWORD_RECOVERY", event)
 			}
 		})
 	}, [])
