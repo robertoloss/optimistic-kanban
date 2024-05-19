@@ -3,8 +3,6 @@ import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-
-
 export default function UpdatePassword() {
 	const supabase = createClient()
 	const router = useRouter()
@@ -15,8 +13,6 @@ export default function UpdatePassword() {
 			if (newPassword) {
 				console.log("new password")
 				const { data, error } = await supabase.auth.updateUser({ password: newPassword })
-				if (data) alert("Password updated successfully!")
-				if (error) alert("There was an error updating your password.")
 				router.push(`kanban/home`)
 			}
 		})
