@@ -17,7 +17,7 @@ import { useStore } from "@/utils/store/useStore"
 import { cn } from "@/lib/utils"
 import { Pencil } from "lucide-react"
 import EditTitle from "./EditTitle"
-import HomeIcon from "./HomeIcon"
+//import HomeIcon from "./HomeIcon"
 
 export type ProjNumCols = {
 	[projectId: string] : number
@@ -81,7 +81,8 @@ export default function Kanban({ children } : Props) {
 							<div className={cn("text-lg font-semibold group-hover:text-muted-foreground -ml-2 transition", {
 								//"text-muted-foreground": !store.project || !store.project.title 
 							})}>
-								{ (!store.home && store.project) || store.home && !store.loading && (pathnameLast.length > 0 && pathnameLast[0] != 'home') 
+								{ (!store.home && store.project) || 
+									store.home && !store.loading && (pathnameLast.length > 0 && pathnameLast[0] != 'home') 
 										? (store.project?.title || "...") 
 										: store.home 
 											? "Home" 

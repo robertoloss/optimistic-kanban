@@ -55,6 +55,17 @@ export default function Login({
     return redirect(`/login?message=You can now login using these credentials (click "Sign In")`);
   };
 
+	async function sendResetPassword(formData: FormData) {
+		"use server"
+		const supabase = createClient() 
+		const { data, error } = await supabase.auth
+			.resetPasswordForEmail(
+				formData.get("email") as string, {
+					redirectTo: 'https://optimistic-kanban.vercel.app/update-password'
+				}
+			)
+	}
+
   return (
 		<div className="flex flex-col w-full h-screen items-center justify-center">
 			<div className="flex flex-col w-full px-8 sm:max-w-md items-center justify-center gap-2">
@@ -93,13 +104,17 @@ export default function Login({
 					<label className="text-md" htmlFor="password">
 						Password
 					</label>
-					<input
-						className="rounded-md px-4 py-2 bg-inherit border mb-6"
-						type="password"
-						name="password"
-						placeholder="••••••••"
-						required
-					/>
+					<div className="flex flex-col gap-y-2">
+						<input
+							className="rounded-md px-4 py-2 bg-inherit border"
+							type="password"
+							name="password"
+							placeholder="•••••"
+						/>
+						<p className="text-sm mb-6 text-muted-foreground">
+							Passwords must be at least 6 characters long
+						</p>
+					</div>
 					<SubmitButton
 						formAction={signIn}
 						className="bg-green-700 rounded-md px-4 py-2 text-foreground mb-2"
@@ -119,6 +134,13 @@ export default function Login({
 							{searchParams.message}
 						</p>
 					)}
+					<SubmitButton
+						formAction={sendResetPassword}
+						className="self-center mt-2 rounded-md text-foreground mb-2 hover:text-destructive transition w-fit h-fit"
+						pendingText="Sendind email to reset password..."
+					>
+						Forgot Password?	
+					</SubmitButton>
 				</form>
 			</div>
 		</div>

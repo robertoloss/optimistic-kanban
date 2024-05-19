@@ -186,6 +186,26 @@ export async function actionFetchAllProjects() {
 	}
 }
 
+
+export async function actionFetchAllProjectsAlpha() {
+	["actionFetchAllProjects"]
+	try {
+		const { data: { user } } = await supabase.auth.getUser()
+		const { data } = await supabase
+			.from('Project')
+			.select()
+			.eq('owner',user?.id)
+			.order('title', {ascending: true})
+		if (data) {
+			const res : Project[] = [...data]
+			return res
+		}
+		return data
+	} catch (error) {
+		console.error(error)
+	}
+}
+
 export async function actionFetchAllCols() {
 	["actionFetchAllCols"]
 	try {
