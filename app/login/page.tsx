@@ -61,7 +61,7 @@ export default function Login({
 		const { data, error } = await supabase.auth
 			.resetPasswordForEmail(
 				formData.get("email") as string, {
-					redirectTo: 'https://optimistic-kanban.vercel.app/update-password'
+					redirectTo: `http://localhost:3000/update-password`
 				}
 			)
 	}
