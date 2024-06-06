@@ -69,10 +69,23 @@ export default function Task({ task, column, overlay } : Props) {
 				<div {...listeners}
 					className={cn(`flex flex-col w-4 justify-center  h-[64px] cursor-grab active:grabbing`, {
 						'h-[64px] cursor-grabbing': overlay,
-						'opacity-50': store.optimisticUpdate
+						'hidden': store.optimisticUpdate,
 					})} >
 					<GripVertical  
-						className="text-muted-foreground hover:text-pure"
+						className={cn(`text-muted-foreground hover:text-pure`, {
+						})}
+						strokeWidth={2}
+						size={16}
+					/>
+				</div>
+				<div 
+					className={cn(`hidden flex-col w-4 justify-center  h-[64px] cursor-grab active:grabbing`, {
+						'h-[64px] cursor-grabbing': overlay,
+						'visible flex': store.optimisticUpdate,
+					})} >
+					<GripVertical  
+						className={cn(`text-muted-foreground hover:text-pure`, {
+						})}
 						strokeWidth={2}
 						size={16}
 					/>
