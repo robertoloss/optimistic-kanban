@@ -45,5 +45,5 @@ export default function updateTaskOverTask({ activeId, overId, store, setStore }
 					log: "updateTaskOverTask"
 				})
 			}
-	}, 1)
+	}, 0)
 }

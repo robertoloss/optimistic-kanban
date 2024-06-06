@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react"
 import { SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable"
 import ColumnComp from "./Column"
-import { DndContext, useSensors, useSensor, UniqueIdentifier, MouseSensor, TouchSensor } from "@dnd-kit/core"
+import { DndContext, useSensors, useSensor, UniqueIdentifier, MouseSensor, TouchSensor, closestCorners, closestCenter, rectIntersection } from "@dnd-kit/core"
 import dragStartHandler from "@/dnd-utils/dragStartHandler"
 import dragEndHandler from "@/dnd-utils/dragEndHandler"
 import dragOverHandler from "@/dnd-utils/dragOverHandler"
@@ -115,6 +115,7 @@ export default function Kanban({ children } : Props) {
 					tasks: store.tasks, columns: store.columns
 				})}
 				onDragOver={dragOverHandler({ setStore, store })}
+				collisionDetection={rectIntersection}
 			>
 				<div className={`flex flex-row flex-shrink w-full px-4 h-full items-start   
 					justify-start gap-x-4 overflow-x-auto py-8`}
@@ -130,6 +131,7 @@ export default function Kanban({ children } : Props) {
 							<SortableContext 
 								items={columnsIds}
 								strategy={horizontalListSortingStrategy}
+							
 							>
 							{currentColumns?.map(column => {
 								const columnTasks = store.tasks?.filter(t => {
