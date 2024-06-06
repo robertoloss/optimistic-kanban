@@ -47,7 +47,8 @@ export default function Kanban({ children } : Props) {
 	const columnsIds =  store.columns?.filter(col => (col.project === projectId && col.id != store.justUpdatedColId))
 		.sort((a,b) => a.position! - b.position! )
 		.map(column => column.id as UniqueIdentifier)
-	const currentColumns = store.columns?.filter(col => (col.project === projectId && col.id != store.justUpdatedColId))
+	const currentColumns = store.columns
+		?.filter(col => (col.project === projectId && col.id != store.justUpdatedColId))
 		.sort((a,b) => a.position! - b.position!)
 	const colJustUpdatedId = store.justUpdatedColId
 
@@ -133,12 +134,10 @@ export default function Kanban({ children } : Props) {
 							{currentColumns?.map(column => {
 								const columnTasks = store.tasks?.filter(t => {
 									if ( column.id === 'update' ) {
-										console.log("id = update: ", colJustUpdatedId)
 										return t.columnId === colJustUpdatedId
 									}
 									return t.columnId === column.id
 								})
-								
 								return (
 									<ColumnComp 
 										projectId={projectId}

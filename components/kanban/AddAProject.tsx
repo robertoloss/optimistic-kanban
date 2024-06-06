@@ -48,7 +48,7 @@ export default function AddAProject({ updateOptimisticProjects } : Props) {
 		})
 		setIsOpen(false)
 		const newProject = await actionCreateProject({ title })
-		console.log("newProject: ", newProject)
+		//console.log("newProject: ", newProject)
 		setStore({
 			...store,
 			loading: false,

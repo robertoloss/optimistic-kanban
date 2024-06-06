@@ -49,7 +49,6 @@ export const SiderbarContent = memo(function({ projects, drawer } : Props) {
 				case "update":
 					return  newProjects || []
 				default:
-					console.log("DEFAULT")
 					return state
 			}
 	})

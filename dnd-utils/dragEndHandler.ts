@@ -15,10 +15,10 @@ type Props = {
 export default function dragEndHandler({ setActiveColumn, setActiveTask, tasks, columns, setStore, store } : Props) {
 	async function updateColsAndTasks(columns: Column[], tasks: Task[]) {
 		try {
-			console.log("dragEnd: ", columns)
+			//console.log("dragEnd: ", columns)
 			await supabase
 				.from('Column')
-				.upsert(columns.map((col,i) => ({...col, position: i})))
+				.upsert(columns)
 			await supabase
 				.from('Task')
 				.upsert(tasks)

@@ -24,11 +24,11 @@ export default function({ children, task, action } : Props) {
 	const { store, setStore }  = useStore(s=>s)
 
 	async function updateTask(data: FormData) {
-		console.log("updateTask:", data)
+		//console.log("updateTask:", data)
 		setEdit(false)
 		const newTitle = data.get('title') as string
 		const newContent = data.get('content') as string
-		console.log("title, content: ", newTitle, newContent)
+		//console.log("title, content: ", newTitle, newContent)
 		const updateTask = {
 			...task,
 			id: 'update',

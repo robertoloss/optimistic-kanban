@@ -17,7 +17,7 @@ export default function updateColumnOverColumn({ setStore, store, activeId, over
 				if (col.id === overId) return {...overColumn, position: activeColumn.position};
 				return col
 			})	
-			console.log("updateColumnOverColumn: ", res)
+			//console.log("updateColumnOverColumn: ", res)
 			setStore({
 				...store, 
 				columns: res,

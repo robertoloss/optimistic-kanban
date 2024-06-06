@@ -16,6 +16,7 @@ export default function({ children, column, project } : Props) {
 	const [ open, setOpen] = useState(false)
 
 	async function update(data: FormData) {
+		// Updating a column...
 		if (column) {
 			const newTitle = data.get('title') as string
 			const updatedColumn = {

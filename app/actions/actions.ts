@@ -49,11 +49,10 @@ export async function actionCreateProject({
 } : {
 	title: string
 }) {
-	console.log("action create Project: ", title)
+	//console.log("action create Project: ", title)
 	try {
 		const { data: { user }} = await supabase.auth.getUser()
 		if (user) {
-			console.log("User ok: ", user)
 			const id = user.id
 			const { count } = await supabase
 				.from('Project')
@@ -139,7 +138,7 @@ export async function actionDeleteProject({
 } : {
 	id: string
 }) {
-	console.log("action delete Project")
+	//console.log("action delete Project")
 	try {
 		await supabase.from('Project')
 			.delete()

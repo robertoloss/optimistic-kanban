@@ -28,7 +28,7 @@ export default async function KanbanLayout({ children }: Props ) {
 					<div className="hidden w-fit max-w-4xl md:flex justify-between items-center p-3 text-sm">
 						<AuthButton />
 					</div>
-					<div className="md:hidden  p-4 flex flex-col justify-center items-center">
+					<div className="md:hidden p-4 flex flex-col justify-center items-center">
 						<HamAndDrawer projects={projects || null}>
 							<AuthButton drawer={true}/>
 						</HamAndDrawer>
@@ -38,7 +38,7 @@ export default async function KanbanLayout({ children }: Props ) {
 			<div className="flex flex-row justify-between w-full h-full pb-4 overflow-hidden">
 				<div className={`
 					hidden md:grid md:grid-cols-[240px] transition-all
-					xl:grid-cols-[240px]
+					xl:grid-cols-[240px
 				`}>
 					<Sidebar projects={projects || null}/>
 				</div>

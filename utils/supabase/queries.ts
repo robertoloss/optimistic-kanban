@@ -52,6 +52,7 @@ export async function supaUpdateColumn({ newTitle, columnId } : {
 				title: newTitle
 			})
 			.eq('id', columnId)
+			.select()
 	} catch(error) {
 		console.error(error)
 	}
@@ -133,7 +134,7 @@ export async function supaFetchTasks(projectId: string) {
 	}
 }
 export async function supaDeleteColumn(column: Column) {
-	console.log("trying to delete column: ", column)
+	//console.log("trying to delete column: ", column)
 	try {
 		await supabase.from('Column')
 			.delete()
@@ -236,6 +237,7 @@ export async function supaFetchAllCols() {
 			.from('Column')
 			.select('*')
 			.eq('owner', user?.id)
+			.order('position', { ascending: true })
 		if (data) {
 			const res : Column[] = [...data]
 			return res
