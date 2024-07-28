@@ -78,10 +78,14 @@ export async function supaUpdateTask({ newTitle, newContent, taskId} : {
 
 export async function supaDeleteProject(projectId: string) {
 	try {
-		await supabase
+		const { data } = await supabase
 			.from("Project")
 			.delete()
 			.eq('id', projectId)
+			.select()
+		if (data) {
+			return data[0] as Project
+		}
 	} catch(error) {
 		console.error(error)
 	}

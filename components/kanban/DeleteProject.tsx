@@ -9,23 +9,21 @@ import { useStore } from "@/utils/store/useStore"
 type Props = {
 	project: Project | null, 
 	drawer?: boolean
-	optimisticProjects?: Project[]
-	revalidate : () => Promise<void>
+	projects: Project[] | null | undefined
 }
-export default function DeleteProject({ project, drawer, revalidate } : Props) {
+export default function DeleteProject({ project, drawer, projects } : Props) {
 	const router = useRouter()
 	const { store , setStore } = useStore(s=>s)
 
 	async function deleteProject() {
 		if (project?.id) {
-			await supaDeleteProject(project?.id)
-			console.log(revalidate())
-			const rev = await revalidate()
-			console.log(rev)
+			const deletedProject: Project | undefined = await supaDeleteProject(project?.id)
+			const newProjects = projects?.filter(p => p.id != deletedProject?.id)
 			setStore({
 				...store,
 				project: null,
-				home: true
+				home: true,
+				projects: newProjects
 			})
 			router.push('/kanban/home')
 		}

@@ -41,10 +41,10 @@ export default function ProectCardContent({ project, colsNum, tasksNum } : Props
 			</h1>
 			<div className="flex flex-col w-fit self-end text-sm font-light">
 				<h1>
-					Columns: {colsNum}
+					Columns: {colsNum ?? '...'}
 				</h1>
 				<h1>
-					Tasks: {tasksNum}
+					Tasks: {tasksNum ?? '...'}
 				</h1>
 			</div>
 		</div>

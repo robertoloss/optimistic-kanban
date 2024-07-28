@@ -65,36 +65,34 @@ export default function SidebarButton({ project, drawer, updateOptimisticProject
 		setIsOpen(false) }, 100)
 	}
 
-	async function deleteProject() {
-		router.push('/kanban/home')
-		setStore({
-			...store,
-			log: "deleteProject",
-			deleting: true,
-			home: true,
-			loading: true,
-			project: null,
-			optimisticUpdate: true,
-			ignoreUseEffectSidebar: true,
-			optimisticProjects
-		})
-		startTransition(() => updateOptimisticProjects({
-			action: "delete",
-			id: project.id as string
-		}))
-	  const newProjects = await actionDeleteProject({ id: project.id as string })
-		setStore({
-			...store,
-			log: "deleteProject after",
-			project: null,
-			home: true,
-			deleting: false,
-			loading: false,
-			optimisticUpdate: false,
-			ignoreUseEffectSidebar: false,
-			optimisticProjects: newProjects
-		})
-	}
+	//async function deleteProject() {
+	//	router.push('/kanban/home')
+	//	setStore({
+	//		...store,
+	//		log: "deleteProject",
+	//		deleting: true,
+	//		home: true,
+	//		loading: true,
+	//		project: null,
+	//		optimisticUpdate: true,
+	//		ignoreUseEffectSidebar: true,
+	//	})
+	//	startTransition(() => updateOptimisticProjects({
+	//		action: "delete",
+	//		id: project.id as string
+	//	}))
+	//  const newProjects = await actionDeleteProject({ id: project.id as string })
+	//	setStore({
+	//		...store,
+	//		log: "deleteProject after",
+	//		project: null,
+	//		home: true,
+	//		deleting: false,
+	//		loading: false,
+	//		optimisticUpdate: false,
+	//		ignoreUseEffectSidebar: false,
+	//	})
+	//}
 
 	return (
 		<div {...attributes} ref={setNodeRef} style={style} className={cn(`z-0`,

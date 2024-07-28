@@ -1,22 +1,31 @@
-import { actionFetchCols, actionFetchTasksOfProject } from "@/app/actions/actions"
 import { Project } from "@prisma/client"
 import ProjectCardContent from "./ProjectCardContent"
+import { supaFetchCols, supaFetchTasks } from "@/utils/supabase/queries"
+import { useState, useEffect } from "react"
+import { Column, Task } from "@prisma/client"
 
 type Props = {
 	project: Project
 }
-export default async function ProjectCard({ project } : Props) {
-	const columns = await actionFetchCols({ projectId: project.id })
-	const tasks = await actionFetchTasksOfProject({ projectId: project.id})
+export default function ProjectCard({ project } : Props) {
+	const [ columns, setColumns ] = useState<null | Column[] | undefined>(null)
+	const [ tasks, setTasks ] = useState<null | Task[] | undefined>(null)
 
-	const colsNum = columns?.length || 0
-	const tasksNum = tasks?.length || 0
+	async function getColsAndTasks() {
+		const resCols = await supaFetchCols(project.id)
+		const resTasks = await supaFetchTasks(project.id)
+		setColumns(resCols)
+		setTasks(resTasks)
+	}
+	useEffect(()=>{
+		getColsAndTasks()
+	},[])
 
 	return (
 		<ProjectCardContent
 			project={project}
-			colsNum={colsNum}
-			tasksNum={tasksNum}
+			colsNum={columns?.length || 0}
+			tasksNum={tasks?.length || 0}
 		/>
 	)
 }

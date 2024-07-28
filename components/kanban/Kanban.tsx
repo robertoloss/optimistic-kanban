@@ -11,23 +11,21 @@ import { Column, Project, Task } from "@prisma/client"
 import AddAColumn from "./AddAColumn"
 import { minHeigtColumn } from "./Column"
 import LoadingColumns from "./LoadingColumns"
-import { supaFetchAllCols, supaFetchAllTasks, supaFetchProject } from "@/utils/supabase/queries"
+import { supaFetchAllCols, supaFetchAllProjects, supaFetchAllTasks, supaFetchProject, supaFetchProjects } from "@/utils/supabase/queries"
 import { useParams, usePathname } from "next/navigation"
 import { useStore } from "@/utils/store/useStore"
 import { cn } from "@/lib/utils"
 import { Pencil } from "lucide-react"
 import EditTitle from "./EditTitle"
 import DeleteProject from "./DeleteProject"
+import KanbanHome from "./KanbanHome"
 //import HomeIcon from "./HomeIcon"
 
 export type ProjNumCols = {
 	[projectId: string] : number
 }
-type Props = {
-	children: React.ReactNode
-	revalidate : () => Promise<void>
-}
-export default function Kanban({ children, revalidate } : Props) {
+//type Props = {}
+export default function Kanban() {
 	const sensors = useSensors( 
 		useSensor(MouseSensor),
 		useSensor(TouchSensor),
@@ -59,6 +57,7 @@ export default function Kanban({ children, revalidate } : Props) {
 			const project = await supaFetchProject({ projectId })
 			const columns = await supaFetchAllCols();
 			const tasks = await supaFetchAllTasks()
+			const projects = await supaFetchAllProjects()
 			if (columns && tasks ) {
 				setStore({
 					...store,
@@ -68,7 +67,8 @@ export default function Kanban({ children, revalidate } : Props) {
 					home: pathnameLast.length > 0 && pathnameLast[0] === 'home',
 					loading: false,
 					deleting: false,
-					log: "Kanban"
+					log: "Kanban",
+					projects
 				})
 			}
 		}
@@ -104,16 +104,16 @@ export default function Kanban({ children, revalidate } : Props) {
 						</div>
 					</EditTitle>
 				</div>
-				{pathnameLast[0] != 'home' && !store.home && <DeleteProject project={store.project} revalidate={revalidate}/> }
+				{pathnameLast[0] != 'home' && !store.home && <DeleteProject project={store.project} projects={store.projects}/> }
 				{/* <HomeIcon /> */}
 			</div>
 			{ 
 				((store.home
-					&& children)
+					&& <KanbanHome projects={store.projects}/>)
 					|| (!store.project?.title
 						&& ((pathnameLast.length > 0 && pathnameLast[0] != 'home'
 							&& <></>)	
-						|| children)
+						|| <KanbanHome projects={store.projects}/>)
 							||	<></>))
 			}
 			{
