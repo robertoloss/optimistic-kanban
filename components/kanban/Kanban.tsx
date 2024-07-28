@@ -63,6 +63,7 @@ export default function Kanban({ children } : Props) {
 					project: project || null,
 					columns,
 					tasks,
+					home: pathnameLast.length > 0 && pathnameLast[0] === 'home',
 					loading: false,
 					deleting: false,
 					log: "Kanban"
@@ -82,12 +83,17 @@ export default function Kanban({ children } : Props) {
 							<div className={cn("text-lg font-semibold group-hover:text-muted-foreground -ml-2 transition", {
 								//"text-muted-foreground": !store.project || !store.project.title 
 							})}>
-								{ (!store.home && store.project) || 
-									store.home && !store.loading && (pathnameLast.length > 0 && pathnameLast[0] != 'home') 
-										? (store.project?.title || "...") 
-										: store.home 
-											? "Home" 
-											: ""
+								{ store.project?.title
+									? store.project?.title
+									: store.home 
+										? "Home"
+										:  "..."
+									//(!store.home && store.project) || 
+									//store.home && !store.loading && (pathnameLast.length > 0 && pathnameLast[0] != 'home') 
+									//	? (store.project?.title || "...") 
+									//	: store.home 
+									//		? "Home" 
+									//		: ""
 								}
 							</div>
 							{!store.home && <div className={`transition opacity-0 group-hover:opacity-100`}>
@@ -98,14 +104,26 @@ export default function Kanban({ children } : Props) {
 				</div>
 				{/* <HomeIcon /> */}
 			</div>
-			{(
-					((pathnameLast.length > 0 && pathnameLast[0] === 'home') && !store.project) ||
-					(store.home && store.loading && children)
-			 ) && children}
-			{(
-				(store.home && !store.loading && pathnameLast.length > 0 && pathnameLast[0] != 'home') ||
-				store.project
-				) &&
+			{ 
+				!store.project?.title
+				&& children 
+				|| store.home
+						&& <></>
+				//(
+				//	((pathnameLast.length > 0 && pathnameLast[0] === 'home') && !store.project) 
+				//	|| (store.home )
+				//) 
+				//&& children
+			}
+			{
+			!store.project?.title
+				&& <></> 
+				|| !store.home
+						&& 
+				
+				//((!store.loading && pathnameLast.length > 0 && pathnameLast[0] != 'home') ||
+				//store.project
+				//) &&
 			<DndContext
 				id="list"
 				sensors={sensors}

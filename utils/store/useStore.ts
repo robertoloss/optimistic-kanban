@@ -32,7 +32,7 @@ export const useStore = create<UseStore>()((set) => ({
 		optimisticUpdate: false,
 		ignoreUseEffectSidebar: false,
 		justUpdatedColId: "",
-		home: true,
+		home: false,
 	},
 	setStore: (c: Store) => set(() => ({ store: c }))
 }))

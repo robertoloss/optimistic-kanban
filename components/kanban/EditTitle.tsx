@@ -31,7 +31,7 @@ export default function({ children, column, project } : Props) {
 				optimisticUpdate: true,
 				justUpdatedColId: column.id
 			}) 
-			await supaUpdateColumn({ newTitle, columnId: column.id })
+			 await supaUpdateColumn({ newTitle, columnId: column.id })
 			const newCols = await supaFetchAllCols()
 			setTimeout(() => setStore({
 				...store,
@@ -75,7 +75,8 @@ export default function({ children, column, project } : Props) {
 					{ children }
 				</DialogTrigger>
 				<DialogContent >
-					<form action={(data: FormData)=>update(data)}
+					<form 
+						action={(data: FormData)=>update(data)}
 						className="flex flex-col max-h-[280px] min-h-[120px] justify-between items-start"
 					>
 					<DialogHeader className="h-full w-full">

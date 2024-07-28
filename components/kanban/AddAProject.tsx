@@ -36,26 +36,29 @@ export default function AddAProject({ updateOptimisticProjects } : Props) {
 			owner: user?.id || null,
 			position: 99 // change this
 		}
-		startTransition(() => updateOptimisticProjects({
-			action: "create",
-			project: dummyProject
-		}))
 		setStore({
 			...store,
+			home: false,
 			loading: true,
 			project: dummyProject,
 			log: "createNewProject before"
 		})
+		startTransition(() => updateOptimisticProjects({
+			action: "create",
+			project: dummyProject
+		}))
 		setIsOpen(false)
 		const newProject = await actionCreateProject({ title })
 		//console.log("newProject: ", newProject)
+		router.push(`/kanban/${newProject?.id || 'home'}`)
+		console.log("newProject != undefined && newProject != null", newProject != undefined && newProject != null)
 		setStore({
 			...store,
+			home: !newProject,
 			loading: false,
 			project: newProject || null,
 			log: "createNewProject after"
 		})
-		router.push(`/kanban/${newProject?.id || 'home'}`)
 	}
 
 	return (
