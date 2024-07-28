@@ -16,8 +16,9 @@ type Props = {
 	project: Omit<Project, 'id'> & { id: UniqueIdentifier },
 	drawer?: boolean
 	updateOptimisticProjects: UpdateOptimisticProjects 
+	optimisticProjects: Project[]
 }
-export default function SidebarButton({ project, drawer, updateOptimisticProjects } : Props) {
+export default function SidebarButton({ project, drawer, updateOptimisticProjects, optimisticProjects } : Props) {
 	const { hover } = useHoverStore(s=>s)
 	const {
     attributes,
@@ -74,14 +75,14 @@ export default function SidebarButton({ project, drawer, updateOptimisticProject
 			loading: true,
 			project: null,
 			optimisticUpdate: true,
-			ignoreUseEffectSidebar: true
+			ignoreUseEffectSidebar: true,
+			optimisticProjects
 		})
 		startTransition(() => updateOptimisticProjects({
 			action: "delete",
 			id: project.id as string
 		}))
-		router.push(`/kanban/home`)
-	  await actionDeleteProject({ id: project.id as string })
+	  const newProjects = await actionDeleteProject({ id: project.id as string })
 		setStore({
 			...store,
 			log: "deleteProject after",
@@ -90,7 +91,8 @@ export default function SidebarButton({ project, drawer, updateOptimisticProject
 			deleting: false,
 			loading: false,
 			optimisticUpdate: false,
-			ignoreUseEffectSidebar: false
+			ignoreUseEffectSidebar: false,
+			optimisticProjects: newProjects
 		})
 	}
 
@@ -143,22 +145,25 @@ export default function SidebarButton({ project, drawer, updateOptimisticProject
 				{!drawer && <p className={`hidden font-semibold w-full self-center text-center ${hover ? '' : ''}`}>
 					{project.title?.at(0)?.toUpperCase()}
 				</p>}
-				<div className={`md:block ${ drawer ? 'block' : 'hidden'}`} 
-					onClick={(e)=>{
-						e.stopPropagation()
-				}}>
-						<AlertComponent
-							title="Delete a Project"
-							content="Are you sure you want to delete this Project? This action cannot be undone."
-							action={() => deleteProject()}
-						>
-						<Trash2 size="16" className={cn(
-							`text-muted-foreground place-self-center hover:text-foreground transition-all`, {
-								'opacity-50': store.optimisticUpdate
-							}
-						)}/>
-					</AlertComponent>
-				</div>
+				<div></div>
+				{
+					//<div className={`md:block ${ drawer ? 'block' : 'hidden'}`} 
+					//	onClick={(e)=>{
+					//		e.stopPropagation()
+					//}}>
+					//		<AlertComponent
+					//			title="Delete a Project"
+					//			content="Are you sure you want to delete this Project? This action cannot be undone."
+					//			action={() => deleteProject()}
+					//		>
+					//		<Trash2 size="16" className={cn(
+					//			`text-muted-foreground place-self-center hover:text-foreground transition-all`, {
+					//				'opacity-50': store.optimisticUpdate
+					//			}
+					//		)}/>
+					//	</AlertComponent>
+					//</div>
+				}
 			</div>
 		</div>
 	)

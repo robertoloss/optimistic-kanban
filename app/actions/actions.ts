@@ -15,6 +15,10 @@ export const actionSignOut = async () => {
 export async function actionRevalidateFetchProjects() {
 	revalidateTag("actionFetchAllProjects")
 }
+export async function actionRevalidateFetchProjectsAlpha() {
+	console.log("let's revalidate the action: fetch projects alpha")
+	revalidateTag("actionFetchAllProjectsAlpha")
+}
 
 export async function actionUpdateProjectTitle({ newTitle, projectId } : {
 	newTitle: string,
@@ -143,7 +147,16 @@ export async function actionDeleteProject({
 		await supabase.from('Project')
 			.delete()
 			.eq('id',id)
+		const { data: { user } } = await supabase.auth.getUser()
+		const { data } = await supabase
+			.from('Project')
+			.select('*')
+			.eq('owner', user?.id)
 		revalidateTag("getNumberOfColumns")
+		if (data) {
+			const res : Project[] = [...data]
+			return res
+		}
 	} catch (error) {
 		console.error(error)
 	}
@@ -187,7 +200,7 @@ export async function actionFetchAllProjects() {
 
 
 export async function actionFetchAllProjectsAlpha() {
-	["actionFetchAllProjects"]
+	["actionFetchAllProjectsAlpha"]
 	try {
 		const { data: { user } } = await supabase.auth.getUser()
 		const { data } = await supabase

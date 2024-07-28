@@ -1,6 +1,6 @@
 import { actionFetchCols, actionFetchTasksOfProject } from "@/app/actions/actions"
 import { Project } from "@prisma/client"
-import ProectCardContent from "./ProjectCardContent"
+import ProjectCardContent from "./ProjectCardContent"
 
 type Props = {
 	project: Project
@@ -13,7 +13,7 @@ export default async function ProjectCard({ project } : Props) {
 	const tasksNum = tasks?.length || 0
 
 	return (
-		<ProectCardContent
+		<ProjectCardContent
 			project={project}
 			colsNum={colsNum}
 			tasksNum={tasksNum}

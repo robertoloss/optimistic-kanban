@@ -110,6 +110,7 @@ export const SiderbarContent = memo(function({ projects, drawer } : Props) {
 								project={project}
 								drawer={drawer}
 								updateOptimisticProjects={updateOptimisticProjects}
+								optimisticProjects={optimisticProjects}
 							/>
 						))}
 					</SortableContext>

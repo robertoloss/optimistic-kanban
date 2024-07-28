@@ -7,7 +7,7 @@ import dragStartHandler from "@/dnd-utils/dragStartHandler"
 import dragEndHandler from "@/dnd-utils/dragEndHandler"
 import dragOverHandler from "@/dnd-utils/dragOverHandler"
 import DragOverlayComponent from "./DragOverlayComponent"
-import { Column, Task } from "@prisma/client"
+import { Column, Project, Task } from "@prisma/client"
 import AddAColumn from "./AddAColumn"
 import { minHeigtColumn } from "./Column"
 import LoadingColumns from "./LoadingColumns"
@@ -17,6 +17,7 @@ import { useStore } from "@/utils/store/useStore"
 import { cn } from "@/lib/utils"
 import { Pencil } from "lucide-react"
 import EditTitle from "./EditTitle"
+import DeleteProject from "./DeleteProject"
 //import HomeIcon from "./HomeIcon"
 
 export type ProjNumCols = {
@@ -24,8 +25,9 @@ export type ProjNumCols = {
 }
 type Props = {
 	children: React.ReactNode
+	revalidate : () => Promise<void>
 }
-export default function Kanban({ children } : Props) {
+export default function Kanban({ children, revalidate } : Props) {
 	const sensors = useSensors( 
 		useSensor(MouseSensor),
 		useSensor(TouchSensor),
@@ -77,9 +79,9 @@ export default function Kanban({ children } : Props) {
 	return (
 		<div className="flex flex-col w-full h-full items-start ">
 			<div className="flex flex-row w-full justify-between h-fit mt-2  items-end px-4">
-				<div className="flex flex-row h-fit w-fit gap-2 items-center group hover:cursor-pointer">
+				<div className="flex flex-row h-fit w-full gap-2 items-center justify-between ">
 					<EditTitle project={store.project || undefined}>
-						<div className="flex flex-row gap-2 justify-start items-center w-fit h-fit p-2 rounded-lg">
+						<div className="flex flex-row gap-2 justify-start items-center w-fit h-fit p-2 group hover:cursor-pointer rounded-lg">
 							<div className={cn("text-lg font-semibold group-hover:text-muted-foreground -ml-2 transition", {
 								//"text-muted-foreground": !store.project || !store.project.title 
 							})}>
@@ -102,28 +104,23 @@ export default function Kanban({ children } : Props) {
 						</div>
 					</EditTitle>
 				</div>
+				{pathnameLast[0] != 'home' && !store.home && <DeleteProject project={store.project} revalidate={revalidate}/> }
 				{/* <HomeIcon /> */}
 			</div>
 			{ 
-				!store.project?.title
-				&& children 
-				|| store.home
-						&& <></>
-				//(
-				//	((pathnameLast.length > 0 && pathnameLast[0] === 'home') && !store.project) 
-				//	|| (store.home )
-				//) 
-				//&& children
+				((store.home
+					&& children)
+					|| (!store.project?.title
+						&& ((pathnameLast.length > 0 && pathnameLast[0] != 'home'
+							&& <></>)	
+						|| children)
+							||	<></>))
 			}
 			{
-			!store.project?.title
-				&& <></> 
-				|| !store.home
-						&& 
-				
-				//((!store.loading && pathnameLast.length > 0 && pathnameLast[0] != 'home') ||
-				//store.project
-				//) &&
+				!store.project?.title
+					&& <></> 
+					|| !store.home
+							&& 
 			<DndContext
 				id="list"
 				sensors={sensors}

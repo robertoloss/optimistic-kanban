@@ -13,7 +13,8 @@ export type Store = {
 	optimisticUpdate: boolean
 	ignoreUseEffectSidebar: boolean
 	justUpdatedColId: string
-	home: boolean
+	home: boolean,
+	optimisticProjects: undefined | Project[]
 }
 type UseStore = {
 	store: Store,
@@ -33,6 +34,7 @@ export const useStore = create<UseStore>()((set) => ({
 		ignoreUseEffectSidebar: false,
 		justUpdatedColId: "",
 		home: false,
+		optimisticProjects: undefined
 	},
 	setStore: (c: Store) => set(() => ({ store: c }))
 }))
