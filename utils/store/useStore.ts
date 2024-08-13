@@ -2,6 +2,7 @@ import { Column, Project, Task } from '@prisma/client'
 import { create } from 'zustand'
 
 export type Store = {
+	triggerUpdate: boolean,
 	loading: boolean
 	numCols: number
 	formerProjectId: string | undefined
@@ -22,6 +23,7 @@ type UseStore = {
 }
 export const useStore = create<UseStore>()((set) => ({
   store: {
+		triggerUpdate: false,
 		loading: false,
 		numCols: 4,
 		formerProjectId: "",

@@ -9,6 +9,7 @@ import { restrictToParentElement, restrictToVerticalAxis } from "@dnd-kit/modifi
 import { actionUpdateProjects } from "@/app/actions/actions";
 import { supaFetchAllProjects } from "@/utils/supabase/queries";
 import SidebarHome from "./SidebarHome";
+import { cn } from "@/lib/utils";
 
 type Props = {
 	projects: Project[] | null
@@ -117,7 +118,9 @@ export const SiderbarContent = memo(function({ projects, drawer } : Props) {
 				}
 			</DndContext>
 			</div>
-			<div className="flex flex-row justify-end w-full ">
+			<div className={cn("flex flex-row justify-end w-full", {
+				"opacity-50": store.loading
+			})}>
 				<AddAProject 
 					updateOptimisticProjects={updateOptimisticProjects}
 				/>

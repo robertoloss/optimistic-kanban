@@ -1,16 +1,13 @@
 import { Project } from "@prisma/client"
 import { CSS } from '@dnd-kit/utilities';
 import { cn } from "@/lib/utils"
-import { GripVertical, Trash2 } from "lucide-react"
+import { GripVertical } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { useDrawerStore, useHoverStore, useStore } from "@/utils/store/useStore"
 import { useRouter } from "next/navigation"
-import { actionDeleteProject } from "@/app/actions/actions"
 import { useSortable } from "@dnd-kit/sortable"
 import { UniqueIdentifier } from "@dnd-kit/core";
 import { UpdateOptimisticProjects } from "./SidebarContent";
-import { useTransition } from "react";
-import AlertComponent from "./kanban/AlertComponent";
 
 type Props = {
 	project: Omit<Project, 'id'> & { id: UniqueIdentifier },
@@ -18,7 +15,7 @@ type Props = {
 	updateOptimisticProjects: UpdateOptimisticProjects 
 	optimisticProjects: Project[]
 }
-export default function SidebarButton({ project, drawer, updateOptimisticProjects, optimisticProjects } : Props) {
+export default function SidebarButton({ project, drawer } : Props) {
 	const { hover } = useHoverStore(s=>s)
 	const {
     attributes,
@@ -49,12 +46,12 @@ export default function SidebarButton({ project, drawer, updateOptimisticProject
 	const pathArray = path.split('/')
 	const currentId = pathArray.at(pathArray.length - 1)
 	const router = useRouter()
-	const [ _, startTransition ] = useTransition()
 
 	async function navigateToProject() {
 		const num = 4 
 		router.push(`/kanban/${project.id}`)
-		setTimeout(() => { setStore({
+		//setTimeout(() => { 
+		setStore({
 			...store,
 			loading: true,
 			formerProjectId: currentId,
@@ -62,37 +59,9 @@ export default function SidebarButton({ project, drawer, updateOptimisticProject
 			project: {...project, id: project.id as string },
 			home: false,
 		})
-		setIsOpen(false) }, 100)
+		setIsOpen(false) 
+		//}, 100)
 	}
-
-	//async function deleteProject() {
-	//	router.push('/kanban/home')
-	//	setStore({
-	//		...store,
-	//		log: "deleteProject",
-	//		deleting: true,
-	//		home: true,
-	//		loading: true,
-	//		project: null,
-	//		optimisticUpdate: true,
-	//		ignoreUseEffectSidebar: true,
-	//	})
-	//	startTransition(() => updateOptimisticProjects({
-	//		action: "delete",
-	//		id: project.id as string
-	//	}))
-	//  const newProjects = await actionDeleteProject({ id: project.id as string })
-	//	setStore({
-	//		...store,
-	//		log: "deleteProject after",
-	//		project: null,
-	//		home: true,
-	//		deleting: false,
-	//		loading: false,
-	//		optimisticUpdate: false,
-	//		ignoreUseEffectSidebar: false,
-	//	})
-	//}
 
 	return (
 		<div {...attributes} ref={setNodeRef} style={style} className={cn(`z-0`,
@@ -117,7 +86,6 @@ export default function SidebarButton({ project, drawer, updateOptimisticProject
 			>
 				<div {...listeners}
 					className={cn(`flex flex-col justify-center h-[64px] cursor-grab active:grabbing`, {
-						//'h-[64px] cursor-grabbing': overlay,
 					})}
 				>
 					<GripVertical  
@@ -144,24 +112,6 @@ export default function SidebarButton({ project, drawer, updateOptimisticProject
 					{project.title?.at(0)?.toUpperCase()}
 				</p>}
 				<div></div>
-				{
-					//<div className={`md:block ${ drawer ? 'block' : 'hidden'}`} 
-					//	onClick={(e)=>{
-					//		e.stopPropagation()
-					//}}>
-					//		<AlertComponent
-					//			title="Delete a Project"
-					//			content="Are you sure you want to delete this Project? This action cannot be undone."
-					//			action={() => deleteProject()}
-					//		>
-					//		<Trash2 size="16" className={cn(
-					//			`text-muted-foreground place-self-center hover:text-foreground transition-all`, {
-					//				'opacity-50': store.optimisticUpdate
-					//			}
-					//		)}/>
-					//	</AlertComponent>
-					//</div>
-				}
 			</div>
 		</div>
 	)

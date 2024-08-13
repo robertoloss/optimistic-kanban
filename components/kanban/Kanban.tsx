@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react"
 import { SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable"
 import ColumnComp from "./Column"
-import { DndContext, useSensors, useSensor, UniqueIdentifier, MouseSensor, TouchSensor, closestCorners, closestCenter, rectIntersection } from "@dnd-kit/core"
+import { DndContext, useSensors, useSensor, UniqueIdentifier, MouseSensor, TouchSensor, rectIntersection } from "@dnd-kit/core"
 import dragStartHandler from "@/dnd-utils/dragStartHandler"
 import dragEndHandler from "@/dnd-utils/dragEndHandler"
 import dragOverHandler from "@/dnd-utils/dragOverHandler"
@@ -11,7 +11,7 @@ import { Column, Project, Task } from "@prisma/client"
 import AddAColumn from "./AddAColumn"
 import { minHeigtColumn } from "./Column"
 import LoadingColumns from "./LoadingColumns"
-import { supaFetchAllCols, supaFetchAllProjects, supaFetchAllTasks, supaFetchProject, supaFetchProjects } from "@/utils/supabase/queries"
+import { supaFetchAllCols, supaFetchAllProjects, supaFetchAllTasks, supaFetchProject } from "@/utils/supabase/queries"
 import { useParams, usePathname } from "next/navigation"
 import { useStore } from "@/utils/store/useStore"
 import { cn } from "@/lib/utils"
@@ -19,12 +19,10 @@ import { Pencil } from "lucide-react"
 import EditTitle from "./EditTitle"
 import DeleteProject from "./DeleteProject"
 import KanbanHome from "./KanbanHome"
-//import HomeIcon from "./HomeIcon"
 
 export type ProjNumCols = {
 	[projectId: string] : number
 }
-//type Props = {}
 export default function Kanban() {
 	const sensors = useSensors( 
 		useSensor(MouseSensor),
@@ -43,7 +41,6 @@ export default function Kanban() {
 										: store.project.id != params.id
 											? store.project.id
 											: params.id
-
 	const columnsIds =  store.columns?.filter(col => (col.project === projectId && col.id != store.justUpdatedColId))
 		.sort((a,b) => a.position! - b.position! )
 		.map(column => column.id as UniqueIdentifier)
@@ -53,18 +50,24 @@ export default function Kanban() {
 	const colJustUpdatedId = store.justUpdatedColId
 
 	useEffect(()=>{
+		console.log("useEffect")
 		async function fetchColsAndTasks() {
-			const project = await supaFetchProject({ projectId })
+			let project: Project | null = null;
+			if (projectId != 'home') {
+				console.log("fetching project: ", projectId)
+				const res = await supaFetchProject({ projectId })
+				if (res) project = res
+			}
 			const columns = await supaFetchAllCols();
 			const tasks = await supaFetchAllTasks()
 			const projects = await supaFetchAllProjects()
+			console.log("fetchColsAndTasks")
 			if (columns && tasks ) {
 				setStore({
 					...store,
 					project: project || null,
 					columns,
 					tasks,
-					home: pathnameLast.length > 0 && pathnameLast[0] === 'home',
 					loading: false,
 					deleting: false,
 					log: "Kanban",
@@ -73,9 +76,8 @@ export default function Kanban() {
 			}
 		}
 		if (!columnsIds) fetchColsAndTasks();
-	},[store.project])
-
-	
+	}, [store.triggerUpdate])
+ 
 	return (
 		<div className="flex flex-col w-full h-full items-start ">
 			<div className="flex flex-row w-full justify-between h-fit mt-2  items-end px-4">
@@ -83,24 +85,21 @@ export default function Kanban() {
 					<EditTitle project={store.project || undefined}>
 						<div className="flex flex-row gap-2 justify-start items-center w-fit h-fit p-2 group hover:cursor-pointer rounded-lg">
 							<div className={cn("text-lg font-semibold group-hover:text-muted-foreground -ml-2 transition", {
-								//"text-muted-foreground": !store.project || !store.project.title 
 							})}>
-								{ store.project?.title
+								{ 
+									store.project?.title
 									? store.project?.title
 									: store.home 
 										? "Home"
 										:  "..."
-									//(!store.home && store.project) || 
-									//store.home && !store.loading && (pathnameLast.length > 0 && pathnameLast[0] != 'home') 
-									//	? (store.project?.title || "...") 
-									//	: store.home 
-									//		? "Home" 
-									//		: ""
 								}
 							</div>
-							{!store.home && <div className={`transition opacity-0 group-hover:opacity-100`}>
-								<Pencil size={16} className="text-muted-foreground"/>
-							</div>}
+							{
+								!store.home && 
+								<div className={`transition opacity-0 group-hover:opacity-100`}>
+									<Pencil size={16} className="text-muted-foreground"/>
+								</div>
+							}
 						</div>
 					</EditTitle>
 				</div>
@@ -111,10 +110,8 @@ export default function Kanban() {
 				((store.home
 					&& <KanbanHome projects={store.projects}/>)
 					|| (!store.project?.title
-						&& ((pathnameLast.length > 0 && pathnameLast[0] != 'home'
-							&& <></>)	
-						|| <KanbanHome projects={store.projects}/>)
-							||	<></>))
+						&& ((pathnameLast.length > 0 && pathnameLast[0] != 'home'	&& <></>)	
+						|| <KanbanHome projects={store.projects}/>) ||	<></>))
 			}
 			{
 				!store.project?.title
@@ -164,10 +161,12 @@ export default function Kanban() {
 									/>
 							)})}
 							</SortableContext> 
-							{<AddAColumn 
-								numOfCols={store.columns?.length} 
-								projectId={projectId}
-								/>}
+							{!store.loading &&
+								<AddAColumn 
+									numOfCols={store.columns?.length} 
+									projectId={projectId}
+								/>
+							}
 						</>
 					: (
 							loading || 

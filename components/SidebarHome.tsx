@@ -13,14 +13,15 @@ export default function SidebarHome({ drawer } : Props) {
 	const { setIsOpen } = useDrawerStore(s=>s)
 	const pathname = usePathname()
 	async function goHome() {
+		router.push(`/kanban/home`)
 		setStore({
 			...store,
-			loading: true,
+			log: "going home",
 			formerProjectId: pathname.split('/').slice(-1).length > 0 ? pathname.split('/').slice(-1)[0] : "",
 			project: null,
 			home: true,
+			triggerUpdate: !store.triggerUpdate
 		})
-		router.push(`/kanban/home`)
 		setIsOpen(false)
 	}
 

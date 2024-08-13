@@ -34,11 +34,11 @@ export default function DeleteProject({ project, drawer, projects } : Props) {
 			onClick={(e)=>{
 				e.stopPropagation()
 		}}>
-				<AlertComponent
-					title="Delete a Project"
-					content="Are you sure you want to delete this Project? This action cannot be undone."
-					action={() => deleteProject()}
-				>
+			<AlertComponent
+				title="Delete a Project"
+				content="Are you sure you want to delete this Project? This action cannot be undone."
+				action={() => deleteProject()}
+			>
 				<Trash2 size="16" className={cn(
 					`text-muted-foreground place-self-center hover:text-foreground transition-all`, {
 						'opacity-50': false 
