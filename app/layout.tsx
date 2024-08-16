@@ -26,22 +26,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={GeistSans.className} suppressHydrationWarning>
-			<body
-        className={cn(
-          "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable
-        )}
-      >
-				<ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
-      </body>
-    </html>
-  );
+	<div> Under maintenance </div>
+	)} 
+
+//	(
+//    <html lang="en" className={GeistSans.className} suppressHydrationWarning>
+//			<body
+//        className={cn(
+//          "min-h-screen bg-background font-sans antialiased",
+//          fontSans.variable
+//        )}
+//      >
+//				<ThemeProvider
+//            attribute="class"
+//            defaultTheme="dark"
+//            enableSystem
+//            disableTransitionOnChange
+//          >
+//            {children}
+//          </ThemeProvider>
+//      </body>
+//    </html>
+//  );
 }
