@@ -75,8 +75,18 @@ export default function Kanban() {
 				})
 			}
 		}
-		if (!columnsIds) fetchColsAndTasks();
+		if (!columnsIds) {
+			fetchColsAndTasks()
+		} else {
+			console.log("setting loading false")
+			 setStore({
+				...store,
+				loading: false
+			})
+		}
 	}, [store.triggerUpdate])
+
+	console.log("store.loading: ", store.loading)
  
 	return (
 		<div className="flex flex-col w-full h-full items-start ">
@@ -103,8 +113,10 @@ export default function Kanban() {
 						</div>
 					</EditTitle>
 				</div>
-				{pathnameLast[0] != 'home' && !store.home && <DeleteProject project={store.project} projects={store.projects}/> }
-				{/* <HomeIcon /> */}
+				{
+					pathnameLast[0] != 'home' && !store.home && 
+					<DeleteProject project={store.project} projects={store.projects}/> 
+				}
 			</div>
 			{ 
 				((store.home

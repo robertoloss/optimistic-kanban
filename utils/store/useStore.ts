@@ -15,7 +15,13 @@ export type Store = {
 	ignoreUseEffectSidebar: boolean
 	justUpdatedColId: string
 	home: boolean,
-	projects: undefined | Project[] | null
+	projects: undefined | Project[] | null,
+	updateOptimisticProjects: ((action: {
+    action: string;
+    project?: Project | undefined;
+    id?: string | undefined;
+    newProjects?: Project[] | undefined;
+	}) => void) | null
 }
 type UseStore = {
 	store: Store,
@@ -36,7 +42,8 @@ export const useStore = create<UseStore>()((set) => ({
 		ignoreUseEffectSidebar: false,
 		justUpdatedColId: "",
 		home: false,
-		projects: undefined
+		projects: undefined,
+		updateOptimisticProjects: null,
 	},
 	setStore: (c: Store) => set(() => ({ store: c }))
 }))

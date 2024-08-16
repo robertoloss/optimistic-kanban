@@ -52,12 +52,12 @@ export default function SidebarButton({ project, drawer } : Props) {
 		router.push(`/kanban/${project.id}`)
 		setStore({
 			...store,
-			//loading: true,
+			loading: true,
 			formerProjectId: currentId,
 			numCols: num,
 			project: {...project, id: project.id as string },
 			home: false,
-			//triggerUpdate: !store.triggerUpdate
+			triggerUpdate: !store.triggerUpdate
 		})
 		setIsOpen(false) 
 	}

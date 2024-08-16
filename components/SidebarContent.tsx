@@ -53,8 +53,12 @@ export const SiderbarContent = memo(function({ projects, drawer } : Props) {
 					return state
 			}
 	})
-	const { store } = useStore(s=>s)
+	const { store, setStore } = useStore(s=>s)
   useEffect(() => {
+		setStore({
+			...store,
+			updateOptimisticProjects
+		})
 		async function update() {
 			const newProjects = await supaFetchAllProjects()
 			startTransition(() => updateOptimisticProjects({

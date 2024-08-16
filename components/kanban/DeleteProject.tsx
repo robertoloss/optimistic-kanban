@@ -3,8 +3,8 @@ import { Project } from "@prisma/client"
 import AlertComponent from "./AlertComponent"
 import { Trash2 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { supaDeleteProject } from "@/utils/supabase/queries"
 import { useStore } from "@/utils/store/useStore"
+import { actionDeleteProject } from "@/app/actions/actions"
 
 type Props = {
 	project: Project | null, 
@@ -17,15 +17,19 @@ export default function DeleteProject({ project, drawer, projects } : Props) {
 
 	async function deleteProject() {
 		if (project?.id) {
-			const deletedProject: Project | undefined = await supaDeleteProject(project?.id)
-			const newProjects = projects?.filter(p => p.id != deletedProject?.id)
+			store.updateOptimisticProjects && store.updateOptimisticProjects({
+				action: 'delete',
+				id: project.id
+			})
+			router.push('/kanban/home')
+			await actionDeleteProject(({ id: project.id}))
+			const newProjects = projects?.filter(p => p.id != project.id)
 			setStore({
 				...store,
 				project: null,
 				home: true,
 				projects: newProjects
 			})
-			router.push('/kanban/home')
 		}
 	}
 
