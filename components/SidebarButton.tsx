@@ -50,17 +50,16 @@ export default function SidebarButton({ project, drawer } : Props) {
 	async function navigateToProject() {
 		const num = 4 
 		router.push(`/kanban/${project.id}`)
-		//setTimeout(() => { 
 		setStore({
 			...store,
-			loading: true,
+			//loading: true,
 			formerProjectId: currentId,
 			numCols: num,
 			project: {...project, id: project.id as string },
 			home: false,
+			//triggerUpdate: !store.triggerUpdate
 		})
 		setIsOpen(false) 
-		//}, 100)
 	}
 
 	return (
