@@ -44,8 +44,7 @@ export default function DeleteProject({ project, drawer, projects } : Props) {
 				title="Delete a Project"
 				content="Are you sure you want to delete this Project? This action cannot be undone."
 				action={() => { 
-					console.log("trying to delete...")
-					if (!store.loading) deleteProject() 
+					deleteProject() 
 				}}
 			>
 				<Trash2 size="24" strokeWidth={2} className={cn(
