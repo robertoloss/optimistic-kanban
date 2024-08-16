@@ -11,6 +11,7 @@ import {  useState } from "react"
 import { Button } from "../ui/button"
 import { supaCreateColumn, supaFetchAllCols, supabase } from "@/utils/supabase/queries"
 import { useStore } from "@/utils/store/useStore"
+import { cn } from "@/lib/utils"
 
 type Props = {
 	numOfCols: number | undefined
@@ -43,17 +44,27 @@ export default function AddAColumn({ numOfCols, projectId } : Props) {
 			log: "AddAColumn"
 		}), 100)
 	}
+	function openModal(shouldOpen: boolean) {
+		console.log("open modal")
+		if (!store.loading) {
+			setOpen(shouldOpen)
+		}
+	}
 
 	return (
 		<div className={`flex flex-col mt-[minHeigtColumn] justify-start `}>
-			<Dialog open={open} onOpenChange={setOpen}>
+			<Dialog open={open} onOpenChange={openModal}>
 				<DialogTrigger disabled={store.optimisticUpdate || store.loading}>
-					<div className={`
+					<div className={cn(`
 						group bg-background p-4 flex flex-col justify-center border-2 rounded-lg border-muted-foreground 
 						hover:border-foreground hover:cursor-pointer border-dashed transition
-					`}>
+					`,{
+						'border-secondary': store.loading
+					})}>
 						<div className="flex flex-col h-6 hover:cursor-pointer rounded-full w-6 transition">
-							<CirclePlus className="text-muted-foreground group-hover:text-foreground transition" />
+							<CirclePlus className={cn(`text-muted-foreground group-hover:text-foreground transition`, {
+								'text-secondary': store.loading
+							})}/>
 						</div>
 					</div>
 				</DialogTrigger>

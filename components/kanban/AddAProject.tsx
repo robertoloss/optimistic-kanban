@@ -60,9 +60,14 @@ export default function AddAProject({ updateOptimisticProjects } : Props) {
 			log: "createNewProject after"
 		})
 	}
+	function openModal(shouldOpen: boolean) {
+		if (!store.loading) {
+			setOpen(shouldOpen)
+		}
+	}
 
 	return (
-		<Dialog open={open} onOpenChange={setOpen}>
+		<Dialog open={open} onOpenChange={openModal}>
 			<DialogTrigger className="w-full">
 				<div className={`
 					flex flex-row justify-center p-4 cursor-pointer rounded-lg

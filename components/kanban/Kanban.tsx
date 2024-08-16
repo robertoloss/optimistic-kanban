@@ -173,12 +173,10 @@ export default function Kanban() {
 									/>
 							)})}
 							</SortableContext> 
-							{!store.loading &&
 								<AddAColumn 
 									numOfCols={store.columns?.length} 
 									projectId={projectId}
 								/>
-							}
 						</>
 					: (
 							loading || 
