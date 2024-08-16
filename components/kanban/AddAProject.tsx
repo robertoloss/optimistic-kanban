@@ -10,7 +10,7 @@ import { Button } from "../ui/button";
 import { useState, useTransition } from "react";
 import { Project } from "@prisma/client";
 import { useDrawerStore, useHoverStore, useStore } from "@/utils/store/useStore";
-import { supabase } from "@/utils/supabase/queries";
+import { supaFetchAllProjects, supabase } from "@/utils/supabase/queries";
 import { useRouter } from "next/navigation";
 import { actionCreateProject } from "@/app/actions/actions";
 import { UpdateOptimisticProjects } from "../SidebarContent";
@@ -41,7 +41,7 @@ export default function AddAProject({ updateOptimisticProjects } : Props) {
 			home: false,
 			loading: true,
 			project: dummyProject,
-			log: "createNewProject before"
+			log: "createNewProject before",
 		})
 		startTransition(() => updateOptimisticProjects({
 			action: "create",
@@ -49,15 +49,15 @@ export default function AddAProject({ updateOptimisticProjects } : Props) {
 		}))
 		setIsOpen(false)
 		const newProject = await actionCreateProject({ title })
-		//console.log("newProject: ", newProject)
+		const newProjects = await supaFetchAllProjects()
 		router.push(`/kanban/${newProject?.id || 'home'}`)
-		console.log("newProject != undefined && newProject != null", newProject != undefined && newProject != null)
 		setStore({
 			...store,
 			home: !newProject,
 			loading: false,
 			project: newProject || null,
-			log: "createNewProject after"
+			projects: newProjects,
+			log: "createNewProject after",
 		})
 	}
 	function openModal(shouldOpen: boolean) {

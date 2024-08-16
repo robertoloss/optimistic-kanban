@@ -19,6 +19,10 @@ export default function DeleteProject({ project, drawer, projects } : Props) {
 
 	async function deleteProject() {
 		if (project?.id) {
+			store.updateOptimisticProjects && startTransition(() =>  store.updateOptimisticProjects!({
+				action: 'delete',
+				id: project.id
+			}))
 			const newProjects = projects?.filter(p => p.id != project.id)
 			setStore({
 				...store,
@@ -26,12 +30,8 @@ export default function DeleteProject({ project, drawer, projects } : Props) {
 				home: true,
 				projects: newProjects
 			})
-			router.push('/kanban/home')
-			store.updateOptimisticProjects && startTransition(() =>  store.updateOptimisticProjects!({
-				action: 'delete',
-				id: project.id
-			}))
 			await actionDeleteProject(({ id: project.id}))
+			router.push('/kanban/home')
 		}
 	}
 

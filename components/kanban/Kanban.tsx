@@ -50,18 +50,15 @@ export default function Kanban() {
 	const colJustUpdatedId = store.justUpdatedColId
 
 	useEffect(()=>{
-		console.log("useEffect")
 		async function fetchColsAndTasks() {
 			let project: Project | null = null;
 			if (projectId != 'home') {
-				console.log("fetching project: ", projectId)
 				const res = await supaFetchProject({ projectId })
 				if (res) project = res
 			}
 			const columns = await supaFetchAllCols();
 			const tasks = await supaFetchAllTasks()
 			const projects = await supaFetchAllProjects()
-			console.log("fetchColsAndTasks")
 			if (columns && tasks ) {
 				setStore({
 					...store,
@@ -78,7 +75,6 @@ export default function Kanban() {
 		if (!columnsIds) {
 			fetchColsAndTasks()
 		} else {
-			console.log("setting loading false")
 			 setStore({
 				...store,
 				loading: false
@@ -86,11 +82,10 @@ export default function Kanban() {
 		}
 	}, [store.triggerUpdate])
 
-	console.log("store.loading: ", store.loading)
  
 	return (
 		<div className="flex flex-col w-full h-full items-start ">
-			<div className="flex flex-row w-full justify-between h-fit mt-2  items-end px-4">
+			<div className="flex flex-row w-full justify-between h-fit mt-2  mb-2 items-end px-4">
 				<div className="flex flex-row h-fit w-full gap-2 items-center justify-between ">
 					<EditTitle project={store.project || undefined}>
 						<div className="flex flex-row gap-2 justify-start items-center w-fit h-fit p-2 group hover:cursor-pointer rounded-lg">
@@ -114,7 +109,6 @@ export default function Kanban() {
 					</EditTitle>
 				</div>
 				{
-					pathnameLast[0] != 'home' && !store.home && 
 					<DeleteProject project={store.project} projects={store.projects}/> 
 				}
 			</div>

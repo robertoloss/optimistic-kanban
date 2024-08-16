@@ -21,6 +21,7 @@ export default function ProectCardContent({ project, colsNum, tasksNum } : Props
 			numCols: num,
 			project: {...project, id: project.id as string },
 			home: false,
+			triggerUpdate: !store.triggerUpdate
 		})
 		router.push(`/kanban/${project.id}`)
 		setIsOpen(false)

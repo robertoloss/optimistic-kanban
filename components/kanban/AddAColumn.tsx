@@ -45,7 +45,6 @@ export default function AddAColumn({ numOfCols, projectId } : Props) {
 		}), 100)
 	}
 	function openModal(shouldOpen: boolean) {
-		console.log("open modal")
 		if (!store.loading) {
 			setOpen(shouldOpen)
 		}
